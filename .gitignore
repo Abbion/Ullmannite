@@ -46,4 +46,4 @@ bin-obj/
 .vscode/
 
 #premake
-!.premake5.exe
+!*premake5.exe
