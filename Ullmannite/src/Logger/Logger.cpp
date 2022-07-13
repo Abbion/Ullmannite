@@ -8,7 +8,7 @@ void Ull::InitLog()
         return;
     }
 
-    static plog::ColorConsoleAppender<plog::SimpleTxtFormatter> consoleAppender;
+    static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     plog::init(plog::Severity::verbose, &consoleAppender);
 }
 

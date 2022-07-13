@@ -7,10 +7,10 @@ workspace "Ullmannite"
         "Release"
     }
 
-outputdir = "%{cfg.buildcfg}-${cfg.system}-%{cfg.architecture}"
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Ullmannite"
-    location "Ullmannite"
+    location  "Ullmannite"
     kind "ConsoleApp"
     language "C++"
 
@@ -25,8 +25,9 @@ project "Ullmannite"
 
     includedirs
     {
-        "%{prj.name}/ThirdPartyLibs/plog/include"
+        path.getabsolute("%{prj.name}/ThirdPartyLibs/plog/include")
     }
+
 
     filter "system:windows"
         cppdialect "C++17"
