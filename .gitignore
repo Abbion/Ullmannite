@@ -44,3 +44,6 @@ bin-obj/
 *.filters
 *.vcxproj
 .vscode/
+
+#premake
+!.premake5.exe
