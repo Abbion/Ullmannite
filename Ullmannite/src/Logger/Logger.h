@@ -5,6 +5,13 @@
 
 namespace Ull
 {
+	class SimpleTxtFormatterImpl
+	{
+	public:
+		static plog::util::nstring header() { return plog::util::nstring(); }
+		static plog::util::nstring format(const plog::Record& record);
+	};
+
 	void InitLog();
 	void SetLogSeverity(plog::Severity serverity);
 	void ClearLogs();
