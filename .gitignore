@@ -27,7 +27,7 @@
 *.lib
 
 # Executables
-*.exe
+#*.exe
 *.out
 *.app
 
@@ -46,4 +46,3 @@ bin-obj/
 .vscode/
 
 #premake
-!*premake5.exe
