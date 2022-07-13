@@ -19,14 +19,14 @@ namespace Ull
 
 #define ULOGF(x) PLOGF << x
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	#define ULOGV(x) PLOGV << x
 	#define ULOGD(x) PLOGD << x
 	#define ULOGI(x) PLOGI << x
 	#define ULOGW(x) PLOGW << x
 	#define ULOGE(x) PLOGE << x
 	#define ULOGN(x) PLOGN << x
-#elif !_DEBUG
+#elif RELEASE
 	#define ULOGV(x)
 	#define ULOGD(x)
 	#define ULOGI(x)

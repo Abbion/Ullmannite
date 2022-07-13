@@ -1,7 +1,7 @@
+#include "Ullpch.h"
 #include "Application.h"
-#include <iostream>
 
-#include "../Logger/Logger.h";
+#include "Logger/Logger.h";
 
 using namespace Ull;
 

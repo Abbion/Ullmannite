@@ -17,6 +17,9 @@ project "Ullmannite"
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
 
+    pchheader "Ullpch.h"
+    pchsource "%{prj.name}/src/Ullpch.cpp"
+
     files
     {
         "%{prj.name}/src/**.h",
@@ -25,7 +28,8 @@ project "Ullmannite"
 
     includedirs
     {
-        path.getabsolute("%{prj.name}/ThirdPartyLibs/plog/include")
+        "%{prj.name}/src",
+        "%{prj.name}/ThirdPartyLibs/plog/include"
     }
 
 

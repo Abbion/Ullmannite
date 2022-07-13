@@ -1,3 +1,4 @@
+#include "Ullpch.h"
 #include "Logger.h"
 
 plog::util::nstring Ull::SimpleTxtFormatterImpl::format(const plog::Record& record)
@@ -35,9 +36,9 @@ void Ull::SetLogSeverity(plog::Severity severity)
 
 void Ull::ClearLogs()
 {
-#ifdef _WIN32
+#ifdef PLATFORM_WINDOWS
     system("cls");
-#elif __linux__
+#elif PLATFORM_LINUX
     system("clear");
 #endif
 }
