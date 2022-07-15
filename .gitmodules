@@ -1,3 +1,6 @@
 [submodule "Ullmannite/ThirdPartyLibs/plog"]
 	path = Ullmannite/ThirdPartyLibs/plog
 	url = https://github.com/SergiusTheBest/plog.git
+[submodule "Ullmannite/ThirdPartyLibs/glfw"]
+	path = Ullmannite/ThirdPartyLibs/glfw
+	url = https://github.com/glfw/glfw.git
