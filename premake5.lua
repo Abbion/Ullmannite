@@ -43,15 +43,15 @@ project "GLFW"
 
 		files
 		{
-			"Ullmannite/ThirdPartyLibs/glfw/src/win32_init.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/win32_joystick.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/win32_monitor.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/win32_time.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/win32_thread.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/win32_window.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/win32_init.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/win32_joystick.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/win32_monitor.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/win32_time.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/win32_thread.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/win32_window.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/win32_module.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/wgl_context.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c"
+            "Ullmannite/ThirdPartyLibs/glfw/src/wgl_context.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c"
 		}
 
 		defines 
@@ -68,15 +68,15 @@ project "GLFW"
 
         files
         {
-			"Ullmannite/ThirdPartyLibs/glfw/src/x11_init.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/x11_monitor.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/x11_window.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/xkb_unicode.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/posix_time.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/posix_thread.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/glx_context.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c",
-			"Ullmannite/ThirdPartyLibs/glfw/src/linux_joystick.c"
+            "Ullmannite/ThirdPartyLibs/glfw/src/x11_init.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/x11_monitor.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/x11_window.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/xkb_unicode.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/posix_time.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/posix_thread.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/glx_context.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/linux_joystick.c"
         }
 
         defines
