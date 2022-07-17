@@ -130,6 +130,71 @@ project "GLAD"
 
 --====================================================================
 
+project "IMGUI"
+    kind "StaticLib"
+    language "C"
+
+    targetdir("bin/" .. outputdir .. "/%{prj.name}")
+    objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+        "Ullmannite/ThirdPartyLibs/imgui/imconfig.h",
+		"Ullmannite/ThirdPartyLibs/imgui/imgui.h",
+		"Ullmannite/ThirdPartyLibs/imgui/imgui.cpp",
+		"Ullmannite/ThirdPartyLibs/imgui/imgui_draw.cpp",
+		"Ullmannite/ThirdPartyLibs/imgui/imgui_internal.h",
+		"Ullmannite/ThirdPartyLibs/imgui/imgui_widgets.cpp",
+		"Ullmannite/ThirdPartyLibs/imgui/imstb_rectpack.h",
+		"Ullmannite/ThirdPartyLibs/imgui/imstb_textedit.h",
+		"Ullmannite/ThirdPartyLibs/imgui/imstb_truetype.h",
+		"Ullmannite/ThirdPartyLibs/imgui/imgui_demo.cpp",
+        "Ullmannite/ThirdPartyLibs/imgui/imgui_tables.cpp",
+
+        --Backend loader
+        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3_loader.h",
+
+        --OpenGL
+        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3.h",
+        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3.cpp",
+
+        --GLFW
+        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_glfw.h",
+        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_glfw.cpp"
+	}
+
+    includedirs
+    {
+        "Ullmannite/ThirdPartyLibs/glfw/include",
+    }
+
+    links
+    {
+        "GLFW"
+    }
+
+
+    filter "system:windows"
+        cppdialect "C++17"
+		systemversion "latest"
+        staticruntime "On"
+
+	filter "system:linux"
+        pic "On"
+        systemversion "latest"
+        cppdialect "C++17"
+        staticruntime "On"
+
+    filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "on"
+
+--====================================================================
+
 project "Ullmannite"
     location  "Ullmannite"
     kind "ConsoleApp"
@@ -152,13 +217,16 @@ project "Ullmannite"
         "%{prj.name}/src",
         "%{prj.name}/ThirdPartyLibs/plog/include",
         "%{prj.name}/ThirdPartyLibs/glfw/include",
-        "%{prj.name}/ThirdPartyLibs/glad/include"
+        "%{prj.name}/ThirdPartyLibs/glad/include",
+        "%{prj.name}/ThirdPartyLibs/imgui",
+        "%{prj.name}/ThirdPartyLibs/imgui/backends"
     }
 
     links
     {
         "GLFW",
         "GLAD",
+        "IMGUI",
         "opengl32.lib"
     }
 
