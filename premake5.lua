@@ -248,6 +248,16 @@ project "Ullmannite"
             "PLATFORM_WINDOWS"
         }
 
+    filter "system:linux"
+        cppdialect "C++17"
+        staticruntime "On"
+        systemversion "latest"
+
+        defines
+        {
+            "PLATFORM_LINUX"
+        }
+
     filter "configurations:Debug"
         defines "DEBUG"
         symbols "On"
