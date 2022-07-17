@@ -17,20 +17,27 @@ namespace Ull
 	void ClearLogs();
 }
 
-#define ULOGF(x) PLOGF << x
+#define ULOGF(message) PLOGF << message
 
 #ifdef DEBUG
-	#define ULOGV(x) PLOGV << x
-	#define ULOGD(x) PLOGD << x
-	#define ULOGI(x) PLOGI << x
-	#define ULOGW(x) PLOGW << x
-	#define ULOGE(x) PLOGE << x
-	#define ULOGN(x) PLOGN << x
+	#define ULOGV(message) PLOGV << message
+	#define ULOGD(message) PLOGD << message
+	#define ULOGI(message) PLOGI << message
+	#define ULOGW(message) PLOGW << message
+	#define ULOGE(message) PLOGE << message
+	#define ULOGN(message) PLOGN << message
+	
+	#ifdef PLATFORM_WINDOWS
+		#define UASSERT(condition, message) { if(!condition) {PLOGF << "Assert! " << message; __debugbreak(); } }
+	#endif
+
 #elif RELEASE
-	#define ULOGV(x)
-	#define ULOGD(x)
-	#define ULOGI(x)
-	#define ULOGW(x)
-	#define ULOGE(x)
-	#define ULOGN(x)
+	#define ULOGV(message)
+	#define ULOGD(message)
+	#define ULOGI(message)
+	#define ULOGW(message)
+	#define ULOGE(message)
+	#define ULOGN(message)
+
+	#define UASSERT(status, message)
 #endif

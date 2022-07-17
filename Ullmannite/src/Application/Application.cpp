@@ -1,9 +1,9 @@
 #include "Ullpch.h"
 #include "Application.h"
-
-#include "Logger/Logger.h";
+#include "Logger/Logger.h"
 
 #include <GLFW/glfw3.h>
+#include "glad/glad.h"
 
 using namespace Ull;
 
@@ -25,9 +25,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 void Application::Run()
 {
-	ULOGD("Hello");
-	ULOGF("Fatal error nr: " << 23);
-
 	GLFWwindow* window;
 
 	if (!glfwInit())
@@ -44,6 +41,9 @@ void Application::Run()
 	}
 
 	glfwMakeContextCurrent(window);
+	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+	UASSERT(status, "Failed to init glad");
 
 	while (!glfwWindowShouldClose(window))
 	{

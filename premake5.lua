@@ -94,6 +94,42 @@ project "GLFW"
 
 --====================================================================
 
+project "GLAD"
+    kind "StaticLib"
+    language "C"
+    staticruntime "Off"
+
+    targetdir("bin/" .. outputdir .. "/%{prj.name}")
+    objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+        "Ullmannite/ThirdPartyLibs/glad/include/glad/glad.h",
+        "Ullmannite/ThirdPartyLibs/glad/include/KHR/khrplatform.h",
+        "Ullmannite/ThirdPartyLibs/glad/src/glad.c"
+	}
+
+    includedirs
+    {
+        "Ullmannite/ThirdPartyLibs/glad/include"
+    }
+
+    filter "system:windows"
+		systemversion "latest"
+
+	filter "system:linux"
+		systemversion "latest"
+
+    filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "on"
+
+--====================================================================
+
 project "Ullmannite"
     location  "Ullmannite"
     kind "ConsoleApp"
@@ -115,13 +151,20 @@ project "Ullmannite"
     {
         "%{prj.name}/src",
         "%{prj.name}/ThirdPartyLibs/plog/include",
-        "%{prj.name}/ThirdPartyLibs/glfw/include"
+        "%{prj.name}/ThirdPartyLibs/glfw/include",
+        "%{prj.name}/ThirdPartyLibs/glad/include"
     }
 
     links
     {
         "GLFW",
+        "GLAD",
         "opengl32.lib"
+    }
+
+    defines
+    {
+        "GLFW_INCLUDE_NONE"
     }
 
 
@@ -138,10 +181,12 @@ project "Ullmannite"
     filter "configurations:Debug"
         defines "DEBUG"
         symbols "On"
+        buildoptions "/MDd"
 
     filter "configurations:Release"
         defines "RELEASE"
         optimize "On"
+        buildoptions "/MD"
 
 --====================================================================
 
