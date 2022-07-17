@@ -7,3 +7,6 @@
 [submodule "Ullmannite/ThirdPartyLibs/imgui"]
 	path = Ullmannite/ThirdPartyLibs/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "Ullmannite/ThirdPartyLibs/glm"]
+	path = Ullmannite/ThirdPartyLibs/glm
+	url = https://github.com/g-truc/glm

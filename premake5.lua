@@ -209,7 +209,9 @@ project "Ullmannite"
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/ThirdPartyLibs/glm/**.hpp",
+        "%{prj.name}/ThirdPartyLibs/glm/**.inl"
     }
 
     includedirs
@@ -219,7 +221,7 @@ project "Ullmannite"
         "%{prj.name}/ThirdPartyLibs/glfw/include",
         "%{prj.name}/ThirdPartyLibs/glad/include",
         "%{prj.name}/ThirdPartyLibs/imgui",
-        "%{prj.name}/ThirdPartyLibs/imgui/backends"
+        "%{prj.name}/ThirdPartyLibs/glm"
     }
 
     links
