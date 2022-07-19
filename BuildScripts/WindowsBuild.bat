@@ -5,5 +5,5 @@ move Ullmannite\ThirdPartyLibs\imgui\backends\imgui_impl_opengl3.h Ullmannite\Th
 move Ullmannite\ThirdPartyLibs\imgui\backends\imgui_impl_glfw.cpp Ullmannite\ThirdPartyLibs\imgui\imgui_impl_glfw.cpp
 move Ullmannite\ThirdPartyLibs\imgui\backends\imgui_impl_glfw.h Ullmannite\ThirdPartyLibs\imgui\imgui_impl_glfw.h
 call cls
-call ThirdParty\bin\premake\premake5.exe vs2022
+call ThirdParty\bin\premake\WinPremake5.exe vs2022
 PAUSE
