@@ -23,6 +23,9 @@ project "GLFW"
         "Ullmannite/ThirdPartyLibs/glfw/include/GLFW/glfw3.h",
         "Ullmannite/ThirdPartyLibs/glfw/include/GLFW/glfw3native.h",
         "Ullmannite/ThirdPartyLibs/glfw/src/glfw_config.h",
+        "Ullmannite/ThirdPartyLibs/glfw/src/internal.h",
+        "Ullmannite/ThirdPartyLibs/glfw/src/mappings.h",
+        "Ullmannite/ThirdPartyLibs/glfw/src/platform.h",
         "Ullmannite/ThirdPartyLibs/glfw/src/context.c",
         "Ullmannite/ThirdPartyLibs/glfw/src/init.c",
         "Ullmannite/ThirdPartyLibs/glfw/src/input.c",
@@ -34,7 +37,8 @@ project "GLFW"
         "Ullmannite/ThirdPartyLibs/glfw/src/null_init.c",
         "Ullmannite/ThirdPartyLibs/glfw/src/null_joystick.c",
         "Ullmannite/ThirdPartyLibs/glfw/src/null_monitor.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/null_window.c"
+        "Ullmannite/ThirdPartyLibs/glfw/src/null_window.c",
+        "Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c",
 	}
 
     filter "system:windows"
@@ -50,8 +54,7 @@ project "GLFW"
             "Ullmannite/ThirdPartyLibs/glfw/src/win32_thread.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/win32_window.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/win32_module.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/wgl_context.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c"
+            "Ullmannite/ThirdPartyLibs/glfw/src/wgl_context.c"
 		}
 
 		defines 
@@ -68,14 +71,19 @@ project "GLFW"
 
         files
         {
+            "Ullmannite/ThirdPartyLibs/glfw/src/x11_platform.h",
             "Ullmannite/ThirdPartyLibs/glfw/src/x11_init.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/x11_monitor.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/x11_window.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/xkb_unicode.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/posix_module.h",
+            "Ullmannite/ThirdPartyLibs/glfw/src/posix_module.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/posix_poll.h",
+            "Ullmannite/ThirdPartyLibs/glfw/src/posix_poll.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/posix_time.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/posix_thread.c",
             "Ullmannite/ThirdPartyLibs/glfw/src/glx_context.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c",
+            "Ullmannite/ThirdPartyLibs/glfw/src/linux_joystick.h",
             "Ullmannite/ThirdPartyLibs/glfw/src/linux_joystick.c"
         }
 
@@ -154,7 +162,7 @@ project "IMGUI"
         --Backend loader
         "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3_loader.h",
 
-        --OpenGL
+        --GLUT
         "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3.h",
         "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3.cpp",
 
@@ -228,15 +236,13 @@ project "Ullmannite"
     {
         "GLFW",
         "GLAD",
-        "IMGUI",
-        "opengl32.lib"
+        "IMGUI"
     }
 
     defines
     {
         "GLFW_INCLUDE_NONE"
     }
-
 
     filter "system:windows"
         cppdialect "C++17"
@@ -248,7 +254,13 @@ project "Ullmannite"
             "PLATFORM_WINDOWS"
         }
 
+        links
+        {
+            "opengl32.lib"
+        }
+
     filter "system:linux"
+    	flags { "NoPCH" }
         cppdialect "C++17"
         staticruntime "On"
         systemversion "latest"
@@ -261,11 +273,16 @@ project "Ullmannite"
     filter "configurations:Debug"
         defines "DEBUG"
         symbols "On"
-        buildoptions "/MDd"
 
     filter "configurations:Release"
         defines "RELEASE"
         optimize "On"
+
+
+    filter {"system:windows", "configurations:Debug"}
+        buildoptions "/MDd"
+
+    filter {"system:windows", "configurations:Release"}
         buildoptions "/MD"
 
 --====================================================================
