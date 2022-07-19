@@ -30,6 +30,9 @@ namespace Ull
 	#ifdef PLATFORM_WINDOWS
 		#define UASSERT(condition, message) { if(!condition) {PLOGF << "Assert! " << message; __debugbreak(); } }
 	#endif
+	#ifdef PLATFORM_LINUX
+		#define UASSERT(condition, message) { if(!condition) {PLOGF << "Assert! " << message; } }
+	#endif
 
 #elif RELEASE
 	#define ULOGV(message)
