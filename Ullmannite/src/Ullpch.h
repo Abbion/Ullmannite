@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 
+#include <glm/glm.hpp>
+
 #ifdef PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

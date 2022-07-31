@@ -1,4 +1,7 @@
 #pragma once
+#include "Window/Window.h"
+#include "Event/EventQueue.h"
+#include <memory>
 
 namespace Ull
 {
@@ -8,8 +11,16 @@ namespace Ull
 		Application();
 		~Application();
 
-		void Run();
-	private:
+		bool FailedToInitialize() { return m_initFailed; }
 
+		void Run();
+
+	private:
+		std::shared_ptr<Window> m_window;
+		std::unique_ptr<EventQueue> m_eventQueue;
+
+		void Init();
+		void HandleEvents();
+		bool m_initFailed{ false };
 	};
 }

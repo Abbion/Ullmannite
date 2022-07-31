@@ -4,7 +4,10 @@
 int main() 
 {
 	Ull::Application* app = new Ull::Application();
-	app->Run();
+
+	if(!app->FailedToInitialize())
+		app->Run();
+
 	delete app;
 
 	return 0;
