@@ -5,7 +5,6 @@
 #include <glfw/glfw3.h>
 #include <memory>
 
-
 namespace Ull
 {
     class Window

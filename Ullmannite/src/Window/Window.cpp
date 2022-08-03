@@ -1,5 +1,7 @@
 #include "Ullpch.h"
 #include "Window.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Event/Event.h"
 
@@ -95,44 +97,72 @@ void Window::InitCallBacks()
     glfwSetWindowPosCallback(m_window, [](GLFWwindow* window, int positionX, int positionY)
         {
             auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
-            eventQueue->PushEvent(WindowMoveEvent(glm::uvec2(positionX, positionY)));
+            eventQueue->PushEvent(std::make_shared<WindowMoveEvent>(glm::uvec2(positionX, positionY)));
         });
 
     glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
         {
             auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
-            eventQueue->PushEvent(WindowResizeEvent(glm::uvec2(width, height)));
+            eventQueue->PushEvent(std::make_shared<WindowResizeEvent>(glm::uvec2(width, height)));
         });
     
     glfwSetWindowFocusCallback(m_window, [](GLFWwindow* window, int focused){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         
         if(focused)
-            eventQueue->PushEvent(WindowGainedFocusEvent());
+            eventQueue->PushEvent(std::make_shared<WindowGainedFocusEvent>());
         else
-            eventQueue->PushEvent(WindowLostFocusEvent());
+            eventQueue->PushEvent(std::make_shared<WindowLostFocusEvent>());
     });
 
     glfwSetWindowIconifyCallback(m_window, [](GLFWwindow* window, int iconified){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
 
         if(iconified)
-            eventQueue->PushEvent(WindowMinimizedEvent());
+            eventQueue->PushEvent(std::make_shared<WindowMinimizedEvent>());
         else
-            eventQueue->PushEvent(WindowRestoredEvent());
+            eventQueue->PushEvent(std::make_shared<WindowRestoredEvent>());
     });
 
     glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow* window, int maximized){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
 
         if(maximized)
-            eventQueue->PushEvent(WindowMaximizedEvent());
+            eventQueue->PushEvent(std::make_shared<WindowMaximizedEvent>());
         else
-            eventQueue->PushEvent(WindowRestoredEvent());
+            eventQueue->PushEvent(std::make_shared<WindowRestoredEvent>());
     });
 
     glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
-        eventQueue->PushEvent(WindowClosedEvent());
+        eventQueue->PushEvent(std::make_shared<WindowClosedEvent>());
+    });
+
+    glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
+        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+
+        if(action == GLFW_PRESS)
+            eventQueue->PushEvent(std::make_shared<KeyDownEvent>(static_cast<Keyboard::Key>(key)));
+        else if(action == GLFW_RELEASE)
+            eventQueue->PushEvent(std::make_shared<KeyUpEvent>(static_cast<Keyboard::Key>(key)));
+    });
+
+    glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
+        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+
+        if (action == GLFW_PRESS)
+            eventQueue->PushEvent(std::make_shared<MouseDownEvent>(static_cast<Mouse::Button>(button)));
+        else if (action == GLFW_RELEASE)
+            eventQueue->PushEvent(std::make_shared<MouseUpEvent>(static_cast<Mouse::Button>(button)));
+    });
+
+    glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos){
+        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        eventQueue->PushEvent(std::make_shared<MouseMoveEvent>(glm::ivec2(xpos, ypos)));
+    });
+
+    glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset) {
+        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        eventQueue->PushEvent(std::make_shared<MouseScrollEvent>(static_cast<int>(yoffset)));
     });
 }

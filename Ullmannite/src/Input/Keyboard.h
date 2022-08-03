@@ -74,16 +74,25 @@ namespace Ull
         };
 
     public:
-        Keyboard();
-        ~Keyboard();
+        static Keyboard* GetInstance();
+        bool IsKeyPressed(Key key);
 
-        static bool IsKeyPressed(Key key);
+        ~Keyboard();
+        void operator=(const Keyboard&) = delete;
+        Keyboard(Keyboard&) = delete;
+        Keyboard(Keyboard&&) = delete;
+
+    protected:
+        Keyboard();
+        
+        static Keyboard* m_keyboardInstance;
 
     private:
-        static bool m_created;
-        static std::map<Key, bool> m_keyMap;
+        std::map<Key, bool> m_keyMap;
 
+        void UpdateKeyMap(const std::map<Key, bool>& updatedKeyMap);
         void InitKeyMap();
-        void UpdateKeyMap(Key key, bool state);
+
+        friend class Application;
     };
 }

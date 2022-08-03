@@ -14,23 +14,18 @@ EventQueue::~EventQueue()
     ULOGD("EventQueue terminated");
 }
 
-void EventQueue::PushEvent(const Event& newEvent)
+void EventQueue::PushEvent(const std::shared_ptr<Event>& newEvent)
 {
     m_events.push_front(newEvent);
 }
 
-void EventQueue::PushEvent(Event&& newEvent)
+std::shared_ptr<Event> EventQueue::PopEvent()
 {
-    m_events.push_front(newEvent);
-}
-
-Event EventQueue::PopEvent()
-{
-    Event event(std::move(m_events.back()));
+    auto lastEvent = m_events.back();
     m_events.pop_back();
-    
-    return event;
+    return lastEvent;
 }
+
 
 unsigned int EventQueue::GetSize() const
 {
@@ -39,12 +34,12 @@ unsigned int EventQueue::GetSize() const
 
 void EventQueue::MakeEventUnique(EventType eventType)
 {
-    std::deque<Event> uniqueQueue;
+    std::deque<std::shared_ptr<Event>> uniqueQueue;
     bool lock = false;
 
     for(const auto& currentEvent : m_events)
     {
-        if(currentEvent.GetType() == eventType)
+        if(currentEvent->GetType() == eventType)
         {
             if(!lock)
             {
@@ -56,6 +51,7 @@ void EventQueue::MakeEventUnique(EventType eventType)
             uniqueQueue.push_back(currentEvent);
     }
 
+    ClearEventQueue();
     m_events = std::move(uniqueQueue);
 }
 

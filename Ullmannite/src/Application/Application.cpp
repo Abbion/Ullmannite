@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "Logger/Logger.h"
 #include "Event/Event.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 
 #include <GLFW/glfw3.h>
 #include "glad/glad.h"
@@ -28,6 +30,8 @@ Application::Application()
 
 Application::~Application()
 {
+    delete Keyboard::GetInstance();
+    delete Mouse::GetInstance();
     ULOGD("Application Terminated");
 }
 
@@ -36,8 +40,9 @@ void Application::Run()
     while(m_window->IsOpen())
     {
         HandleEvents();
-        
 
+        auto pos = Mouse::GetInstance()->GetMousePosition();
+        ULOGD(pos.x << ", " << pos.y);
 
         m_window->SwapBuffers();
     }
@@ -58,18 +63,51 @@ void Application::Init()
 void Application::HandleEvents()
 {
     m_window->PullEvents(m_eventQueue.get());
+    
+    std::map<Keyboard::Key, bool> updatedKeyMap;
+    std::map<Mouse::Button, bool> updatedButtonMap;
+    int scroll = 0;
 
     while(m_eventQueue->GetSize() > 0)
     {
-        auto event = m_eventQueue->PopEvent();
+        auto currentEvent = m_eventQueue->PopEvent();
         
-        switch (event.GetType())
+        switch (currentEvent->GetType())
         {
         case EventType::WindowClosed:
             m_window->Close();
             break;
+
+        case EventType::KeyDown:
+            updatedKeyMap[static_cast<KeyDownEvent*>(currentEvent.get())->GetKey()] = true;
+        break;
+
+        case EventType::KeyUp:
+            updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetKey()] = false;
+        break;
+
+        case EventType::MouseDown:
+            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetButton()] = true;
+            break;
+
+        case EventType::MouseUp:
+            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetButton()] = false;
+            break;
+
+        case EventType::MouseMove:
+            Mouse::GetInstance()->UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetPosition());
+            break;
+
+        case EventType::MouseScroll:
+            scroll = static_cast<MouseScrollEvent*>(currentEvent.get())->GetScroll();
+            break;
+
         default:
             break;
         }
     }
+
+    Keyboard::GetInstance()->UpdateKeyMap(updatedKeyMap);
+    Mouse::GetInstance()->UpdateButtonMap(updatedButtonMap);
+    Mouse::GetInstance()->UpdateScroll(scroll);
 }

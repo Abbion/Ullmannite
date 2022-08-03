@@ -10,16 +10,15 @@ namespace Ull
         EventQueue();
         ~EventQueue();
 
-        void PushEvent(const Event& newEvent);
-        void PushEvent(Event&& newEvent);
+        void PushEvent(const std::shared_ptr<Event>& newEvent);
 
-        Event PopEvent();
+        std::shared_ptr<Event> PopEvent();
         unsigned int GetSize() const;
         
         void MakeEventUnique(EventType eventType);
         void ClearEventQueue();
 
     private:
-        std::deque<Event> m_events;
+        std::deque<std::shared_ptr<Event>> m_events;
     };
 };

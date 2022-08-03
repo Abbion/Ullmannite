@@ -4,18 +4,25 @@
 
 using namespace Ull;
 
-bool Keyboard::m_created = false;
+Keyboard* Keyboard::m_keyboardInstance = {};
 
+Keyboard* Keyboard::GetInstance()
+{
+    if (m_keyboardInstance == nullptr)
+        m_keyboardInstance = new Keyboard();
+
+    return m_keyboardInstance;
+}
 
 Keyboard::Keyboard()
 {
-    if(!m_created)
-    {
-        InitKeyMap();
-        m_created = true;
-    }
-    else
-        ULOGD("Keyboard already created!!!");
+    InitKeyMap();
+}
+
+Keyboard::~Keyboard()
+{
+    m_keyMap.clear();
+    ULOGD("Keyboard terminated");
 }
 
 bool Keyboard::IsKeyPressed(Key key)
@@ -23,10 +30,10 @@ bool Keyboard::IsKeyPressed(Key key)
     return m_keyMap[key];
 }
 
-void Keyboard::UpdateKeyMap(std::map<Key, bool> updatedKeyMap)
+void Keyboard::UpdateKeyMap(const std::map<Key, bool>& updatedKeyMap)
 {
-    for(auto& key : m_keyMap)
-        key.second = updatedKeyMap[key.first];
+    for (const auto& key : updatedKeyMap)
+        m_keyMap[key.first] = key.second;
 }
 
 void Keyboard::InitKeyMap()
