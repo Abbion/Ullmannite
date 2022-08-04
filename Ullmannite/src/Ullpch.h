@@ -10,6 +10,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Exceptions/Exceptions.h"
+
 #ifdef PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

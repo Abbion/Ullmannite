@@ -5,13 +5,6 @@
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
-#include <GLFW/glfw3.h>
-#include "glad/glad.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
-
 using namespace Ull;
 
 Application::Application()
@@ -51,7 +44,7 @@ void Application::Init()
 {
     //GLFW
     if (glfwInit() == -1)
-        throw std::exception("Can't initialize GLFW");
+        throw InitializationException("Can't initialize GLFW");
 
     m_window = std::make_shared<Window>("Ullmanite 0.01", glm::ivec2(1280, 720));
 

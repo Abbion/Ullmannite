@@ -21,7 +21,7 @@ Window::Window(std::string title, glm::uvec2 size)
     m_window = glfwCreateWindow(size.x, size.y, m_title.c_str(), nullptr, nullptr);
 
     if (!m_window)
-        throw std::exception("Can't initialize Window");
+        throw InitializationException("Can't initialize Window");
 
     glfwMakeContextCurrent(m_window);
 
