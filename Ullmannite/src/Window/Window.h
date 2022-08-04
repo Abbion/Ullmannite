@@ -14,11 +14,11 @@ namespace Ull
         ~Window();
 
         void SetTitle(const std::string& title);
-        void SetSize(const glm::uvec2& size);
-        void SetPosition(const glm::ivec2& position);
+        void SetSize(glm::uvec2 size);
+        void SetPosition(glm::ivec2 position);
 
-        glm::uvec2 GetPosition() const { return m_position; }
-        glm::uvec2 GetSize() const { return m_size; }
+        glm::ivec2 GetPosition() const;
+        glm::ivec2 GetSize() const;
         std::string GetTitle() const { return m_title; }
 
         bool IsOpen() const { return m_isOpen; }
@@ -26,15 +26,12 @@ namespace Ull
 
         void Minimize();
         void Maximize();
-        void RestoreSize();
         void Close();
 
         void SwapBuffers();
         void PullEvents(EventQueue* eventQueue);
 
     private:
-        glm::uvec2 m_size;
-        glm::ivec2 m_position;
         std::string m_title;
 
         bool m_isOpen{ true };

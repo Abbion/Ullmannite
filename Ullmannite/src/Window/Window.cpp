@@ -10,23 +10,20 @@
 
 using namespace Ull;
 
-Window::Window(std::string title, glm::uvec2 size) :
-    m_size(std::move(size)),
-    m_title(std::move(title))
+Window::Window(std::string title, glm::uvec2 size)
 {
-    if(m_size.x < MIN_WINDOW_WIDTH)
-        m_size.x = MIN_WINDOW_WIDTH;
+    if(size.x < MIN_WINDOW_WIDTH)
+        size.x = MIN_WINDOW_WIDTH;
 
-    if(m_size.y < MIN_WINDOW_HEIGHT)
-        m_size.y = MIN_WINDOW_HEIGHT;
+    if(size.y < MIN_WINDOW_HEIGHT)
+        size.y = MIN_WINDOW_HEIGHT;
 
-    m_window = glfwCreateWindow(m_size.x, m_size.y, m_title.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(size.x, size.y, m_title.c_str(), nullptr, nullptr);
 
     if (!m_window)
         throw std::exception("Can't initialize Window");
 
     glfwMakeContextCurrent(m_window);
-    glfwGetWindowPos(m_window, &m_position.x, &m_position.y);
 
     InitCallBacks();
 }
@@ -45,23 +42,36 @@ void Window::SetTitle(const std::string& title)
     glfwSetWindowTitle(m_window, m_title.c_str());
 }
 
-void Window::SetSize(const glm::uvec2& size)
+void Window::SetSize(glm::uvec2 size)
 {
-    m_size = size;
+    if(size.x < MIN_WINDOW_WIDTH)
+        size.x = MIN_WINDOW_WIDTH;
 
-    if(m_size.x < MIN_WINDOW_WIDTH)
-        m_size.x = MIN_WINDOW_WIDTH;
+    if(size.y < MIN_WINDOW_HEIGHT)
+        size.y = MIN_WINDOW_HEIGHT;
 
-    if(m_size.y < MIN_WINDOW_HEIGHT)
-        m_size.y = MIN_WINDOW_HEIGHT;
-
-    glfwSetWindowSize(m_window, m_size.x, m_size.y);
+    glfwSetWindowSize(m_window, size.x, size.y);
 }
 
-void Window::SetPosition(const glm::ivec2& position)
+void Window::SetPosition(glm::ivec2 position)
 {
-    m_position = position;
-    glfwSetWindowPos(m_window, m_position.x, m_position.y);
+    glfwSetWindowPos(m_window, position.x, position.y);
+}
+
+glm::ivec2 Window::GetPosition() const
+{
+    glm::ivec2 position;
+    glfwGetWindowPos(m_window, &position.x, &position.y);
+    
+    return position;
+}
+
+glm::ivec2 Window::GetSize() const
+{
+    glm::ivec2 size;
+    glfwGetWindowSize(m_window, &size.x, &size.y);
+
+    return size;
 }
 
 void Window::Minimize()

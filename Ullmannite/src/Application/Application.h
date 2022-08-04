@@ -16,6 +16,8 @@ namespace Ull
 
 		void Run();
 
+		void Tester1();
+
 	private:
 		std::shared_ptr<Window> m_window;
 		std::unique_ptr<EventQueue> m_eventQueue;
