@@ -1,7 +1,6 @@
 #pragma once
 #include "Window/Window.h"
 #include "Event/EventQueue.h"
-#include "Input/Keyboard.h"
 #include <memory>
 
 namespace Ull
@@ -12,18 +11,17 @@ namespace Ull
 		Application();
 		~Application();
 
-		bool FailedToInitialize() { return m_initFailed; }
+		bool FailedToInitialize() const { return m_initFailed; }
 
 		void Run();
 
-		void Tester1();
-
 	private:
-		std::shared_ptr<Window> m_window;
+		std::unique_ptr<Window> m_window;
 		std::unique_ptr<EventQueue> m_eventQueue;
 
-		void Init();
+		void InitApplication();
 		void HandleEvents();
+
 		bool m_initFailed{ false };
 	};
 }

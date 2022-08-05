@@ -75,7 +75,7 @@ namespace Ull
 
     public:
         static Keyboard* GetInstance();
-        bool IsKeyPressed(Key key);
+        bool IsKeyPressed(Key key) const;
 
         ~Keyboard();
         void operator=(const Keyboard&) = delete;

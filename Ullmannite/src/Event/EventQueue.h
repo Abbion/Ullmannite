@@ -13,6 +13,8 @@ namespace Ull
         void PushEvent(const std::shared_ptr<Event>& newEvent);
 
         std::shared_ptr<Event> PopEvent();
+        
+        bool HasPenddingEvents() const;
         unsigned int GetSize() const;
         
         void MakeEventUnique(EventType eventType);

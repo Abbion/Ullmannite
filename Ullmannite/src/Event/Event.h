@@ -1,9 +1,9 @@
 #pragma once
-#include <optional>
-#include <glm/glm.hpp>
+#include "Logger/Logger.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
-#include "Logger/Logger.h"
+
+#include <glm/glm.hpp>
 
 namespace Ull
 {
@@ -40,7 +40,7 @@ namespace Ull
     private:
         EventType m_type;
     };
-
+    
     //==================================================================
     class WindowMoveEvent : public Event
     {
@@ -177,5 +177,18 @@ namespace Ull
             
         private:
             glm::ivec2 m_position;
+    };
+    
+    //==================================================================
+    template<typename T>
+    class VariableEvent : public Event
+    {
+    public:
+        VariableEvent(EventType eventType, T var) : Event(eventType), m_var(var) {}
+
+        T GetVar() const { return m_var; }
+
+    private:
+        T m_var;
     };
 };

@@ -1,9 +1,9 @@
 #pragma once
-#include "Event/EventQueue.h"
 #include <string>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <memory>
+#include "Event/EventQueue.h"
 
 namespace Ull
 {
@@ -22,10 +22,6 @@ namespace Ull
         std::string GetTitle() const { return m_title; }
 
         bool IsOpen() const { return m_isOpen; }
-        bool IsMinimized() const { return m_isMinimized; }
-
-        void Minimize();
-        void Maximize();
         void Close();
 
         void SwapBuffers();
@@ -33,10 +29,7 @@ namespace Ull
 
     private:
         std::string m_title;
-
         bool m_isOpen{ true };
-        bool m_isMinimized{ false };
-
         GLFWwindow* m_window;
 
     private:

@@ -74,18 +74,6 @@ glm::ivec2 Window::GetSize() const
     return size;
 }
 
-void Window::Minimize()
-{
-    m_isMinimized = true;
-    glfwIconifyWindow(m_window);
-}
-
-void Window::Maximize()
-{
-    m_isMinimized = false;
-    glfwMaximizeWindow(m_window);
-}
-
 void Window::Close()
 {
     m_isOpen = false;
@@ -104,17 +92,15 @@ void Window::PullEvents(EventQueue* eventQueue)
 
 void Window::InitCallBacks()
 {
-    glfwSetWindowPosCallback(m_window, [](GLFWwindow* window, int positionX, int positionY)
-        {
-            auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
-            eventQueue->PushEvent(std::make_shared<WindowMoveEvent>(glm::uvec2(positionX, positionY)));
-        });
+    glfwSetWindowPosCallback(m_window, [](GLFWwindow* window, int positionX, int positionY){
+        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        eventQueue->PushEvent(std::make_shared<WindowMoveEvent>(glm::uvec2(positionX, positionY)));
+    });
 
-    glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
-        {
-            auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
-            eventQueue->PushEvent(std::make_shared<WindowResizeEvent>(glm::uvec2(width, height)));
-        });
+    glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height){
+        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        eventQueue->PushEvent(std::make_shared<WindowResizeEvent>(glm::uvec2(width, height)));
+    });
     
     glfwSetWindowFocusCallback(m_window, [](GLFWwindow* window, int focused){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));

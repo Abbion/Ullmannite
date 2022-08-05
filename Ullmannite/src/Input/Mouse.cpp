@@ -1,10 +1,11 @@
 #include "Ullpch.h"
 #include "Mouse.h"
+
 #include "Logger/Logger.h"
 
 using namespace Ull;
 
-Mouse* Mouse::m_mouseInstance = {};
+Mouse* Mouse::m_mouseInstance = nullptr;
 
 Mouse* Mouse::GetInstance()
 {

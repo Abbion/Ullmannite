@@ -15,3 +15,7 @@
 #ifdef PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif
+
+#define not !
+#define and &&
+#define or

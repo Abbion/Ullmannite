@@ -1,10 +1,11 @@
 #include "Ullpch.h"
 #include "Keyboard.h"
+
 #include "Logger/Logger.h"
 
 using namespace Ull;
 
-Keyboard* Keyboard::m_keyboardInstance = {};
+Keyboard* Keyboard::m_keyboardInstance = nullptr;
 
 Keyboard* Keyboard::GetInstance()
 {
@@ -25,9 +26,9 @@ Keyboard::~Keyboard()
     ULOGD("Keyboard terminated");
 }
 
-bool Keyboard::IsKeyPressed(Key key)
+bool Keyboard::IsKeyPressed(Key key) const
 {
-    return m_keyMap[key];
+    return m_keyMap.at(key);
 }
 
 void Keyboard::UpdateKeyMap(const std::map<Key, bool>& updatedKeyMap)
