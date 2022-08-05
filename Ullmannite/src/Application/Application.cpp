@@ -26,7 +26,7 @@ Application::~Application()
 {
     delete Keyboard::GetInstance();
     delete Mouse::GetInstance();
-    ULOGD("Application Terminated");
+    ULOGD("Application terminated");
 }
 
 void Application::Run()
@@ -45,7 +45,7 @@ void Application::InitApplication()
     if (glfwInit() == -1)
         throw InitializationException("Can't initialize GLFW");
 
-    m_window = std::make_unique<Window>("Ullmanite 0.01", glm::ivec2(1280, 720));
+    m_window = std::make_unique<Window>("Ullmanite 0.02", glm::ivec2(1280, 720));
 
     //Events
     m_eventQueue = std::make_unique<EventQueue>();
