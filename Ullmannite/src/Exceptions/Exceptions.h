@@ -7,7 +7,7 @@ namespace Ull
 	public:
 		InitializationException(const char* str) : m_message(str) {}
 
-		const char* what() const {
+		const char* what() const override {
 			return m_message;
 		}
 
