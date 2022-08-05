@@ -5,7 +5,7 @@ int main()
 {
 	Ull::Application* app = new Ull::Application();
 
-	if(not app->FailedToInitialize())
+	if(!app->FailedToInitialize())
 		app->Run();
 
 	delete app;

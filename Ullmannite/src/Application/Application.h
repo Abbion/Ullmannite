@@ -18,10 +18,9 @@ namespace Ull
 	private:
 		std::unique_ptr<Window> m_window;
 		std::unique_ptr<EventQueue> m_eventQueue;
+		bool m_initFailed{ false };
 
 		void InitApplication();
 		void HandleEvents();
-
-		bool m_initFailed{ false };
 	};
 }
