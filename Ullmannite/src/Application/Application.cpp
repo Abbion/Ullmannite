@@ -6,6 +6,8 @@
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
+#include "Layer/Layer.h"
+
 using namespace Ull;
 
 Application::Application()
@@ -49,6 +51,11 @@ void Application::InitApplication()
 
     //Events
     m_eventQueue = std::make_unique<EventQueue>();
+
+    //Layers
+    m_layerManager = std::make_unique<LayerManager>();
+    m_layerManager->PushLayer(std::make_shared<Layer>("Test layer 1"));
+    m_layerManager->PushLayer(std::make_shared<Layer>("Test layer 2"));
 }
 
 void Application::HandleEvents()
@@ -67,69 +74,38 @@ void Application::HandleEvents()
         {
         case EventType::WindowClosed:
             m_window->Close();
-            break;
-
-        case EventType::WindowResize:
-        {
-            auto size = static_cast<WindowResizeEvent*>(currentEvent.get())->GetSize();
-            ULOGD("Resize: " << size.x << ", " << size.y);
-        }
-            break;
-
-        case EventType::WindowLostFocus:
-            ULOGD("LostFocus");
-            break;
-
-        case EventType::WindowGainedFocus:
-            ULOGD("GainedFocus");
         break;
-
-        case EventType::WindowMaximized:
-            ULOGD("Maximized");
-        break;
-
-        case EventType::WindowMinimized:
-            ULOGD("Minimized");
-        break;
-
-        case EventType::WindowRestored:
-            ULOGD("Restored");
-        break;
-
-        case EventType::WindowMove:
-        {
-            auto mv = static_cast<WindowMoveEvent*>(currentEvent.get())->GetPosition();
-            ULOGD("Move: " << mv.x << ", " << mv.y);
-        }
-            break;
 
         case EventType::KeyDown:
-            updatedKeyMap[static_cast<KeyDownEvent*>(currentEvent.get())->GetKey()] = true;
+            updatedKeyMap[static_cast<KeyDownEvent*>(currentEvent.get())->GetVal()] = true;
         break;
 
         case EventType::KeyUp:
-            updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetKey()] = false;
+            updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
         break;
 
         case EventType::MouseDown:
-            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetButton()] = true;
+            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
         break;
 
         case EventType::MouseUp:
-            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetButton()] = false;
+            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
         break;
 
         case EventType::MouseMove:
-            Mouse::GetInstance()->UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetPosition());
+            Mouse::GetInstance()->UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
         break;
 
         case EventType::MouseScroll:
-            scroll = static_cast<MouseScrollEvent*>(currentEvent.get())->GetScroll();
+            scroll = static_cast<MouseScrollEvent*>(currentEvent.get())->GetVal();
         break;
-
+        
         default:
-            break;
+        break;
         }
+
+        if(!currentEvent->IsHandeled())
+            m_layerManager->HandleEvent(currentEvent.get());
     }
 
     Keyboard::GetInstance()->UpdateKeyMap(updatedKeyMap);
