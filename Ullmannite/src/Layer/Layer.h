@@ -2,7 +2,7 @@
 #include "Logger/Logger.h"
 #include "Event/Event.h"
 #include "Event/EventHandler.h"
-#include "UiElement/UiElement.h"
+#include "UiElement/UiArea.h"
 
 namespace Ull
 {
@@ -12,18 +12,16 @@ namespace Ull
         Layer(std::string name);
         virtual ~Layer();
 
+        void CreateLayout(glm::uvec2 size);
+
         void HandleEvent(Event* event) override;
         
-        void SetBlockEventPassing(bool blockEventPassing)   { m_blockEventPassing = blockEventPassing; }    //TODO: Delete This event is doing all the lifting
-        
-        bool BlockEventPassing() const      { return m_blockEventPassing; }
-        std::string GetName() const         { return m_name; }
+        std::string GetName() const { return m_name; }
 
     private:
-        bool m_blockEventPassing{ false };
         std::string m_name;
 
-        //std::vector<UiElement> m_uiElements;
+        UiArea* m_layout;
         unsigned int m_focusedElement { 0 };
     };
 };

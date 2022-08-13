@@ -11,11 +11,13 @@ namespace Ull
 
         virtual void Update() = 0;
         virtual void Render() = 0;
-        //OPENGL TEXTURE
 
     private:
         glm::uvec2 m_position;
         glm::uvec2 m_size;
         std::string m_name;
+
+        UiElement* m_parent;
+        std::vector<UiElement*> m_children;
     };
 }

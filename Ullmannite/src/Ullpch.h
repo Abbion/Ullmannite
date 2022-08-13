@@ -15,3 +15,8 @@
 #ifdef PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif
+
+#define NON_COPYABLE(className) className(const className&) = delete; \
+								className(const className&&) = delete; \
+								className& operator=(className&) = delete; \
+								className& operator=(className&&) = delete;

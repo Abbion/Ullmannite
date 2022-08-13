@@ -28,6 +28,7 @@ Application::~Application()
 {
     delete Keyboard::GetInstance();
     delete Mouse::GetInstance();
+    delete Renderer::GetInstance();
     ULOGD("Application terminated");
 }
 
@@ -51,6 +52,9 @@ void Application::InitApplication()
 
     //Events
     m_eventQueue = std::make_unique<EventQueue>();
+    
+    //Renderer
+    Renderer::GetInstance()->SetApi(Renderer::API::OPEN_GL);
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();

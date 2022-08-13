@@ -78,6 +78,7 @@ namespace Ull
         bool IsKeyPressed(Key key) const;
 
         ~Keyboard();
+        //TODO USE NON_COPYABLE
         void operator=(const Keyboard&) = delete;
         Keyboard(Keyboard&) = delete;
         Keyboard(Keyboard&&) = delete;
