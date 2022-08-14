@@ -4,19 +4,27 @@
 #include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Event/Event.h"
+#include "Rendering/Api/Renderer.h"
 
 #define MIN_WINDOW_WIDTH 1024
 #define MIN_WINDOW_HEIGHT 576
 
 using namespace Ull;
 
-Window::Window(std::string title, glm::uvec2 size)
+Window::Window(std::string title, glm::uvec2 size) : m_title(title)
 {
     if(size.x < MIN_WINDOW_WIDTH)
         size.x = MIN_WINDOW_WIDTH;
 
     if(size.y < MIN_WINDOW_HEIGHT)
         size.y = MIN_WINDOW_HEIGHT;
+
+    if(Renderer::GetInstance()->GetApi() == Renderer::API::OPEN_GL)
+    {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    }
 
     m_window = glfwCreateWindow(size.x, size.y, m_title.c_str(), nullptr, nullptr);
 

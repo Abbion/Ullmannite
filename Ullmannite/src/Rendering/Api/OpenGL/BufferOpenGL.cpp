@@ -22,6 +22,7 @@ namespace
 
         default:
             //TODO ERROR HANDLING
+            return 0;
         break;
         }
     }
@@ -60,7 +61,8 @@ namespace
         
         default:
             //TODO ERROR HANDLING
-            break;
+            return 0;
+        break;
         }
     }
 
@@ -89,7 +91,8 @@ namespace
         
         default:
             //TODO ERROR HANDLING
-            break;
+            return 0;
+        break;
         }
     }
 }
@@ -98,7 +101,7 @@ VertexBufferOpenGL::VertexBufferOpenGL(int size, float* data, GraphicsBufferType
 {
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_ARRAY_BUFFER, m_bufferID);
-    glBufferData(m_bufferID, size, data, ConvertUsageType(type));
+    glBufferData(GL_ARRAY_BUFFER, size, data, ConvertUsageType(type));
 }
 
 VertexBufferOpenGL::~VertexBufferOpenGL()
@@ -117,7 +120,7 @@ void VertexBufferOpenGL::Unbind() const
 }
 
 
-IndexBufferOpenGL::IndexBufferOpenGL(int size, int* data, GraphicsBufferType type)
+IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type)
 {
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferID);
@@ -140,7 +143,7 @@ void IndexBufferOpenGL::Unbind() const
 }
 
 
-VertexLayoutOpenGL::VertexLayoutOpenGL(std::initializer_list<VertexLayoutElement> initList) :
+VertexLayoutOpenGL::VertexLayoutOpenGL(std::initializer_list<LayoutElement> initList) :
     m_elementList(std::move(initList))
 {
     for (auto& element : m_elementList)
@@ -157,20 +160,29 @@ VertexLayoutOpenGL::~VertexLayoutOpenGL()
     glDeleteVertexArrays(1, &m_layoutID);
 }
 
-void VertexLayoutOpenGL::Bind() const
+void VertexLayoutOpenGL::Build() const
 {
-    glBindVertexArray(m_layoutID);
-    
-    if(!m_layoutCreated)
+    if (!m_layoutCreated)
     {
         uint8_t index = 0;
-        for(const auto& element : m_elementList)
+        for (const auto& element : m_elementList)
         {
             glVertexAttribPointer(index, element.amount, ConvetDataType(element.dataType), element.normalized ? GL_TRUE : GL_FALSE, m_totalSize, (void*)element.offset);
             glEnableVertexAttribArray(index);
             index++;
         }
 
+        //TODO Clear element list????
         m_layoutCreated = true;
     }
+}
+
+void VertexLayoutOpenGL::Bind() const
+{
+    glBindVertexArray(m_layoutID);
+}
+
+void VertexLayoutOpenGL::Unbind() const
+{
+    glBindVertexArray(0);
 }

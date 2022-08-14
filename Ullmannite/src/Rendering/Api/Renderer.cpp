@@ -1,5 +1,7 @@
 #include "Ullpch.h"
 #include "Renderer.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
 using namespace Ull;
 
@@ -19,4 +21,13 @@ void Renderer::SetApi(API api)
 {
     //TODO check if can change api
     m_api = m_api;
+}
+
+void Renderer::init()
+{
+    if (m_api == API::OPEN_GL)
+    {
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+            throw InitializationException("Can't initialize GLAD");
+    }
 }

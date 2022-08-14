@@ -8,6 +8,8 @@
 
 #include "Layer/Layer.h"
 
+#include "glad/glad.h"
+
 using namespace Ull;
 
 Application::Application()
@@ -34,32 +36,79 @@ Application::~Application()
 
 void Application::Run()
 {
+    auto shader = Shader::Create("TestVertex", "TestPixel");
+
+    float vertices[] = {
+         0.5f,  0.5f, 0.0f,  // top right
+         0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f   // top left 
+    };
+    
+    unsigned int indices[] = {  // note that we start from 0!
+    0, 1, 3,  // first Triangle
+    1, 2, 3   // second Triangle
+    };
+
+    auto layout = VertexLayout::Create({
+        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
+    });
+
+    layout->Bind();
+
+    auto vertexBuffer = VertexBuffer::Create(sizeof(vertices), vertices, GraphicsBufferType::STATIC_DRAW);
+    auto indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
+
+
+    layout->Build();
+    vertexBuffer->Unbind();
+    layout->Unbind();
+
+
     while(m_window->IsOpen())
     {
         HandleEvents();
 
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        shader->Bind();
+        layout->Bind();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
         m_window->SwapBuffers();
     }
+
+    delete vertexBuffer;
+    delete indexBuffer;
+    delete layout;
+    delete shader;
 }
 
 void Application::InitApplication()
 {
+    //Renderer API
+    Renderer::GetInstance()->SetApi(Renderer::API::OPEN_GL);
+
     //GLFW
     if (glfwInit() == -1)
         throw InitializationException("Can't initialize GLFW");
 
     m_window = std::make_unique<Window>("Ullmanite 0.02", glm::ivec2(1280, 720));
 
+    //Renderer Core
+    Renderer::GetInstance()->init();
+
     //Events
     m_eventQueue = std::make_unique<EventQueue>();
-    
-    //Renderer
-    Renderer::GetInstance()->SetApi(Renderer::API::OPEN_GL);
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
     m_layerManager->PushLayer(std::make_shared<Layer>("Test layer 1"));
     m_layerManager->PushLayer(std::make_shared<Layer>("Test layer 2"));
+
+    //Test
+    glViewport(0, 0, 1280, 720);
 }
 
 void Application::HandleEvents()

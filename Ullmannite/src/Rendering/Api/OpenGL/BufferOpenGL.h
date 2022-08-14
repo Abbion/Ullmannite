@@ -20,7 +20,7 @@ namespace Ull
     class IndexBufferOpenGL : public IndexBuffer
     {
     public:
-        IndexBufferOpenGL(int size, int* data, GraphicsBufferType type);
+        IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type);
         ~IndexBufferOpenGL();
         
         void Bind() const override;
@@ -33,9 +33,10 @@ namespace Ull
     class VertexLayoutOpenGL : public VertexLayout
     {
     public:
-        VertexLayoutOpenGL(std::initializer_list<VertexLayoutElement> initList);
+        VertexLayoutOpenGL(std::initializer_list<LayoutElement> initList);
         ~VertexLayoutOpenGL();
 
+        virtual void Build() const override;
         void Bind() const override;
         void Unbind() const override;
     
@@ -43,6 +44,6 @@ namespace Ull
         unsigned int m_layoutID{ 0 };
         mutable bool m_layoutCreated{ false };
         uint32_t m_totalSize{ 0 };
-        std::vector<VertexLayoutElement> m_elementList;
+        std::vector<LayoutElement> m_elementList;
     };
 }

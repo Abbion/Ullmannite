@@ -31,7 +31,7 @@ void LayerManager::HandleEvent(Event* event)
     {
         layer->HandleEvent(event);
 
-        if(event->IsHandeled() || layer->BlockEventPassing())
+        if(event->IsHandeled())
             break;
     }
 }

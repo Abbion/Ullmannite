@@ -7,7 +7,7 @@ namespace Ull
     {
     public:
         UiArea(std::string name, glm::uvec2 position, glm::uvec2 size);
-        ~UiArea();
+        ~UiArea() {}
 
         void Update() override {};
         void Render() override {};

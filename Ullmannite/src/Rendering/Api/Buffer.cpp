@@ -5,7 +5,7 @@
 
 using namespace Ull;
 
-VertexBuffer* VertexBuffer::Creeate(int size, float* data, GraphicsBufferType type)
+VertexBuffer* VertexBuffer::Create(int size, float* data, GraphicsBufferType type)
 {
     switch (Renderer::GetInstance()->GetApi())
     {
@@ -18,7 +18,7 @@ VertexBuffer* VertexBuffer::Creeate(int size, float* data, GraphicsBufferType ty
     return nullptr;
 }
 
-IndexBuffer* IndexBuffer::Create(int size, int* data, GraphicsBufferType type)
+IndexBuffer* IndexBuffer::Create(int size, unsigned int* data, GraphicsBufferType type)
 {
     switch (Renderer::GetInstance()->GetApi())
     {
@@ -31,7 +31,7 @@ IndexBuffer* IndexBuffer::Create(int size, int* data, GraphicsBufferType type)
     return nullptr;
 }
 
-VertexLayout* VertexLayout::Create(std::initializer_list<VertexLayoutElement> initList)
+VertexLayout* VertexLayout::Create(std::initializer_list<LayoutElement> initList)
 {
     switch (Renderer::GetInstance()->GetApi())
     {

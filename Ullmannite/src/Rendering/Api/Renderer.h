@@ -1,4 +1,7 @@
 #pragma once
+#include "Ullpch.h"
+#include "Buffer.h"
+#include "Shader.h"
 
 namespace Ull
 {
@@ -11,20 +14,23 @@ namespace Ull
         };
 
     public:
+        NON_COPYABLE(Renderer);
+        
         ~Renderer();
 
         static Renderer* GetInstance();
 
         void SetApi(API api);
+        void init();
 
         API inline GetApi() { return m_api; }
 
     protected:
-        Renderer();
-        static Renderer* m_rendererInstance{ nullptr };
+        Renderer() = default;
+        inline static Renderer* m_rendererInstance{ nullptr };
 
     private:
 
         API m_api{ API::OPEN_GL };
-    }
+    };
 }

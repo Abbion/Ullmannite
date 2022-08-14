@@ -7,7 +7,7 @@ namespace Ull
     class ShaderOpenGL : public Shader
     {
     public:
-        ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName = std::string(""));
+        ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName);
         ~ShaderOpenGL();
 
         void Bind() const override;
@@ -19,7 +19,7 @@ namespace Ull
         void SetBool(std::string uniformName, bool value) const override;
 
     private:
-        void checkCompileErrors(unsigned int shader, GraphicsShaderType type);
+        void CheckCompileErrors(unsigned int shader, GraphicsShaderType type);
 
         uint32_t m_shaderID;
     };

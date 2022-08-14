@@ -1,3 +1,4 @@
+#include "Ullpch.h"
 #include "ShaderOpenGL.h"
 #include "Logger/Logger.h"
 #include "glad/glad.h"
@@ -7,7 +8,8 @@
 #include <string>
 
 using namespace Ull;
-#define OPENGL_SHADDER_PATH "src/Rendering/Shaders/"
+#define OPENGL_SHADDER_PATH "src/Rendering/Shaders/OpenGL/"
+#define OPENGL_SHADER_EXTENSION ".glsl"
 
 namespace
 {
@@ -34,7 +36,7 @@ namespace
     }
 }
 
-ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName = std::string(""))
+ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName)
 {
     std::string vertexCode;
     std::string fragmentCode;
@@ -48,9 +50,9 @@ ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::strin
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-    std::string vertexShaderPath = OPENGL_SHADDER_PATH + vertexShaderName;
-    std::string fragmentShaderPath = OPENGL_SHADDER_PATH + fragmentCode;
-    std::string geometryShaderPath = OPENGL_SHADDER_PATH + geometryShaderName;
+    std::string vertexShaderPath = OPENGL_SHADDER_PATH + vertexShaderName + OPENGL_SHADER_EXTENSION;
+    std::string fragmentShaderPath = OPENGL_SHADDER_PATH + fragmentShaderName + OPENGL_SHADER_EXTENSION;
+    std::string geometryShaderPath = OPENGL_SHADDER_PATH + geometryShaderName + OPENGL_SHADER_EXTENSION;
 
     const bool geometryShaderSet = geometryShaderName.empty() ? false : true;
 
@@ -93,12 +95,12 @@ ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::strin
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, NULL);
     glCompileShader(vertex);
-    checkCompileErrors(vertex, GraphicsShaderType::VERTEX);
+    CheckCompileErrors(vertex, GraphicsShaderType::VERTEX);
     
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, NULL);
     glCompileShader(fragment);
-    checkCompileErrors(fragment, GraphicsShaderType::FRAGMENT);
+    CheckCompileErrors(fragment, GraphicsShaderType::FRAGMENT);
 
     if (geometryShaderSet)
     {
@@ -106,7 +108,7 @@ ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::strin
         geometry = glCreateShader(GL_GEOMETRY_SHADER);
         glShaderSource(geometry, 1, &gShaderCode, NULL);
         glCompileShader(geometry);
-        checkCompileErrors(geometry, GraphicsShaderType::GEOMETRY);
+        CheckCompileErrors(geometry, GraphicsShaderType::GEOMETRY);
     }
     
     m_shaderID = glCreateProgram();
@@ -117,7 +119,7 @@ ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::strin
         glAttachShader(m_shaderID, geometry);
     
     glLinkProgram(m_shaderID);
-    checkCompileErrors(m_shaderID, GraphicsShaderType::PROGRAM);
+    CheckCompileErrors(m_shaderID, GraphicsShaderType::PROGRAM);
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -161,7 +163,7 @@ void ShaderOpenGL::SetBool(std::string uniformName, bool value) const
     glUniform1i(glGetUniformLocation(m_shaderID, uniformName.c_str()), (int)value);
 }
 
-void ShaderOpenGLcheckCompileErrors(unsigned int shader, GraphicsShaderType type)
+void ShaderOpenGL::CheckCompileErrors(unsigned int shader, GraphicsShaderType type)
 {
     int success;
     char infoLog[1024];
@@ -180,7 +182,7 @@ void ShaderOpenGLcheckCompileErrors(unsigned int shader, GraphicsShaderType type
     {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         
-        if(success)
+        if(!success)
         {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
             ULOGE("Program linking failed:\n" << infoLog << "\n-----");

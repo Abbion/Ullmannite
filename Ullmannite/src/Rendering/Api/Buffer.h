@@ -4,15 +4,15 @@
 
 namespace Ull
 {
-    struct VertexLayoutElement
+    struct LayoutElement
     {
         std::string name;
         GraphicsDataType dataType;
         uint8_t amount;
         bool normalized;
-        uint16_t offset;
+        uint16_t offset{ 0 };
 
-         VertexLayoutElement(std::string name, GraphicsDataType dataType, uint8_t amount, bool normalized = false)
+        LayoutElement(std::string name, GraphicsDataType dataType, uint8_t amount, bool normalized = false)
          : name(name), dataType(dataType), amount(amount), normalized(normalized) {}
     };
 
@@ -23,7 +23,7 @@ namespace Ull
 
             virtual ~VertexBuffer() {}
 
-            static VertexBuffer* Creeate(int size, float* data, GraphicsBufferType type);
+            static VertexBuffer* Create(int size, float* data, GraphicsBufferType type);
 
             virtual void Bind() const = 0;
             virtual void Unbind() const = 0;
@@ -39,7 +39,7 @@ namespace Ull
 
             virtual ~IndexBuffer() {}
 
-            static IndexBuffer* Create(int size, int* data, GraphicsBufferType type);
+            static IndexBuffer* Create(int size, unsigned int* data, GraphicsBufferType type);
 
             virtual void Bind() const = 0;
             virtual void Unbind() const = 0;
@@ -55,8 +55,9 @@ namespace Ull
         
             virtual ~VertexLayout() {}
 
-            static VertexLayout* Create(std::initializer_list<VertexLayoutElement> initList);
+            static VertexLayout* Create(std::initializer_list<LayoutElement> initList);
 
+            virtual void Build() const = 0;
             virtual void Bind() const = 0;
             virtual void Unbind() const = 0;
     
