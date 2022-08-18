@@ -1,6 +1,6 @@
 #pragma once
 #include "Rendering/Api/Buffer.h"
-#include "glad/glad.h"
+#include "glad/glad.h" //TODO Move to cpp
 
 namespace Ull
 {
@@ -36,7 +36,7 @@ namespace Ull
         VertexLayoutOpenGL(std::initializer_list<LayoutElement> initList);
         ~VertexLayoutOpenGL();
 
-        virtual void Build() const override;
+        void Build() const override;
         void Bind() const override;
         void Unbind() const override;
     

@@ -31,3 +31,11 @@ void Renderer::init()
             throw InitializationException("Can't initialize GLAD");
     }
 }
+
+void Renderer::DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type, unsigned int skip)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+    }
+}

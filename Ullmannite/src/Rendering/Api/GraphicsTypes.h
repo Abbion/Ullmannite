@@ -28,4 +28,11 @@ namespace Ull
         COMPUTE,
         PROGRAM
     };
+
+    enum class GraphicsRenderPrimitives
+    {
+        TRIANGLE,
+        LINE,
+        POINT
+    };
 }

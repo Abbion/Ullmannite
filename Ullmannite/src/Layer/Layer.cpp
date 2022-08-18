@@ -4,9 +4,10 @@
 
 using namespace Ull;
 
-Layer::Layer(std::string name) : m_name(name)
+Layer::Layer(const std::string& name, const glm::uvec2& size) : m_name(name)
 {
-    
+    auto layoutName = m_name + " Layout";
+    m_layout = new UiArea(layoutName, glm::uvec2(0, 0), size);    
 }
 
 Layer::~Layer()
@@ -14,19 +15,4 @@ Layer::~Layer()
     delete m_layout;
     
     ULOGD("Layer " << m_name << " terminated");
-}
-
-void Layer::CreateLayout(glm::uvec2 size)
-{
-    auto layoutName = m_name + " layout";
-    m_layout = new UiArea(layoutName, glm::uvec2(0, 0), size);
-}
-
-void Layer::HandleEvent(Event* event)
-{
-    if(event->GetType() == EventType::KeyDown)
-    {
-        ULOGD(m_name << " key down");
-        event->MarkHandeled(true);
-    }       
 }

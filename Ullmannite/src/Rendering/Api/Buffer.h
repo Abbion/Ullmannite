@@ -12,7 +12,7 @@ namespace Ull
         bool normalized;
         uint16_t offset{ 0 };
 
-        LayoutElement(std::string name, GraphicsDataType dataType, uint8_t amount, bool normalized = false)
+         LayoutElement(std::string name, GraphicsDataType dataType, uint8_t amount, bool normalized = false)
          : name(name), dataType(dataType), amount(amount), normalized(normalized) {}
     };
 

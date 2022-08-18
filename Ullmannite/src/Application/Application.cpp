@@ -7,6 +7,9 @@
 #include "Input/Mouse.h"
 
 #include "Layer/Layer.h"
+#include "Layer/MainLayer.h"
+
+#include "Rendering/Converters/CoordinateConverter.h"
 
 #include "glad/glad.h"
 
@@ -36,6 +39,7 @@ Application::~Application()
 
 void Application::Run()
 {
+    /*
     auto shader = Shader::Create("TestVertex", "TestPixel");
 
     float vertices[] = {
@@ -63,6 +67,7 @@ void Application::Run()
     layout->Build();
     vertexBuffer->Unbind();
     layout->Unbind();
+    */
 
 
     while(m_window->IsOpen())
@@ -72,17 +77,20 @@ void Application::Run()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader->Bind();
-        layout->Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //shader->Bind();
+        //layout->Bind();
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        m_layerManager->GetTopLayer()->Render();
 
         m_window->SwapBuffers();
     }
 
+    /*
     delete vertexBuffer;
     delete indexBuffer;
     delete layout;
     delete shader;
+    */
 }
 
 void Application::InitApplication()
@@ -102,10 +110,16 @@ void Application::InitApplication()
     //Events
     m_eventQueue = std::make_unique<EventQueue>();
 
+    //Converters
+    CoordinateConverter::GetInstance()->SetWindowSize(m_window->GetSize());
+
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
-    m_layerManager->PushLayer(std::make_shared<Layer>("Test layer 1"));
-    m_layerManager->PushLayer(std::make_shared<Layer>("Test layer 2"));
+    m_layerManager->PushLayer(std::make_shared<MainLayer>(glm::uvec2(1220, 700)));
+
+    //TODO add warning layer
+    //m_layerManager->PushLayer(std::make_shared<Layer>("WarrningLayer"));
+    //Plan: You can create an tool tip layer to display tool tips
 
     //Test
     glViewport(0, 0, 1280, 720);
@@ -127,6 +141,10 @@ void Application::HandleEvents()
         {
         case EventType::WindowClosed:
             m_window->Close();
+        break;
+
+        case EventType::WindowResize:
+            WindowResizeHandler(m_window->GetSize());
         break;
 
         case EventType::KeyDown:
@@ -164,4 +182,9 @@ void Application::HandleEvents()
     Keyboard::GetInstance()->UpdateKeyMap(updatedKeyMap);
     Mouse::GetInstance()->UpdateButtonMap(updatedButtonMap);
     Mouse::GetInstance()->UpdateScroll(scroll);
+}
+
+void Application::WindowResizeHandler(const glm::uvec2& size)
+{
+    CoordinateConverter::GetInstance()->SetWindowSize(size);
 }

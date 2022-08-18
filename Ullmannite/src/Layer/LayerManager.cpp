@@ -36,6 +36,11 @@ void LayerManager::HandleEvent(Event* event)
     }
 }
 
+std::shared_ptr<Layer> LayerManager::GetTopLayer()
+{
+    return m_layers.back();
+}
+
 unsigned int LayerManager::GetSize() const
 {
     return static_cast<unsigned int>(m_layers.size());

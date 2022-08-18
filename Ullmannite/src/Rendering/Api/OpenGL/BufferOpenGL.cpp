@@ -119,7 +119,6 @@ void VertexBufferOpenGL::Unbind() const
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-
 IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type)
 {
     glGenBuffers(1, &m_bufferID);

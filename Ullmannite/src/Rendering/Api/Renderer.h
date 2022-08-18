@@ -22,6 +22,7 @@ namespace Ull
 
         void SetApi(API api);
         void init();
+        void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
 
         API inline GetApi() { return m_api; }
 
