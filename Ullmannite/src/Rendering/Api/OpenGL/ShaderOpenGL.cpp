@@ -153,6 +153,11 @@ void ShaderOpenGL::SetFloat(std::string uniformName, float value) const
     glUniform1f(glGetUniformLocation(m_shaderID, uniformName.c_str()), value);
 }
 
+void ShaderOpenGL::SetFloat4(std::string uniformName, glm::vec4 value) const
+{
+    glUniform4f(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.r, value.g, value.b, value.a);
+}
+
 void ShaderOpenGL::SetDouble(std::string uniformName, double value) const
 {
     glUniform1d(glGetUniformLocation(m_shaderID, uniformName.c_str()), value);

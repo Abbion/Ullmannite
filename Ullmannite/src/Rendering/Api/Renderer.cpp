@@ -23,12 +23,20 @@ void Renderer::SetApi(API api)
     m_api = m_api;
 }
 
-void Renderer::init()
+void Renderer::Init()
 {
     if (m_api == API::OPEN_GL)
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             throw InitializationException("Can't initialize GLAD");
+    }
+}
+
+void Renderer::SetViewPort(const glm::uvec2& position, const glm::uvec2& size)
+{
+    if(m_api == API::OPEN_GL)
+    {
+        glViewport(position.x, position.y, size.x, size.y);
     }
 }
 

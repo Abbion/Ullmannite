@@ -10,6 +10,8 @@ namespace Ull
             m_name(name), m_position(position), m_size(size) {}
         virtual ~UiElement();
 
+        virtual void CreateResources() = 0;
+
         virtual void Update() = 0;
         virtual void Render() = 0;
 

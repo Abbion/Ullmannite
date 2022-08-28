@@ -13,6 +13,10 @@
 
 #include "glad/glad.h"
 
+#include <thread>
+#include <chrono>
+#include <functional>
+
 using namespace Ull;
 
 Application::Application()
@@ -20,7 +24,7 @@ Application::Application()
     try
     {
         InitLog();
-        InitApplication();
+        InitApplciation();
     }
     catch (const std::exception& e)
     {
@@ -34,150 +38,165 @@ Application::~Application()
     delete Keyboard::GetInstance();
     delete Mouse::GetInstance();
     delete Renderer::GetInstance();
+
     ULOGD("Application terminated");
 }
 
 void Application::Run()
-{
-    /*
-    auto shader = Shader::Create("TestVertex", "TestPixel");
+{    
+    glClearColor(0.9f, 0.2f, 0.2f, 1.0f);
 
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
-    
-    unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,  // first Triangle
-    1, 2, 3   // second Triangle
-    };
-
-    auto layout = VertexLayout::Create({
-        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
-    });
-
-    layout->Bind();
-
-    auto vertexBuffer = VertexBuffer::Create(sizeof(vertices), vertices, GraphicsBufferType::STATIC_DRAW);
-    auto indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
-
-
-    layout->Build();
-    vertexBuffer->Unbind();
-    layout->Unbind();
-    */
-
-
-    while(m_window->IsOpen())
+    while (m_window->IsOpen())
     {
+        m_window->CheckCursorInteractions();
+
+        auto s = m_window->GetSize();
+        int speed = 20;
+        if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::W))
+        {
+            m_window->SetSize(glm::uvec2(s.x + speed, s.y + speed));
+        }
+        else if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::S))
+        {
+            m_window->SetSize(glm::uvec2(s.x - speed + 2, s.y - speed + 2));
+        }
+
         HandleEvents();
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        //shader->Bind();
-        //layout->Bind();
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         m_layerManager->GetTopLayer()->Render();
 
         m_window->SwapBuffers();
     }
 
-    /*
-    delete vertexBuffer;
-    delete indexBuffer;
-    delete layout;
-    delete shader;
-    */
+    if(m_eventPullThread.joinable())
+        m_eventPullThread.join();
 }
 
-void Application::InitApplication()
+void Application::InitApplciation()
 {
-    //Renderer API
     Renderer::GetInstance()->SetApi(Renderer::API::OPEN_GL);
 
-    //GLFW
+    //Window
     if (glfwInit() == -1)
         throw InitializationException("Can't initialize GLFW");
 
-    m_window = std::make_unique<Window>("Ullmanite 0.02", glm::ivec2(1280, 720));
+    //Thread that is creating the acctual window and handles event pulling form the system
+    m_eventPullThread = std::thread(&Application::InitWindow, this);
 
-    //Renderer Core
-    Renderer::GetInstance()->init();
+    //Wait for the event pull thread to finish the window creation
+    std::unique_lock<std::mutex> mlock(m_initMutex);
+    m_initCV.wait(mlock, std::bind(&Application::RenderContextCreated, this));
 
-    //Events
-    m_eventQueue = std::make_unique<EventQueue>();
+    //Renderer
+    glfwMakeContextCurrent(m_window->GetRenderContext());
 
-    //Converters
+    Renderer::GetInstance()->Init();
+    Renderer::GetInstance()->SetViewPort(glm::uvec2(0, 0), m_window->GetSize());
+    
     CoordinateConverter::GetInstance()->SetWindowSize(m_window->GetSize());
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
-    m_layerManager->PushLayer(std::make_shared<MainLayer>(glm::uvec2(1220, 700)));
+    m_layerManager->PushLayer(std::make_shared<MainLayer>(m_window->GetSize()));
+    
+}
 
-    //TODO add warning layer
-    //m_layerManager->PushLayer(std::make_shared<Layer>("WarrningLayer"));
-    //Plan: You can create an tool tip layer to display tool tips
+void Application::InitWindow()
+{
+    std::unique_lock<std::mutex> lock(m_initMutex);
 
-    //Test
-    glViewport(0, 0, 1280, 720);
+    try
+    {
+        m_window = std::make_unique<Window>("Ullmanite 0.02", glm::ivec2(1280, 720));
+
+        m_eventQueue = std::make_unique<EventQueue>();
+        m_window->SetEventQueueDataPointer(m_eventQueue.get());
+    }
+    catch (const std::exception& e)
+    {
+        UASSERT(false, e.what());
+        m_ContextCreationFailed = true;
+    }
+
+    lock.unlock();
+    m_initCV.notify_one();
+
+    if (m_ContextCreationFailed)
+        return;
+
+     while (m_window->IsOpen())
+        m_window->PullEvents();
+}
+
+bool Application::RenderContextCreated()
+{
+    if (m_ContextCreationFailed)
+    {
+        if(m_eventPullThread.joinable())
+            m_eventPullThread.join();
+        throw InitializationException("Context creation error");
+    }
+
+    return (m_window != nullptr && m_window->GetRenderContext() != nullptr);
 }
 
 void Application::HandleEvents()
 {
-    m_window->PullEvents(m_eventQueue.get());
-    
+    m_eventQueue->LockAccess();
+
+    m_eventQueue->MakeEventUnique(EventType::WindowResize);
+
     std::map<Keyboard::Key, bool> updatedKeyMap;
     std::map<Mouse::Button, bool> updatedButtonMap;
     int scroll = 0;
 
-    while(m_eventQueue->HasPenddingEvents())
+    while (m_eventQueue->HasPenddingEvents())
     {
         auto currentEvent = m_eventQueue->PopEvent();
-        
+
         switch (currentEvent->GetType())
         {
         case EventType::WindowClosed:
             m_window->Close();
-        break;
+            break;
 
         case EventType::WindowResize:
-            WindowResizeHandler(m_window->GetSize());
-        break;
+            WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
+            break;
 
         case EventType::KeyDown:
             updatedKeyMap[static_cast<KeyDownEvent*>(currentEvent.get())->GetVal()] = true;
-        break;
+            break;
 
         case EventType::KeyUp:
             updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
-        break;
+            break;
 
-        case EventType::MouseDown:
+        case EventType::MouseDown: {
             updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
-        break;
+            break; }
 
         case EventType::MouseUp:
             updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
-        break;
+            break;
 
         case EventType::MouseMove:
             Mouse::GetInstance()->UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
-        break;
+            break;
 
         case EventType::MouseScroll:
             scroll = static_cast<MouseScrollEvent*>(currentEvent.get())->GetVal();
-        break;
-        
+            break;
+
         default:
-        break;
+            break;
         }
 
-        if(!currentEvent->IsHandeled())
+        if (!currentEvent->IsHandeled())
             m_layerManager->HandleEvent(currentEvent.get());
     }
+    m_eventQueue->UnlockAccess();
 
     Keyboard::GetInstance()->UpdateKeyMap(updatedKeyMap);
     Mouse::GetInstance()->UpdateButtonMap(updatedButtonMap);
@@ -187,4 +206,5 @@ void Application::HandleEvents()
 void Application::WindowResizeHandler(const glm::uvec2& size)
 {
     CoordinateConverter::GetInstance()->SetWindowSize(size);
+    Renderer::GetInstance()->SetViewPort(glm::uvec2(0, 0), size);
 }

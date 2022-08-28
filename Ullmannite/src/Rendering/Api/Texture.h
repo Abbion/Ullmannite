@@ -11,7 +11,8 @@ namespace Ull
         RG,
         RB,
         GB,
-        RGB
+        RGB,
+        RGBA
     };
 
     class Texture2D
@@ -25,7 +26,7 @@ namespace Ull
         
         virtual void Bind();
         virtual void Unbind();
-
+        
     protected:
         Texture2D() = default;
     };

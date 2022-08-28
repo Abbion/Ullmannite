@@ -8,6 +8,13 @@ using namespace Ull;
 UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiElement(name, position, size)
 {
+    //TODO: Move this out of here!!!!
+    m_layout = VertexLayout::Create({
+        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
+        });
+
+    //TODO: Move this out of here!!!!
+    m_shader = Shader::Create("TestVertex", "TestPixel");
     CreateResources();
 }
 
@@ -21,7 +28,7 @@ void UiArea::CreateResources()
 
     auto cc = CoordinateConverter::GetInstance();
     auto pos = cc->ScreenToNormal(m_position) * m_scale;
-    auto siz = cc->ScreenToNormal(m_size) * m_scale;
+    auto siz = cc->ScreenToNormal(m_position + m_size) * m_scale;
 
     float vertices[] = { 
         pos.x, pos.y, 0.0f,
@@ -35,11 +42,6 @@ void UiArea::CreateResources()
         1, 3, 2 
     };
 
-    //TODO: Move this out of here!!!!
-    m_layout = VertexLayout::Create({
-        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
-    });
-
     m_layout->Bind();
 
     m_vertexBuffer = VertexBuffer::Create(sizeof(vertices), vertices, GraphicsBufferType::STATIC_DRAW);
@@ -49,8 +51,12 @@ void UiArea::CreateResources()
     m_vertexBuffer->Unbind();
     m_layout->Unbind();
 
-    //TODO: Move this out of here!!!!
-    m_shader = Shader::Create("TestVertex", "TestPixel");
+
+}
+
+void UiArea::SetColor(const glm::vec4& color)
+{
+    m_color = color;
 }
 
 void UiArea::HandleEvent(Event* event)
@@ -67,5 +73,8 @@ void UiArea::Render()
 {
     m_shader->Bind();
     m_layout->Bind();
+
+    m_shader->SetFloat4("ourColor", m_color);
+
     Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, 6);
 }

@@ -17,7 +17,9 @@ EventQueue::~EventQueue()
 
 void EventQueue::PushEvent(const std::shared_ptr<Event>& newEvent)
 {
-    m_events.push_front(newEvent);
+    LockAccess();
+    m_events.push_back(newEvent);
+    UnlockAccess();
 }
 
 std::shared_ptr<Event> EventQueue::PopEvent()
@@ -42,22 +44,22 @@ void EventQueue::MakeEventUnique(EventType eventType)
     std::deque<std::shared_ptr<Event>> uniqueQueue;
     bool lock = false;
 
-    for(const auto& currentEvent : m_events)
+    for(std::deque<std::shared_ptr<Event>>::reverse_iterator itr = m_events.rbegin(); itr != m_events.rend(); ++itr)
     {
-        if(currentEvent->GetType() == eventType)
+        if((*itr)->GetType() == eventType)
         {
             if(!lock)
             {
-                uniqueQueue.push_back(currentEvent);
+                uniqueQueue.push_back(*itr);
                 lock = true;
             }
         }
         else
-            uniqueQueue.push_back(currentEvent);
+            uniqueQueue.push_back(*itr);
     }
 
     ClearEventQueue();
-    m_events = std::move(uniqueQueue);
+    m_events = uniqueQueue;
 }
 
 void EventQueue::ClearEventQueue()

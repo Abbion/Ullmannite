@@ -3,6 +3,8 @@
 #include "Buffer.h"
 #include "Shader.h"
 
+#include <glad/glad.h>
+
 namespace Ull
 {
     class Renderer
@@ -21,7 +23,10 @@ namespace Ull
         static Renderer* GetInstance();
 
         void SetApi(API api);
-        void init();
+        void Init();
+
+        void SetViewPort(const glm::uvec2& position, const glm::uvec2& size);
+
         void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
 
         API inline GetApi() { return m_api; }

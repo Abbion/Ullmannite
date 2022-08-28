@@ -16,6 +16,10 @@ void MainLayer::Update()
 void MainLayer::Render()
 {
     m_layout->Render();
+    for (auto& element : m_layout->GetChildren())
+    {
+        element->Render();
+    }
 }
 
 void MainLayer::HandleEvent(Event* event)
@@ -31,6 +35,7 @@ void MainLayer::HandleEvent(Event* event)
 void MainLayer::Init()
 {
     CreateLayout();
+    m_layout->SetColor(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
 }
 
 void MainLayer::CreateLayout()
@@ -41,21 +46,26 @@ void MainLayer::CreateLayout()
     auto initSize = m_layout->GetSize();
 
     UiArea* topBarView = new UiArea("topBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
+    topBarView->SetColor(glm::vec4(0.0f, 0.56f, 0.55f, 1.0f));
     m_layout->AddUiElement(topBarView);
 
-    /*
-    UiArea* renderView = new UiArea("renderElement", glm::vec2(0, 30), glm::vec2(initSize.x - 260, initSize.y - 30));
+    UiArea* renderView = new UiArea("renderElement", glm::vec2(0, 30), glm::vec2(initSize.x - 260, initSize.y));
+    renderView->SetColor(glm::vec4(0.0f, 0.35f, 0.35f, 1.0f));
     m_layout->AddUiElement(renderView);
 
     UiArea* menuView = new UiArea("menuElement", glm::vec2(initSize.x - 260, 30), glm::vec2(260, initSize.y - 30));
+    menuView->SetColor(glm::vec4(0.0f, 0.2f, 0.2f, 1.0f));
     m_layout->AddUiElement(menuView);
-    */
 
-    //m_layout->CreateResources();
+    m_layout->CreateResources();
 }
 
 void MainLayer::Resize(const glm::uvec2& size)
 {
+    ULOGD(size.x << ", " << size.y);
+    m_layout->SetSize(size);
+    m_layout->CreateResources();
+    
     for(auto& element : m_layout->GetChildren())
     {
         auto currentElementName = element->GetName(); 
@@ -63,7 +73,7 @@ void MainLayer::Resize(const glm::uvec2& size)
         {
             element->SetSize(glm::vec2(size.x, 30));
         }
-        /*
+        
         else if(currentElementName == "renderElement")
         {
             element->SetSize(glm::vec2(size.x - 260, size.y - 30));
@@ -73,6 +83,7 @@ void MainLayer::Resize(const glm::uvec2& size)
             element->SetPositiion(glm::vec2(size.x - 260, 30));
             element->SetSize(glm::vec2(260, size.y - 30));
         }
-        */
+
+        element->CreateResources();
     }
 }
