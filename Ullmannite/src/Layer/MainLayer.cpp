@@ -62,7 +62,7 @@ void MainLayer::CreateLayout()
 
 void MainLayer::Resize(const glm::uvec2& size)
 {
-    ULOGD(size.x << ", " << size.y);
+    //ULOGD(size.x << ", " << size.y);
     m_layout->SetSize(size);
     m_layout->CreateResources();
     

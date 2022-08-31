@@ -27,7 +27,7 @@ namespace Ull
         ~Window();
 
         void SetTitle(const std::string& title);
-        void SetSize(glm::uvec2 size);
+        void SetSize(glm::ivec2 size);
         void SetPosition(glm::ivec2 position);
         void SetEventQueueDataPointer(EventQueue* eventQueue);
 
@@ -61,6 +61,7 @@ namespace Ull
 
         bool m_isDragged{ false };
         bool m_isResized{ false };
+        glm::ivec2 m_windowPositionWithMinSize;
 
         ResizeBorder m_resizeBorder{ ResizeBorder::NONE };
 
