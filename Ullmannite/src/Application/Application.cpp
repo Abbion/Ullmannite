@@ -44,26 +44,20 @@ Application::~Application()
 
 void Application::Run()
 {    
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    Renderer::GetInstance()->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
     while (m_window->IsOpen())
     {
-        m_window->CheckCursorInteractions();
-
-        auto s = m_window->GetSize();
-        int speed = 20;
-        if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::W))
-        {
-            m_window->SetSize(glm::uvec2(s.x + speed, s.y + speed));
-        }
-        else if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::S))
-        {
-            m_window->SetSize(glm::uvec2(s.x - speed + 2, s.y - speed + 2));
-        }
-
         HandleEvents();
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        m_window->CheckCursorInteractions();
+
+        if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::X))
+        {
+            m_window->Close();
+        }
+
+        Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
         m_layerManager->GetTopLayer()->Render();
 
         m_window->SwapBuffers();

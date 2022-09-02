@@ -43,6 +43,7 @@ namespace Ull
             U = GLFW_KEY_U,
             V = GLFW_KEY_V,
             W = GLFW_KEY_W,
+            X = GLFW_KEY_X,
             Y = GLFW_KEY_Y,
             Z = GLFW_KEY_Z,
             ESCAPE = GLFW_KEY_ESCAPE,

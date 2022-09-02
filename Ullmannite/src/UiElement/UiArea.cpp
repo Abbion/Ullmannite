@@ -12,6 +12,11 @@ UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size) :
     CreateResources();
 }
 
+UiArea::~UiArea()
+{
+
+}
+
 void UiArea::CreateResources()
 {
     if (m_vertexBuffer != nullptr)

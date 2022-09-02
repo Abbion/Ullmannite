@@ -11,6 +11,6 @@ DrawableInterface::~DrawableInterface()
     if(m_vertexBuffer != nullptr)
         delete m_indexBuffer;
 
-    //TODO: check if shader should be deleted
-    //TODO: check if layout should be deleted
+    if (m_layout != nullptr)
+        delete m_layout;
 }

@@ -8,7 +8,7 @@ namespace Ull
     {
     public:
         UiArea(std::string name, glm::uvec2 position, glm::uvec2 size);
-        ~UiArea() {}
+        ~UiArea();
 
         void CreateResources() override;
         void SetColor(const glm::vec4& color);

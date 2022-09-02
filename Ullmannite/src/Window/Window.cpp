@@ -343,19 +343,19 @@ void Window::SwapBuffers()
 {
     if (m_isResized)
     {
-        glFlush();
-        glfwSwapBuffers(m_renderWindow);
         glfwSwapInterval(2);
+        Renderer::GetInstance()->FlushContext();
+        glfwSwapBuffers(m_renderWindow);
         m_intervalRestored = false;
-
 
         //Synchronization for resizing
         auto now = std::chrono::steady_clock::now();
         auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastRefresh);
         int waitForMs = 20 - durationMs.count();
+
         if (waitForMs > 0)
             std::this_thread::sleep_for(std::chrono::milliseconds(waitForMs));
-        m_lastRefresh = now;
+        m_lastRefresh = std::chrono::steady_clock::now();
     }
     else
     {

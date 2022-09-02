@@ -8,7 +8,7 @@ namespace Ull
     class DrawableInterface
     {
     public:
-        //TODO: NON COPYABLE
+        //TODO: NON COPYABLE???
         virtual ~DrawableInterface();
         
     protected:

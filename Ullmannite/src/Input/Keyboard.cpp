@@ -74,6 +74,7 @@ void Keyboard::InitKeyMap()
     m_keyMap[Key::V] = false;
     m_keyMap[Key::W] = false;
     m_keyMap[Key::Y] = false;
+    m_keyMap[Key::X] = false;
     m_keyMap[Key::Z] = false;
     m_keyMap[Key::ESCAPE] = false;
     m_keyMap[Key::ENTER] = false;
