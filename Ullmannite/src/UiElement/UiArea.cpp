@@ -1,20 +1,14 @@
 #include "Ullpch.h"
 #include "UiArea.h"
-#include "Rendering/Converters/CoordinateConverter.h"
 #include "Rendering/Api/Renderer.h"
+#include "Rendering/Api/ShaderManager.h"
 
 using namespace Ull;
 
 UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiElement(name, position, size)
 {
-    //TODO: Move this out of here!!!!
-    m_layout = VertexLayout::Create({
-        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
-        });
-
-    //TODO: Move this out of here!!!!
-    m_shader = Shader::Create("TestVertex", "TestPixel");
+    m_shader = ShaderManager::GetInstance()->GetShader(ShaderTag::UI_SHADER);
     CreateResources();
 }
 
@@ -26,21 +20,27 @@ void UiArea::CreateResources()
     if (m_indexBuffer != nullptr)
         delete m_indexBuffer;
 
-    auto cc = CoordinateConverter::GetInstance();
-    auto pos = cc->ScreenToNormal(m_position) * m_scale;
-    auto siz = cc->ScreenToNormal(m_position + m_size) * m_scale;
+    if (m_layout != nullptr)
+        delete m_layout;
+
+    glm::vec2 pos = glm::vec2(m_position) * m_scale;
+    glm::vec2 size = glm::vec2(m_position + m_size) * m_scale;
 
     float vertices[] = { 
         pos.x, pos.y, 0.0f,
-        siz.x, pos.y, 0.0f,
-        pos.x, siz.y, 0.0f,
-        siz.x, siz.y, 0.0f 
+        size.x, pos.y, 0.0f,
+        pos.x, size.y, 0.0f,
+        size.x, size.y, 0.0f
     };
 
     unsigned int indices[] = { 
         0, 1, 2,
         1, 3, 2 
     };
+
+    m_layout = VertexLayout::Create({
+        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
+    });
 
     m_layout->Bind();
 

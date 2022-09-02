@@ -58,6 +58,8 @@ Window::Window(std::string title, glm::uvec2 size) : m_title(title)
     glfwSetWindowSizeLimits(m_renderWindow, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     InitCallBacks();
+
+    m_lastRefresh = std::chrono::steady_clock::now();
 }
 
 Window::~Window()
@@ -327,8 +329,8 @@ void Window::MovedByCursor()
         }
 
         glm::ivec2 newWindowPosition = GetCursorScreenPosition();
-        newWindowPosition.x -= m_startGrabPosition.x;
-        newWindowPosition.y -= m_startGrabPosition.y;
+        newWindowPosition.x -= static_cast<int>(m_startGrabPosition.x);
+        newWindowPosition.y -= static_cast<int>(m_startGrabPosition.y);
         SetPosition(newWindowPosition);
     }
     else
@@ -339,7 +341,32 @@ void Window::MovedByCursor()
 
 void Window::SwapBuffers()
 {
-    glfwSwapBuffers(m_renderWindow);
+    if (m_isResized)
+    {
+        glFlush();
+        glfwSwapBuffers(m_renderWindow);
+        glfwSwapInterval(2);
+        m_intervalRestored = false;
+
+
+        //Synchronization for resizing
+        auto now = std::chrono::steady_clock::now();
+        auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastRefresh);
+        int waitForMs = 20 - durationMs.count();
+        if (waitForMs > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(waitForMs));
+        m_lastRefresh = now;
+    }
+    else
+    {
+        glfwSwapBuffers(m_renderWindow);
+
+        if (m_intervalRestored)
+        {
+            glfwSwapInterval(0);
+            m_intervalRestored = true;
+        }
+    }
 }
 
 void Window::PullEvents()
@@ -349,11 +376,11 @@ void Window::PullEvents()
 
 glm::ivec2 Window::GetCursorScreenPosition()
 {
-    //TODO: if windows
-
+#ifdef  PLATFORM_WINDOWS
     POINT cursorPosOnScreen;
     GetCursorPos(&cursorPosOnScreen);
     return glm::ivec2(cursorPosOnScreen.x, cursorPosOnScreen.y);
+#endif //  PLATFORM_WINDOWS
 }
 
 void Window::InitCallBacks()

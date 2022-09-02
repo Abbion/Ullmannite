@@ -2,6 +2,7 @@
 #include "ShaderOpenGL.h"
 #include "Logger/Logger.h"
 #include "glad/glad.h"
+#include "glm/gtc/type_ptr.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -156,6 +157,11 @@ void ShaderOpenGL::SetFloat(std::string uniformName, float value) const
 void ShaderOpenGL::SetFloat4(std::string uniformName, glm::vec4 value) const
 {
     glUniform4f(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.r, value.g, value.b, value.a);
+}
+
+void ShaderOpenGL::SetFloat4x4(std::string uniformName, glm::mat4x4 value) const
+{
+    glUniformMatrix4fv(glGetUniformLocation(m_shaderID, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void ShaderOpenGL::SetDouble(std::string uniformName, double value) const

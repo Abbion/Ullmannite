@@ -18,6 +18,8 @@ namespace Ull
     private:
         void CreateLayout();
         void Resize(const glm::uvec2& size);
+
+        glm::mat4 m_viewMatrix;
     };
     
 }

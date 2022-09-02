@@ -6,10 +6,10 @@
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
+#include "Rendering/Api/ShaderManager.h"
+
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
-
-#include "Rendering/Converters/CoordinateConverter.h"
 
 #include "glad/glad.h"
 
@@ -44,7 +44,7 @@ Application::~Application()
 
 void Application::Run()
 {    
-    glClearColor(0.9f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     while (m_window->IsOpen())
     {
@@ -93,8 +93,9 @@ void Application::InitApplciation()
 
     Renderer::GetInstance()->Init();
     Renderer::GetInstance()->SetViewPort(glm::uvec2(0, 0), m_window->GetSize());
-    
-    CoordinateConverter::GetInstance()->SetWindowSize(m_window->GetSize());
+
+    //Load Shaders
+    ShaderManager::GetInstance()->LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
@@ -205,6 +206,5 @@ void Application::HandleEvents()
 
 void Application::WindowResizeHandler(const glm::uvec2& size)
 {
-    CoordinateConverter::GetInstance()->SetWindowSize(size);
     Renderer::GetInstance()->SetViewPort(glm::uvec2(0, 0), size);
 }

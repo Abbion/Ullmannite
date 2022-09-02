@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "Event/EventQueue.h"
+#include <chrono>
 
 namespace Ull
 {
@@ -54,8 +55,7 @@ namespace Ull
         GLFWwindow* m_eventContext{ nullptr };
         GLFWcursor* m_cursor{ nullptr };
 
-
-        uint8_t m_resizeBorderSize{ 5 };
+        uint8_t m_resizeBorderSize{ 6 };
 
         glm::dvec2 m_startGrabPosition;
 
@@ -65,6 +65,9 @@ namespace Ull
 
         ResizeBorder m_resizeBorder{ ResizeBorder::NONE };
 
+        std::chrono::time_point<std::chrono::steady_clock> m_lastRefresh;
+        bool m_intervalRestored{ false };
+
         void CheckResizeBorder();
         void ResizeByCursor();
         void MovedByCursor();
@@ -72,6 +75,5 @@ namespace Ull
         glm::ivec2 GetCursorScreenPosition();
 
         void InitCallBacks();
-
     };
 }

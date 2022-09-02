@@ -1,6 +1,8 @@
 #include "Ullpch.h"
 #include "MainLayer.h"
 #include "Event/Event.h"
+#include "glm/gtc/matrix_transform.hpp"
+#include "Rendering/Api/ShaderManager.h"
 
 using namespace Ull;
 
@@ -15,7 +17,9 @@ void MainLayer::Update()
 
 void MainLayer::Render()
 {
+    ShaderManager::GetInstance()->GetShader(ShaderTag::UI_SHADER)->SetFloat4x4("viewMatrix", m_viewMatrix);
     m_layout->Render();
+    
     for (auto& element : m_layout->GetChildren())
     {
         element->Render();
@@ -45,6 +49,8 @@ void MainLayer::CreateLayout()
 
     auto initSize = m_layout->GetSize();
 
+    m_viewMatrix = glm::ortho(0.0f, static_cast<float>(initSize.x), static_cast<float>(initSize.y), 0.0f, -1.0f, 1.0f);
+
     UiArea* topBarView = new UiArea("topBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
     topBarView->SetColor(glm::vec4(0.0f, 0.56f, 0.55f, 1.0f));
     m_layout->AddUiElement(topBarView);
@@ -62,6 +68,8 @@ void MainLayer::CreateLayout()
 
 void MainLayer::Resize(const glm::uvec2& size)
 {
+    m_viewMatrix = glm::ortho(0.0f, static_cast<float>(size.x), static_cast<float>(size.y), 0.0f, -1.0f, 1.0f);
+
     //ULOGD(size.x << ", " << size.y);
     m_layout->SetSize(size);
     m_layout->CreateResources();

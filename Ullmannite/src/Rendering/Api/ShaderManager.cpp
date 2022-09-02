@@ -1,0 +1,49 @@
+#include "Ullpch.h"
+#include "ShaderManager.h"
+#include "Logger/Logger.h"
+
+using namespace Ull;
+
+ShaderManager* ShaderManager::m_shaderManagerInstance = nullptr;
+
+ShaderManager::ShaderManager()
+{
+	m_shaderMap[ShaderTag::UI_SHADER] = nullptr;
+}
+
+ShaderManager::~ShaderManager()
+{
+	for (auto shaderPair : m_shaderMap)
+		delete shaderPair.second;
+	m_shaderMap.clear();
+}
+
+ShaderManager* ShaderManager::GetInstance()
+{
+	if (m_shaderManagerInstance == nullptr)
+		m_shaderManagerInstance = new ShaderManager();
+
+	return m_shaderManagerInstance;
+}
+
+void ShaderManager::LoadShader(ShaderTag tag, std::string vertexShaderName, std::string pixelShaderName, std::string geometryShaderName)
+{
+	if (m_shaderMap[tag] != nullptr)
+	{
+		ULOGE("Shader " << vertexShaderName << ", " << pixelShaderName << " already loaded");
+		return;
+	}
+
+	m_shaderMap[tag] = Shader::Create(vertexShaderName.c_str(), pixelShaderName.c_str(), geometryShaderName.empty() ? nullptr : geometryShaderName.c_str());
+}
+
+void ShaderManager::UnloadShader(ShaderTag tag)
+{
+	delete m_shaderMap[tag];
+	m_shaderMap[tag] = nullptr;
+}
+
+Shader* ShaderManager::GetShader(ShaderTag tag)
+{
+	return m_shaderMap[tag];
+}
