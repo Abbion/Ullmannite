@@ -10,6 +10,10 @@
 #define MIN_WINDOW_HEIGHT 576
 
 #include <Windows.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WGL
+#define GLFW_NATIVE_INCLUDE_NONE
+#include <GLFW/glfw3native.h>
 
 using namespace Ull;
 
@@ -117,6 +121,21 @@ glm::ivec2 Window::GetSize() const
 void Window::Close()
 {
     m_isOpen = false;
+}
+
+void Window::Maximize()
+{
+    glfwMaximizeWindow(m_renderWindow);
+}
+
+void Window::Minimize()
+{
+    glfwIconifyWindow(m_renderWindow);
+}
+
+void Window::Restore()
+{
+    glfwRestoreWindow(m_renderWindow);
 }
 
 void Window::CheckCursorInteractions()
@@ -343,8 +362,8 @@ void Window::SwapBuffers()
 {
     if (m_isResized)
     {
-        glfwSwapInterval(2);
         Renderer::GetInstance()->FlushContext();
+        glfwSwapInterval(2);
         glfwSwapBuffers(m_renderWindow);
         m_intervalRestored = false;
 
@@ -390,7 +409,7 @@ void Window::InitCallBacks()
         eventQueue->PushEvent(std::make_shared<WindowMoveEvent>(EventType::WindowMaximized, glm::uvec2(positionX, positionY)));
     });
    
-    glfwSetWindowSizeCallback(m_renderWindow, [](GLFWwindow* window, int width, int height){
+    glfwSetFramebufferSizeCallback(m_renderWindow, [](GLFWwindow* window, int width, int height){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         eventQueue->PushEvent(std::make_shared<WindowResizeEvent>(EventType::WindowResize, glm::uvec2(width, height)));
     });

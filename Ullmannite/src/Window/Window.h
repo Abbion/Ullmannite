@@ -42,6 +42,9 @@ namespace Ull
 
         bool IsOpen() const { return m_isOpen; }
         void Close();
+        void Maximize();
+        void Minimize();
+        void Restore();
 
         void CheckCursorInteractions();
 

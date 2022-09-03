@@ -15,6 +15,20 @@ namespace Ull
         RGBA
     };
 
+    enum class WrapMode
+    {
+        REPAT,
+        MIRROR_REPEAT,
+        CLAMP,
+        BORDER
+    };
+
+    enum class Sampling
+    {
+        NEAREST,
+        LINEAR
+    };
+
     class Texture2D
     {
     public:
@@ -22,12 +36,25 @@ namespace Ull
 
         virtual ~Texture2D() {}
 
-        static Texture2D* Create(unsigned int windth, unsigned int height, ColorChannels channel, const uint8_t* data);
+        static Texture2D* Create();
+
+        glm::uvec2 GetSize() { return m_size; }
+        ColorChannels GetChannels() { return m_channels; }
         
-        virtual void Bind();
-        virtual void Unbind();
+        virtual void SetData(unsigned int width, unsigned int height, ColorChannels InChannel, ColorChannels OutChannel, const uint8_t* data) const = 0;
+        virtual void EnableMinMap(bool minMap) const = 0;
+        virtual void SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap) const = 0;
+        virtual void SetBorderColor(glm::vec4 color) const = 0;
+        virtual void SetSampling(Sampling magSampling, Sampling minSampling) const = 0;
+
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
         
     protected:
         Texture2D() = default;
+
+    private:
+        glm::uvec2 m_size;
+        ColorChannels m_channels;
     };
 }

@@ -48,11 +48,10 @@ void Application::Run()
 
     while (m_window->IsOpen())
     {
+        m_window->CheckCursorInteractions();
         HandleEvents();
 
-        m_window->CheckCursorInteractions();
-
-        if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::X))
+        if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window->Close();
         }
@@ -154,6 +153,9 @@ void Application::HandleEvents()
         {
         case EventType::WindowClosed:
             m_window->Close();
+            break;
+        case EventType::WindowRestored:
+            m_window->Restore();
             break;
 
         case EventType::WindowResize:

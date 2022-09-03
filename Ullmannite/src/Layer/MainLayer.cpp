@@ -55,13 +55,13 @@ void MainLayer::CreateLayout()
     topBarView->SetColor(glm::vec4(0.0f, 0.56f, 0.55f, 1.0f));
     m_layout->AddUiElement(topBarView);
 
-    UiArea* renderView = new UiArea("renderElement", glm::vec2(0, 30), glm::vec2(initSize.x - 260, initSize.y));
-    renderView->SetColor(glm::vec4(0.0f, 0.35f, 0.35f, 1.0f));
-    m_layout->AddUiElement(renderView);
-
-    UiArea* menuView = new UiArea("menuElement", glm::vec2(initSize.x - 260, 30), glm::vec2(260, initSize.y - 30));
+    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 30), glm::vec2(260, initSize.y - 30));
     menuView->SetColor(glm::vec4(0.0f, 0.2f, 0.2f, 1.0f));
     m_layout->AddUiElement(menuView);
+
+    UiArea* renderView = new UiArea("renderElement", glm::vec2(260, 30), glm::vec2(initSize.x - 260, initSize.y - 30));
+    renderView->SetColor(glm::vec4(0.0f, 0.35f, 0.35f, 1.0f));
+    m_layout->AddUiElement(renderView);
 
     m_layout->CreateResources();
 }
@@ -82,14 +82,15 @@ void MainLayer::Resize(const glm::uvec2& size)
             element->SetSize(glm::vec2(size.x, 30));
         }
         
-        else if(currentElementName == "renderElement")
-        {
-            element->SetSize(glm::vec2(size.x - 260, size.y - 30));
-        }
         else if(currentElementName == "menuElement")
         {
-            element->SetPositiion(glm::vec2(size.x - 260, 30));
             element->SetSize(glm::vec2(260, size.y - 30));
+        }
+
+        else if(currentElementName == "renderElement")
+        {
+            element->SetPositiion(glm::vec2(260, 30));
+            element->SetSize(glm::vec2(size.x - 260, size.y - 30));
         }
 
         element->CreateResources();

@@ -67,6 +67,8 @@ namespace Ull
     typedef Event WindowMinimizedEvent;
     typedef Event WindowRestoredEvent;
     typedef Event WindowClosedEvent;
+    typedef Event WindowMinimized;
+    typedef Event WindowRestored;
 
     typedef ValueEvent<Keyboard::Key> KeyDownEvent;
     typedef ValueEvent<Keyboard::Key> KeyUpEvent;
@@ -75,4 +77,5 @@ namespace Ull
     typedef ValueEvent<Mouse::Button> MouseUpEvent;
     typedef ValueEvent<int> MouseScrollEvent;
     typedef ValueEvent<glm::ivec2> MouseMoveEvent;
+
 };
