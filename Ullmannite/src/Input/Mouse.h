@@ -1,4 +1,5 @@
 #pragma once
+#include "Ullpch.h"
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <map>
@@ -16,17 +17,15 @@ namespace Ull
         };
 
     public:
+        NON_COPYABLE(Mouse);
+
+        ~Mouse();
+
         static Mouse* GetInstance();
 
         bool IsButtonPressed(Button button) const;
         glm::ivec2 GetMousePosition() const { return m_mousePosition; }
         int GetScrollDelta() const { return m_scroll; }
-
-        ~Mouse();
-        //TODO USE NON_COPYABLE
-        void operator=(const Mouse&) = delete;
-        Mouse(Mouse&) = delete;
-        Mouse(Mouse&&) = delete;
 
     protected:
         Mouse();

@@ -1,4 +1,5 @@
 #pragma once
+#include "Ullpch.h"
 #include <GLFW/glfw3.h>
 #include <map>
 
@@ -75,14 +76,12 @@ namespace Ull
         };
 
     public:
-        static Keyboard* GetInstance();
-        bool IsKeyPressed(Key key) const;
+        NON_COPYABLE(Keyboard);
 
         ~Keyboard();
-        //TODO USE NON_COPYABLE
-        void operator=(const Keyboard&) = delete;
-        Keyboard(Keyboard&) = delete;
-        Keyboard(Keyboard&&) = delete;
+
+        static Keyboard* GetInstance();
+        bool IsKeyPressed(Key key) const;
 
     protected:
         Keyboard();

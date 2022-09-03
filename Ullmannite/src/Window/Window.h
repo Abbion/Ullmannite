@@ -8,7 +8,7 @@
 
 namespace Ull
 {
-    enum class ResizeBorder //TODO: change to resize frame
+    enum class ResizeFrame
     {
         NONE,
         TOP,
@@ -66,7 +66,7 @@ namespace Ull
         bool m_isResized{ false };
         glm::ivec2 m_windowPositionWithMinSize;
 
-        ResizeBorder m_resizeBorder{ ResizeBorder::NONE };
+        ResizeFrame m_resizeBorder{ ResizeFrame::NONE };
 
         std::chrono::time_point<std::chrono::steady_clock> m_lastRefresh;
         bool m_intervalRestored{ false };

@@ -164,47 +164,47 @@ void Window::CheckResizeBorder()
 
         if ((cursorPos.x < cornerBias && cursorPos.y < cornerBias))
         {
-            m_resizeBorder = ResizeBorder::TOP_LEFT;
+            m_resizeBorder = ResizeFrame::TOP_LEFT;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
         }
         else if ((cursorPos.x > windowSize.x - cornerBias && cursorPos.y > windowSize.y - cornerBias))
         {
-            m_resizeBorder = ResizeBorder::BOTTOM_RIGHT;
+            m_resizeBorder = ResizeFrame::BOTTOM_RIGHT;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
         }
         else if ((cursorPos.x < cornerBias && cursorPos.y > windowSize.y - cornerBias))
         {
-            m_resizeBorder = ResizeBorder::BOTTOM_LEFT;
+            m_resizeBorder = ResizeFrame::BOTTOM_LEFT;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
         }
         else if ((cursorPos.x > windowSize.x - cornerBias && cursorPos.y < cornerBias))
         {
-            m_resizeBorder = ResizeBorder::TOP_RIGHT;
+            m_resizeBorder = ResizeFrame::TOP_RIGHT;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
         }
         else if (cursorPos.x < m_resizeBorderSize)
         {
-            m_resizeBorder = ResizeBorder::LEFT;
+            m_resizeBorder = ResizeFrame::LEFT;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR);
         }
         else if (cursorPos.x > windowSize.x - m_resizeBorderSize)
         {
-            m_resizeBorder = ResizeBorder::RIGHT;
+            m_resizeBorder = ResizeFrame::RIGHT;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR);
         }
         else if (cursorPos.y < m_resizeBorderSize)
         {
-            m_resizeBorder = ResizeBorder::TOP;
+            m_resizeBorder = ResizeFrame::TOP;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR);
         }
         else if (cursorPos.y > windowSize.y - m_resizeBorderSize)
         {
-            m_resizeBorder = ResizeBorder::BOTTOM;
+            m_resizeBorder = ResizeFrame::BOTTOM;
             m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR);
         }
         else
         {
-            m_resizeBorder = ResizeBorder::NONE;
+            m_resizeBorder = ResizeFrame::NONE;
             m_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
         }
 
@@ -217,7 +217,7 @@ void Window::ResizeByCursor()
     if(m_isDragged)
         return;
 
-    if (m_resizeBorder != ResizeBorder::NONE && Mouse::GetInstance()->IsButtonPressed(Mouse::Button::LEFT))
+    if (m_resizeBorder != ResizeFrame::NONE && Mouse::GetInstance()->IsButtonPressed(Mouse::Button::LEFT))
     {
         if(!m_isResized) //Started resizing
         {
@@ -227,7 +227,7 @@ void Window::ResizeByCursor()
 
         glm::ivec2 cursorPosition = GetCursorScreenPosition();
 
-        if (m_resizeBorder == ResizeBorder::TOP_LEFT)
+        if (m_resizeBorder == ResizeFrame::TOP_LEFT)
         {
             auto windowPosition = GetPosition();
             auto newWindowPosition = glm::ivec2(cursorPosition.x, cursorPosition.y);
@@ -245,14 +245,14 @@ void Window::ResizeByCursor()
 
             SetPosition(newWindowPosition);
         }
-        else if (m_resizeBorder == ResizeBorder::TOP_RIGHT)
+        else if (m_resizeBorder == ResizeFrame::TOP_RIGHT)
         {
             auto windowPosition = GetPosition();
             auto newWindowPosition = glm::ivec2(windowPosition.x, cursorPosition.y);
 
             auto positionDelta = windowPosition - newWindowPosition;
             auto windowSize = GetSize() + positionDelta;
-            windowSize.x = cursorPosition.x - m_startGrabPosition.x;
+            windowSize.x = cursorPosition.x - static_cast<int>(m_startGrabPosition.x);
 
             SetSize(windowSize);
 
@@ -261,14 +261,14 @@ void Window::ResizeByCursor()
 
             SetPosition(newWindowPosition);
         }
-        else if (m_resizeBorder == ResizeBorder::BOTTOM_LEFT)
+        else if (m_resizeBorder == ResizeFrame::BOTTOM_LEFT)
         {
             auto windowPosition = GetPosition();
             auto newWindowPosition = glm::ivec2(cursorPosition.x, windowPosition.y);
 
             auto positionDelta = windowPosition - newWindowPosition;
             auto windowSize = GetSize() + positionDelta;
-            windowSize.y = cursorPosition.y - m_startGrabPosition.y;
+            windowSize.y = cursorPosition.y - static_cast<int>(m_startGrabPosition.y);
             
             SetSize(windowSize);
 
@@ -277,12 +277,12 @@ void Window::ResizeByCursor()
 
             SetPosition(newWindowPosition);
         }
-        else if (m_resizeBorder == ResizeBorder::BOTTOM_RIGHT)
+        else if (m_resizeBorder == ResizeFrame::BOTTOM_RIGHT)
         {
             glm::ivec2 windowSize(cursorPosition.x - m_startGrabPosition.x, cursorPosition.y - m_startGrabPosition.y);
             SetSize(windowSize);
         }
-        else if (m_resizeBorder == ResizeBorder::TOP)
+        else if (m_resizeBorder == ResizeFrame::TOP)
         {
             auto windowPosition = GetPosition();
             auto newWindowPosition = glm::ivec2(windowPosition.x, cursorPosition.y);
@@ -297,7 +297,7 @@ void Window::ResizeByCursor()
 
             SetPosition(newWindowPosition);
         }
-        else if (m_resizeBorder == ResizeBorder::BOTTOM)
+        else if (m_resizeBorder == ResizeFrame::BOTTOM)
         {
             glm::ivec2 windowSize(cursorPosition.x - m_startGrabPosition.x, cursorPosition.y - m_startGrabPosition.y);
 
@@ -305,7 +305,7 @@ void Window::ResizeByCursor()
             SetSize(glm::ivec2(windowPosition.x, windowSize.y));
         }
         
-        else if (m_resizeBorder == ResizeBorder::LEFT)
+        else if (m_resizeBorder == ResizeFrame::LEFT)
         {
             auto windowPosition = GetPosition();
             auto newWindowPosition = glm::ivec2(cursorPosition.x, windowPosition.y);
@@ -320,7 +320,7 @@ void Window::ResizeByCursor()
 
             SetPosition(newWindowPosition);
         }
-        else if (m_resizeBorder == ResizeBorder::RIGHT)
+        else if (m_resizeBorder == ResizeFrame::RIGHT)
         {
             glm::ivec2 windowSize(cursorPosition.x - m_startGrabPosition.x, cursorPosition.y - m_startGrabPosition.y);
 
@@ -339,7 +339,7 @@ void Window::MovedByCursor()
     if(m_isResized)
         return;
 
-    if (m_resizeBorder == ResizeBorder::NONE && Mouse::GetInstance()->IsButtonPressed(Mouse::Button::LEFT))
+    if (m_resizeBorder == ResizeFrame::NONE && Mouse::GetInstance()->IsButtonPressed(Mouse::Button::LEFT))
     {
         if (!m_isDragged)   //Started draggins
         {
@@ -370,7 +370,7 @@ void Window::SwapBuffers()
         //Synchronization for resizing
         auto now = std::chrono::steady_clock::now();
         auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastRefresh);
-        int waitForMs = 20 - durationMs.count();
+        int waitForMs = 20 - static_cast<int>(durationMs.count());
 
         if (waitForMs > 0)
             std::this_thread::sleep_for(std::chrono::milliseconds(waitForMs));

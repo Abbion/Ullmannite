@@ -1,5 +1,8 @@
 #include "Ullpch.h"
+#include "glad/glad.h"
 #include "BufferOpenGL.h"
+#include "Logger/Logger.h"
+#include "TextureOpenGL.h"
 
 using namespace Ull;
 
@@ -21,7 +24,7 @@ namespace
         break;
 
         default:
-            //TODO ERROR HANDLING
+            ULOGE("Cannot convert this type");
             return 0;
         break;
         }
@@ -60,7 +63,7 @@ namespace
         break;
         
         default:
-            //TODO ERROR HANDLING
+            ULOGE("Cannot convert this type");
             return 0;
         break;
         }
@@ -90,7 +93,26 @@ namespace
         break;
         
         default:
-            //TODO ERROR HANDLING
+            ULOGE("Cannot convert this type");
+            return 0;
+        break;
+        }
+    }
+
+    constexpr GLenum ConvertRenderFufferFormat(RenderBuffer::Format format)
+    {
+        switch (format)
+        {
+        case RenderBuffer::Format::DEPTH:
+            return GL_DEPTH_COMPONENT24;
+        break;
+
+        case RenderBuffer::Format::DEPTH_STENCIL:
+            return GL_DEPTH24_STENCIL8;
+        break;
+        
+        default:
+            ULOGE("Cannot convert this type");
             return 0;
         break;
         }
@@ -184,4 +206,63 @@ void VertexLayoutOpenGL::Bind() const
 void VertexLayoutOpenGL::Unbind() const
 {
     glBindVertexArray(0);
+}
+
+RenderBufferOpenGL::RenderBufferOpenGL(glm::uvec2 size, Format format)
+{
+    m_size = size;
+    m_format = format;
+
+    glGenRenderbuffers(1, &m_bufferID);
+    Bind();
+    glRenderbufferStorage(GL_RENDERBUFFER, ConvertRenderFufferFormat(format), m_size.x, m_size.y);
+}
+
+RenderBufferOpenGL::~RenderBufferOpenGL()
+{
+    glDeleteRenderbuffers(1, &m_bufferID);
+}
+
+void RenderBufferOpenGL::Bind() const
+{
+    glBindRenderbuffer(GL_RENDERBUFFER, m_bufferID);
+}
+
+void RenderBufferOpenGL::Unbind() const
+{
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+FrameBufferOpenGL::FrameBufferOpenGL()
+{
+    glGenFramebuffers(1, &m_bufferID);
+    Bind();
+    UASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer creation failed!");
+}
+
+FrameBufferOpenGL::~FrameBufferOpenGL()
+{
+    glDeleteFramebuffers(1, &m_bufferID);
+}
+
+void FrameBufferOpenGL::AttachColorTexture(const Texture2D& texture) const
+{
+    auto textureID = dynamic_cast<const Texture2DOpenGL&>(texture).GetOpenGLTextureID();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
+}
+
+void FrameBufferOpenGL::AttachDepthTexture(const Texture2D& texture) const
+{
+    auto textureID = dynamic_cast<const Texture2DOpenGL&>(texture).GetOpenGLTextureID();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
+}
+
+void FrameBufferOpenGL::Bind() const
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, m_bufferID);
+}
+
+void FrameBufferOpenGL::Unbind() const
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -9,7 +9,9 @@ namespace Ull
         Texture2DOpenGL();
         ~Texture2DOpenGL();
 
-        void SetData(unsigned int width, unsigned int height, ColorChannels InChannel, ColorChannels OutChannel, const uint8_t* data) const override;
+        unsigned int GetOpenGLTextureID() const { return m_textureID; }
+
+        void SetData(glm::uvec2 size, ColorFormat InChannel, ColorFormat OutChannel, const uint8_t* data) override;
         void EnableMinMap(bool minMap) const override;
         void SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap) const override;
         void SetBorderColor(glm::vec4 color) const override;

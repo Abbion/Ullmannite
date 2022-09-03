@@ -2,7 +2,7 @@
 #include "Shader.h"
 #include "Renderer.h"
 #include "OpenGL/ShaderOpenGL.h"
-
+#include "Logger/Logger.h"
 #include <string>
 
 using namespace Ull;
@@ -21,6 +21,6 @@ Shader* Shader::Create(const char* vertexShaderName, const char* fragmentShaderN
     
     }
 
-    //TODO error message
+    ULOGE("Current API didn't implement shader");
     return nullptr;
 }

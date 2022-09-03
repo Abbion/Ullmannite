@@ -1,6 +1,7 @@
 #pragma once
 #include "Ullpch.h"
 #include "GraphicsTypes.h"
+#include "Texture.h"
 
 namespace Ull
 {
@@ -63,5 +64,49 @@ namespace Ull
     
         protected:
             VertexLayout() = default;
+    };
+
+    class RenderBuffer
+    {
+    public:
+        enum class Format {
+            DEPTH,
+            DEPTH_STENCIL
+        };
+
+    public:
+        virtual ~RenderBuffer() {}
+
+        glm::uvec2 GetSize() { return m_size; }
+        Format GetFormat() { return m_format; }
+
+        static RenderBuffer* Create(glm::uvec2 size, Format format);
+
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+
+    protected:
+        RenderBuffer() = default;
+        
+        glm::uvec2 m_size{0, 0};
+        Format m_format;
+    };
+
+    class FrameBuffer
+    {
+    public:
+        NON_COPYABLE(FrameBuffer);
+
+        virtual ~FrameBuffer() {}
+
+        static FrameBuffer* Create();
+
+        virtual void AttachColorTexture(const Texture2D& texture) const = 0;
+        virtual void AttachDepthTexture(const Texture2D& texture) const = 0;
+
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+    protected:
+        FrameBuffer() = default;
     };
 }

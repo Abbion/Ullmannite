@@ -31,7 +31,7 @@ void MainLayer::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::WindowResize:
-        Resize(static_cast<WindowResizeEvent*>(event)->GetVal());
+        Resize(dynamic_cast<WindowResizeEvent*>(event)->GetVal());
     break;
     }
 }

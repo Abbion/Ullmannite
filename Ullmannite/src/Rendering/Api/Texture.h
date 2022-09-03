@@ -3,14 +3,10 @@
 
 namespace Ull
 {
-    enum class ColorChannels
+    enum class ColorFormat
     {
         R,
-        G,
-        B,
         RG,
-        RB,
-        GB,
         RGB,
         RGBA
     };
@@ -32,16 +28,13 @@ namespace Ull
     class Texture2D
     {
     public:
-        NON_COPYABLE(Texture2D)
-
         virtual ~Texture2D() {}
 
         static Texture2D* Create();
 
         glm::uvec2 GetSize() { return m_size; }
-        ColorChannels GetChannels() { return m_channels; }
         
-        virtual void SetData(unsigned int width, unsigned int height, ColorChannels InChannel, ColorChannels OutChannel, const uint8_t* data) const = 0;
+        virtual void SetData(glm::uvec2 size, ColorFormat InChannel, ColorFormat OutChannel, const uint8_t* data) = 0;
         virtual void EnableMinMap(bool minMap) const = 0;
         virtual void SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap) const = 0;
         virtual void SetBorderColor(glm::vec4 color) const = 0;
@@ -53,8 +46,6 @@ namespace Ull
     protected:
         Texture2D() = default;
 
-    private:
-        glm::uvec2 m_size;
-        ColorChannels m_channels;
+        glm::uvec2 m_size{0, 0};
     };
 }

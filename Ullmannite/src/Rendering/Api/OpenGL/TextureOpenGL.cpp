@@ -1,43 +1,40 @@
 #include "Ullpch.h"
 #include "TextureOpenGL.h"
 #include "glad/glad.h"
+#include "Logger/Logger.h"
 
 using namespace Ull;
 
 namespace
 {
-	unsigned int ChannelConverter(ColorChannels channel)
+	constexpr GLenum ConverterChannel(ColorFormat channel)
 	{
 		switch (channel)
 		{
-		case ColorChannels::R:
-		case ColorChannels::G:
-		case ColorChannels::B:
-			return GL_R8;
+		case ColorFormat::R:
+			return GL_RED;
 		break;
 
-		case ColorChannels::RG:
-		case ColorChannels::RB:
-		case ColorChannels::GB:
+		case ColorFormat::RG:
 			return GL_RG;
 		break;
 
-		case ColorChannels::RGB:
+		case ColorFormat::RGB:
 			return GL_RGB;
 		break;
 
-		case ColorChannels::RGBA:
+		case ColorFormat::RGBA:
 			return GL_RGBA;
 		break;
 
 		default:
-            //TODO ERROR HANDLING
+			ULOGE("Can't conver this channel");
             return 0;
         break;
 		}
 	}
 
-	unsigned int WrapConverter(WrapMode wrap)
+	constexpr GLenum ConverterWrap(WrapMode wrap)
 	{
 		switch(wrap)
 		{
@@ -58,13 +55,13 @@ namespace
 		break;
 
 		default:
-            //TODO ERROR HANDLING
+			ULOGE("Can't conver this wrap type");
             return 0;
         break;
 		}
 	}
 
-	unsigned int SamplerConverter(Sampling sampling)
+	constexpr GLenum SamplerConverter(Sampling sampling)
 	{
 		switch (sampling)
 		{
@@ -77,9 +74,9 @@ namespace
 		break;
 		
 		default:
-			//TODO Error handling
+			ULOGE("Can't conver this sampling type");
 			return 0;
-			break;
+		break;
 		}
 	}
 }
@@ -94,11 +91,13 @@ Texture2DOpenGL::~Texture2DOpenGL()
 	glDeleteTextures(1, &m_textureID);
 }
 
-void Texture2DOpenGL::SetData(unsigned int width, unsigned int height, ColorChannels InChannel, ColorChannels OutChannel, const uint8_t* data) const
+void Texture2DOpenGL::SetData(glm::uvec2 size, ColorFormat InChannel, ColorFormat OutChannel, const uint8_t* data)
 {
 	Bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, ChannelConverter(InChannel), width, height, 0, ChannelConverter(OutChannel), GL_UNSIGNALED, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, ConverterChannel(InChannel), size.x, size.y, 0, ConverterChannel(OutChannel), GL_UNSIGNALED, data);
 	Unbind();
+
+	m_size = size;
 }
 
 void Texture2DOpenGL::EnableMinMap(bool minMap) const
@@ -111,8 +110,8 @@ void Texture2DOpenGL::EnableMinMap(bool minMap) const
 void Texture2DOpenGL::SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap) const
 {
 	Bind();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, WrapConverter(horizontalWrap));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, WrapConverter(verticalWrap));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ConverterWrap(horizontalWrap));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ConverterWrap(verticalWrap));
 	Unbind();
 }
 

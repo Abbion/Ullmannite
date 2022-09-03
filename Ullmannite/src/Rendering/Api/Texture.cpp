@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include "Renderer.h"
 #include "OpenGL/TextureOpenGL.h"
+#include "Logger/Logger.h"
 
 using namespace Ull;
 
@@ -14,6 +15,6 @@ Texture2D* Texture2D::Create()
 		break;
 	}
 
-	//TODO: error message
+	ULOGE("Current API didn't implement Texture2D");
 	return nullptr;
 }

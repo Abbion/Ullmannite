@@ -159,31 +159,31 @@ void Application::HandleEvents()
             break;
 
         case EventType::WindowResize:
-            WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
+            WindowResizeHandler(dynamic_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::KeyDown:
-            updatedKeyMap[static_cast<KeyDownEvent*>(currentEvent.get())->GetVal()] = true;
+            updatedKeyMap[dynamic_cast<KeyDownEvent*>(currentEvent.get())->GetVal()] = true;
             break;
 
         case EventType::KeyUp:
-            updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
+            updatedKeyMap[dynamic_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
             break;
 
         case EventType::MouseDown: {
-            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
+            updatedButtonMap[dynamic_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
             break; }
 
         case EventType::MouseUp:
-            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
+            updatedButtonMap[dynamic_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
             break;
 
         case EventType::MouseMove:
-            Mouse::GetInstance()->UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
+            Mouse::GetInstance()->UpdatePosition(dynamic_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::MouseScroll:
-            scroll = static_cast<MouseScrollEvent*>(currentEvent.get())->GetVal();
+            scroll = dynamic_cast<MouseScrollEvent*>(currentEvent.get())->GetVal();
             break;
 
         default:
