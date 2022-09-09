@@ -36,7 +36,7 @@ bool EventQueue::HasPenddingEvents() const
 
 unsigned int EventQueue::GetSize() const
 {
-    return static_cast<unsigned int>(m_events.size());
+    return (unsigned int)m_events.size();
 }
 
 void EventQueue::MakeEventUnique(EventType eventType)

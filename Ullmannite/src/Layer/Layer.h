@@ -4,6 +4,7 @@
 #include "Event/Event.h"
 #include "Event/EventHandler.h"
 #include "UiElement/UiArea.h"
+#include "UiElement/UiLayout.h"
 
 namespace Ull
 {
@@ -25,7 +26,7 @@ namespace Ull
     protected:
         Layer(const std::string& name, const glm::uvec2& size);
 
-        UiArea* m_layout;
+        UiLayout* m_layout;
         unsigned int m_focusedElement { 0 };
     };
 };

@@ -7,7 +7,7 @@ using namespace Ull;
 Layer::Layer(const std::string& name, const glm::uvec2& size) : m_name(name)
 {
     auto layoutName = m_name + " Layout";
-    m_layout = new UiArea(layoutName, glm::uvec2(0, 0), size);    
+    m_layout = new UiLayout(layoutName, glm::uvec2(0, 0), size);    
 }
 
 Layer::~Layer()

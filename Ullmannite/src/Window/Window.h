@@ -60,7 +60,7 @@ namespace Ull
 
         uint8_t m_resizeBorderSize{ 6 };
 
-        glm::dvec2 m_startGrabPosition;
+        glm::ivec2 m_startGrabPosition;
 
         bool m_isDragged{ false };
         bool m_isResized{ false };

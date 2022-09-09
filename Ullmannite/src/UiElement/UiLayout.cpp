@@ -1,25 +1,24 @@
 #include "Ullpch.h"
-#include "UiArea.h"
+#include "UiLayout.h"
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 using namespace Ull;
 
-UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiElement(name, position, size)
+UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
+	UiElement(name, position, size)
 {
-    m_shader = ShaderManager::GetInstance()->GetShader(ShaderTag::UI_SHADER);
-    CreateResources();
+	m_shader = ShaderManager::GetInstance()->GetShader(ShaderTag::FRAME_DISPLAY_SHADER);
+	CreateResources();
 }
 
-UiArea::~UiArea()
+UiLayout::~UiLayout()
 {
-    if (m_frameBuffer != nullptr)
-        delete m_frameBuffer;
+
 }
 
-void UiArea::CreateResources()
+void UiLayout::CreateResources()
 {
     if (m_vertexBuffer != nullptr)
         delete m_vertexBuffer;
@@ -30,26 +29,25 @@ void UiArea::CreateResources()
     if (m_layout != nullptr)
         delete m_layout;
 
-    m_frameBuffer = FrameBuffer::Create(m_size);
-
     glm::vec2 pos = glm::vec2(m_position) * m_scale;
     glm::vec2 size = glm::vec2(m_position + m_size) * m_scale;
 
-    float vertices[] = { 
-        pos.x, pos.y, 0.0f,
-        size.x, pos.y, 0.0f,
-        pos.x, size.y, 0.0f,
-        size.x, size.y, 0.0f
+    float vertices[] = {
+        pos.x, pos.y, 0.0f,     0.0f, 1.0f,
+        size.x, pos.y, 0.0f,    1.0f, 1.0f,
+        pos.x, size.y, 0.0f,    0.0f, 0.0f,
+        size.x, size.y, 0.0f,    1.0f, 0.0f
     };
 
-    unsigned int indices[] = { 
+    unsigned int indices[] = {
         0, 1, 2,
-        1, 3, 2 
+        1, 3, 2
     };
 
     m_layout = VertexLayout::Create({
-        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
-    });
+        LayoutElement("Position", GraphicsDataType::FLOAT, 3),
+        LayoutElement("TextureCoords", GraphicsDataType::FLOAT, 2)
+        });
 
     m_layout->Bind();
 
@@ -59,34 +57,22 @@ void UiArea::CreateResources()
     m_layout->Build();
     m_vertexBuffer->Unbind();
     m_layout->Unbind();
-
-
 }
 
-void UiArea::BindTargetTexture()
-{
-    m_frameBuffer->GetColorTarget()->Bind();
-}
-
-void UiArea::SetColor(const glm::vec4& color)
-{
-    m_color = color;
-}
-
-void UiArea::HandleEvent(Event* event)
+void UiLayout::HandleEvent(Event* event)
 {
 
 }
 
-void UiArea::Update()
+void UiLayout::Update()
 {
 
 }
 
-void UiArea::Render()
+void UiLayout::Render()
 {
-    m_frameBuffer->Bind();
-    Renderer::GetInstance()->SetClearColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    Renderer::GetInstance()->SetClearColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    Renderer::GetInstance()->SetDepth(Renderer::State::DISABLE);
     Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
 
     glm::mat4 m_viewMatrix;
@@ -95,13 +81,9 @@ void UiArea::Render()
     m_shader->Bind();
 
     m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);
-    m_shader->SetFloat4("ourColor", m_color);
-    
-    m_layout->Bind();
 
+    m_layout->Bind();
 
     Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
     Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, 6);
-    
-    m_frameBuffer->Unbind();
 }

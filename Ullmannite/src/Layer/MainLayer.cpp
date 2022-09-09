@@ -3,6 +3,7 @@
 #include "Event/Event.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Rendering/Api/ShaderManager.h"
+#include "Rendering/Api/Renderer.h"
 
 using namespace Ull;
 
@@ -17,13 +18,14 @@ void MainLayer::Update()
 
 void MainLayer::Render()
 {
-    ShaderManager::GetInstance()->GetShader(ShaderTag::UI_SHADER)->SetFloat4x4("viewMatrix", m_viewMatrix);
-    m_layout->Render();
-    
     for (auto& element : m_layout->GetChildren())
     {
         element->Render();
+        static_cast<UiArea*>(element)->BindTargetTexture();
+        break;
     }
+
+    m_layout->Render();
 }
 
 void MainLayer::HandleEvent(Event* event)
@@ -31,7 +33,7 @@ void MainLayer::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::WindowResize:
-        Resize(dynamic_cast<WindowResizeEvent*>(event)->GetVal());
+        Resize(static_cast<WindowResizeEvent*>(event)->GetVal());
     break;
     }
 }
@@ -39,7 +41,7 @@ void MainLayer::HandleEvent(Event* event)
 void MainLayer::Init()
 {
     CreateLayout();
-    m_layout->SetColor(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
+    //m_layout->SetColor(glm::vec4(0.0f, 0.8f, 0.0f, 1.0f));
 }
 
 void MainLayer::CreateLayout()
@@ -49,10 +51,10 @@ void MainLayer::CreateLayout()
 
     auto initSize = m_layout->GetSize();
 
-    m_viewMatrix = glm::ortho(0.0f, static_cast<float>(initSize.x), static_cast<float>(initSize.y), 0.0f, -1.0f, 1.0f);
+    m_viewMatrix = glm::ortho(0.0f, (float)initSize.x, (float)initSize.y, 0.0f, -1.0f, 1.0f);
 
     UiArea* topBarView = new UiArea("topBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
-    topBarView->SetColor(glm::vec4(0.0f, 0.56f, 0.55f, 1.0f));
+    topBarView->SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
     m_layout->AddUiElement(topBarView);
 
     UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 30), glm::vec2(260, initSize.y - 30));
@@ -68,9 +70,8 @@ void MainLayer::CreateLayout()
 
 void MainLayer::Resize(const glm::uvec2& size)
 {
-    m_viewMatrix = glm::ortho(0.0f, static_cast<float>(size.x), static_cast<float>(size.y), 0.0f, -1.0f, 1.0f);
+    m_viewMatrix = glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f, -1.0f, 1.0f);
 
-    //ULOGD(size.x << ", " << size.y);
     m_layout->SetSize(size);
     m_layout->CreateResources();
     

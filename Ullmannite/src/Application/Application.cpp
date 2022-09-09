@@ -89,6 +89,7 @@ void Application::InitApplciation()
 
     //Load Shaders
     ShaderManager::GetInstance()->LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
+    ShaderManager::GetInstance()->LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
@@ -159,31 +160,31 @@ void Application::HandleEvents()
             break;
 
         case EventType::WindowResize:
-            WindowResizeHandler(dynamic_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
+            WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::KeyDown:
-            updatedKeyMap[dynamic_cast<KeyDownEvent*>(currentEvent.get())->GetVal()] = true;
+            updatedKeyMap[static_cast<KeyDownEvent*>(currentEvent.get())->GetVal()] = true;
             break;
 
         case EventType::KeyUp:
-            updatedKeyMap[dynamic_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
+            updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
             break;
 
         case EventType::MouseDown: {
-            updatedButtonMap[dynamic_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
+            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
             break; }
 
         case EventType::MouseUp:
-            updatedButtonMap[dynamic_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
+            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
             break;
 
         case EventType::MouseMove:
-            Mouse::GetInstance()->UpdatePosition(dynamic_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
+            Mouse::GetInstance()->UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::MouseScroll:
-            scroll = dynamic_cast<MouseScrollEvent*>(currentEvent.get())->GetVal();
+            scroll = static_cast<MouseScrollEvent*>(currentEvent.get())->GetVal();
             break;
 
         default:

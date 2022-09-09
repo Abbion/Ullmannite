@@ -58,12 +58,12 @@ RenderBuffer* RenderBuffer::Create(glm::uvec2 size, Format format)
     return nullptr;
 }
 
-FrameBuffer* FrameBuffer::Create()
+FrameBuffer* FrameBuffer::Create(glm::uvec2 size, bool enableDepth)
 {
     switch (Renderer::GetInstance()->GetApi())
     {
     case Renderer::API::OPEN_GL:
-        return new FrameBufferOpenGL();
+        return new FrameBufferOpenGL(size, enableDepth);
         break;
     }
 

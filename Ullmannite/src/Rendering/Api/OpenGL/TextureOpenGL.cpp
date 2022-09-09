@@ -94,7 +94,7 @@ Texture2DOpenGL::~Texture2DOpenGL()
 void Texture2DOpenGL::SetData(glm::uvec2 size, ColorFormat InChannel, ColorFormat OutChannel, const uint8_t* data)
 {
 	Bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, ConverterChannel(InChannel), size.x, size.y, 0, ConverterChannel(OutChannel), GL_UNSIGNALED, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, ConverterChannel(InChannel), size.x, size.y, 0, ConverterChannel(OutChannel), GL_UNSIGNED_BYTE, data);
 	Unbind();
 
 	m_size = size;
@@ -126,8 +126,8 @@ void Texture2DOpenGL::SetBorderColor(glm::vec4 color) const
 void Texture2DOpenGL::SetSampling(Sampling magSampling, Sampling minSampling) const
 {
 	Bind();
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, SamplerConverter(magSampling));
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, SamplerConverter(minSampling));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, SamplerConverter(magSampling));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, SamplerConverter(minSampling));
 	Unbind();
 }
 

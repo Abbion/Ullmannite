@@ -52,6 +52,8 @@ namespace Ull
         RenderBufferOpenGL(glm::uvec2 size, Format format);
         ~RenderBufferOpenGL();
 
+        unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+
         void Bind() const override;
         void Unbind() const override;
 
@@ -62,11 +64,8 @@ namespace Ull
     class FrameBufferOpenGL : public FrameBuffer
     {
     public:
-        FrameBufferOpenGL();
+        FrameBufferOpenGL(glm::uvec2 size, bool enableDepth);
         ~FrameBufferOpenGL();
-
-        void AttachColorTexture(const Texture2D& texture) const override;
-        void AttachDepthTexture(const Texture2D& texture) const override;
 
         void Bind() const override;
         void Unbind() const override;

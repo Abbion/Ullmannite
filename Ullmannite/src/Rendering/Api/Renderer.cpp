@@ -6,6 +6,22 @@
 
 using namespace Ull;
 
+namespace {
+    static void GLAPIENTRY MessageCallback(GLenum source,
+        GLenum type,
+        GLuint id,
+        GLenum severity,
+        GLsizei length,
+        const GLchar* message,
+        const void* userParam)
+    {
+        if (type == GL_DEBUG_TYPE_ERROR)
+        {
+            ULOGE("OpenGL error: " << type << ", " << severity << ", " << message);
+        }
+    }
+}
+
 Renderer::~Renderer()
 {
     ULOGD("Renderer terminated");
@@ -30,6 +46,9 @@ void Renderer::Init()
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             throw InitializationException("Can't initialize GLAD");
+
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(MessageCallback, nullptr);
     }
 }
 
@@ -57,6 +76,17 @@ void Renderer::Clear(ClearBits clearBits)
         bitSum |= (clearBits & ClearBits::DEPTH) ? GL_DEPTH_BUFFER_BIT : 0;
         bitSum |= (clearBits & ClearBits::SETNCIL) ? GL_STENCIL_BUFFER_BIT : 0;
         glClear(bitSum);
+    }
+}
+
+void Renderer::SetDepth(State state)
+{
+    if(m_api == API::OPEN_GL)
+    {
+        if(state == State::ENABLE)
+            glEnable(GL_DEPTH_TEST);
+        else
+            glDisable(GL_DEPTH_TEST);
     }
 }
 

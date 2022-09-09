@@ -22,6 +22,12 @@ namespace Ull
             SETNCIL = 1 << 2
         };
 
+        enum class State
+        {
+            ENABLE,
+            DISABLE
+        };
+
     public:
         NON_COPYABLE(Renderer);
         
@@ -36,6 +42,8 @@ namespace Ull
         void SetClearColor(glm::vec4 color);
         void Clear(ClearBits clearBits);
 
+        void SetDepth(State state);
+
         void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
         void FlushContext();
 
@@ -46,7 +54,6 @@ namespace Ull
         inline static Renderer* m_rendererInstance{ nullptr };
 
     private:
-
         API m_api{ API::OPEN_GL };
     };
 

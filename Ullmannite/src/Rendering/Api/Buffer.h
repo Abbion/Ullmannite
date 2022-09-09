@@ -88,8 +88,8 @@ namespace Ull
     protected:
         RenderBuffer() = default;
         
-        glm::uvec2 m_size{0, 0};
-        Format m_format;
+        glm::uvec2 m_size{ 0, 0 };
+        Format m_format{ Format::DEPTH_STENCIL };
     };
 
     class FrameBuffer
@@ -99,14 +99,17 @@ namespace Ull
 
         virtual ~FrameBuffer() {}
 
-        static FrameBuffer* Create();
-
-        virtual void AttachColorTexture(const Texture2D& texture) const = 0;
-        virtual void AttachDepthTexture(const Texture2D& texture) const = 0;
+        Texture2D* GetColorTarget() const { return m_colorTarget; }
+        RenderBuffer* GetDepthTarget() const { return m_depthTarget; }
+        
+        static FrameBuffer* Create(glm::uvec2 size, bool enableDepth = false);
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
     protected:
         FrameBuffer() = default;
+        
+        Texture2D* m_colorTarget{ nullptr };
+        RenderBuffer* m_depthTarget{ nullptr };
     };
 }

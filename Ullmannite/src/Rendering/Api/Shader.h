@@ -5,7 +5,8 @@
 namespace Ull
 {
     enum class ShaderTag {
-        UI_SHADER
+        UI_SHADER,
+        FRAME_DISPLAY_SHADER
     };
 
     class Shader

@@ -215,7 +215,7 @@ RenderBufferOpenGL::RenderBufferOpenGL(glm::uvec2 size, Format format)
 
     glGenRenderbuffers(1, &m_bufferID);
     Bind();
-    glRenderbufferStorage(GL_RENDERBUFFER, ConvertRenderFufferFormat(format), m_size.x, m_size.y);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_size.x, m_size.y);
 }
 
 RenderBufferOpenGL::~RenderBufferOpenGL()
@@ -233,28 +233,41 @@ void RenderBufferOpenGL::Unbind() const
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-FrameBufferOpenGL::FrameBufferOpenGL()
+FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
 {
     glGenFramebuffers(1, &m_bufferID);
     Bind();
-    UASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer creation failed!");
+
+    //Attach color target
+    m_colorTarget = new Texture2DOpenGL();
+    m_colorTarget->SetData(size, ColorFormat::RGB, ColorFormat::RGB, nullptr);
+    m_colorTarget->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
+    auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, txId, 0);
+
+    //Attach depth target
+    //if(enableDepth)
+    //{
+        m_depthTarget = new RenderBufferOpenGL(size, RenderBuffer::Format::DEPTH_STENCIL);
+        auto rbo = static_cast<RenderBufferOpenGL*>(m_depthTarget)->GetOpenGLBufferID();
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    //}
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        ULOGE("Framebuffer is not complete!");
+
+    
+    Unbind();
 }
 
 FrameBufferOpenGL::~FrameBufferOpenGL()
 {
+    delete m_colorTarget;
+
+    if(m_depthTarget != nullptr)
+        delete m_depthTarget;
+
     glDeleteFramebuffers(1, &m_bufferID);
-}
-
-void FrameBufferOpenGL::AttachColorTexture(const Texture2D& texture) const
-{
-    auto textureID = dynamic_cast<const Texture2DOpenGL&>(texture).GetOpenGLTextureID();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
-}
-
-void FrameBufferOpenGL::AttachDepthTexture(const Texture2D& texture) const
-{
-    auto textureID = dynamic_cast<const Texture2DOpenGL&>(texture).GetOpenGLTextureID();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
 }
 
 void FrameBufferOpenGL::Bind() const

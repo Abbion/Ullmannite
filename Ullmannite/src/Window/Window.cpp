@@ -28,8 +28,9 @@ Window::Window(std::string title, glm::uvec2 size) : m_title(title)
     if(Renderer::GetInstance()->GetApi() == Renderer::API::OPEN_GL)
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     }
 
@@ -252,7 +253,7 @@ void Window::ResizeByCursor()
 
             auto positionDelta = windowPosition - newWindowPosition;
             auto windowSize = GetSize() + positionDelta;
-            windowSize.x = cursorPosition.x - static_cast<int>(m_startGrabPosition.x);
+            windowSize.x = cursorPosition.x - m_startGrabPosition.x;
 
             SetSize(windowSize);
 
@@ -268,7 +269,7 @@ void Window::ResizeByCursor()
 
             auto positionDelta = windowPosition - newWindowPosition;
             auto windowSize = GetSize() + positionDelta;
-            windowSize.y = cursorPosition.y - static_cast<int>(m_startGrabPosition.y);
+            windowSize.y = cursorPosition.y - m_startGrabPosition.y;
             
             SetSize(windowSize);
 
@@ -343,13 +344,15 @@ void Window::MovedByCursor()
     {
         if (!m_isDragged)   //Started draggins
         {
-            glfwGetCursorPos(m_renderWindow, &m_startGrabPosition.x, &m_startGrabPosition.y);
+            glm::dvec2 startGrapPosGetter;
+            glfwGetCursorPos(m_renderWindow, &startGrapPosGetter.x, &startGrapPosGetter.y);
+            m_startGrabPosition = glm::ivec2(startGrapPosGetter);
             m_isDragged = true;
         }
 
         glm::ivec2 newWindowPosition = GetCursorScreenPosition();
-        newWindowPosition.x -= static_cast<int>(m_startGrabPosition.x);
-        newWindowPosition.y -= static_cast<int>(m_startGrabPosition.y);
+        newWindowPosition.x -= m_startGrabPosition.x;
+        newWindowPosition.y -= m_startGrabPosition.y;
         SetPosition(newWindowPosition);
     }
     else
@@ -370,7 +373,7 @@ void Window::SwapBuffers()
         //Synchronization for resizing
         auto now = std::chrono::steady_clock::now();
         auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastRefresh);
-        int waitForMs = 20 - static_cast<int>(durationMs.count());
+        auto waitForMs = 20 - durationMs.count();
 
         if (waitForMs > 0)
             std::this_thread::sleep_for(std::chrono::milliseconds(waitForMs));
