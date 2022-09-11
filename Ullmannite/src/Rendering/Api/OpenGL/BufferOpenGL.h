@@ -22,11 +22,14 @@ namespace Ull
         IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type);
         ~IndexBufferOpenGL();
         
+        unsigned int GetSize() const override;
+
         void Bind() const override;
         void Unbind() const override;
 
     private:
         unsigned int m_bufferID{ 0 };
+        unsigned int m_size{ 0 };
     };
 
     class VertexLayoutOpenGL : public VertexLayout

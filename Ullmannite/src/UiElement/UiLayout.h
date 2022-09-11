@@ -15,5 +15,10 @@ namespace Ull
 
 		void Update() override;
 		void Render() override;
+
+	private:
+		void CreateRenderAreaForUiElements(unsigned int elementID);
+
+		glm::mat4 m_viewMatrix;
 	};
 }

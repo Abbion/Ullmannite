@@ -22,5 +22,7 @@ namespace Ull
     private:
         glm::vec4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };
         FrameBuffer* m_frameBuffer{ nullptr };
+
+        
     };
 }

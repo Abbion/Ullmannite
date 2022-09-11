@@ -3,6 +3,7 @@
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "UiArea.h"
 
 using namespace Ull;
 
@@ -15,11 +16,51 @@ UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
 
 UiLayout::~UiLayout()
 {
-
+    
 }
 
 void UiLayout::CreateResources()
 {
+    m_viewMatrix = glm::ortho(0.0f, (float)m_size.x, (float)m_size.y, 0.0f, -1.0f, 1.0f);
+}
+
+void UiLayout::HandleEvent(Event* event)
+{
+
+}
+
+void UiLayout::Update()
+{
+
+}
+
+void UiLayout::Render()
+{
+    Renderer::GetInstance()->SetClearColor(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f)); //TODO: add as debug
+    Renderer::GetInstance()->SetDepth(Renderer::State::DISABLE);
+    Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
+    Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
+
+    Renderer::GetInstance()->SetClearColor(glm::vec4(0.5f, 0.0f, 0.5f, 1.0f)); //TODO: add as debug
+
+    m_shader->Bind();
+    m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);
+
+    const auto elementCount = m_children.size();
+
+    for (int i = 0; i < elementCount; ++i)
+    {
+        CreateRenderAreaForUiElements(i);
+        m_layout->Bind();
+        static_cast<UiArea*>(m_children[i])->BindTargetTexture();
+        Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    }
+}
+
+void UiLayout::CreateRenderAreaForUiElements(unsigned int elementID)
+{
+    const auto element = m_children[elementID];
+
     if (m_vertexBuffer != nullptr)
         delete m_vertexBuffer;
 
@@ -29,8 +70,8 @@ void UiLayout::CreateResources()
     if (m_layout != nullptr)
         delete m_layout;
 
-    glm::vec2 pos = glm::vec2(m_position) * m_scale;
-    glm::vec2 size = glm::vec2(m_position + m_size) * m_scale;
+    glm::vec2 pos = glm::vec2(element->GetPosition()) * element->GetScale();
+    glm::vec2 size = glm::vec2(element->GetPosition() + element->GetSize()) * element->GetScale();
 
     float vertices[] = {
         pos.x, pos.y, 0.0f,     0.0f, 1.0f,
@@ -55,35 +96,7 @@ void UiLayout::CreateResources()
     m_indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
 
     m_layout->Build();
+
     m_vertexBuffer->Unbind();
     m_layout->Unbind();
-}
-
-void UiLayout::HandleEvent(Event* event)
-{
-
-}
-
-void UiLayout::Update()
-{
-
-}
-
-void UiLayout::Render()
-{
-    Renderer::GetInstance()->SetClearColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-    Renderer::GetInstance()->SetDepth(Renderer::State::DISABLE);
-    Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
-
-    glm::mat4 m_viewMatrix;
-    m_viewMatrix = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f, -1.0f, 1.0f);
-
-    m_shader->Bind();
-
-    m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);
-
-    m_layout->Bind();
-
-    Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
-    Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, 6);
 }

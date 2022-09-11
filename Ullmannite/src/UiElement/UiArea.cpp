@@ -32,14 +32,12 @@ void UiArea::CreateResources()
 
     m_frameBuffer = FrameBuffer::Create(m_size);
 
-    glm::vec2 pos = glm::vec2(m_position) * m_scale;
-    glm::vec2 size = glm::vec2(m_position + m_size) * m_scale;
-
+    //Abstract this to a plane
     float vertices[] = { 
-        pos.x, pos.y, 0.0f,
-        size.x, pos.y, 0.0f,
-        pos.x, size.y, 0.0f,
-        size.x, size.y, 0.0f
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f
     };
 
     unsigned int indices[] = { 
@@ -86,22 +84,17 @@ void UiArea::Update()
 void UiArea::Render()
 {
     m_frameBuffer->Bind();
-    Renderer::GetInstance()->SetClearColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-    Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
 
-    glm::mat4 m_viewMatrix;
-    m_viewMatrix = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f, -1.0f, 1.0f);
+    Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
+    Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
 
     m_shader->Bind();
 
-    m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);
     m_shader->SetFloat4("ourColor", m_color);
     
     m_layout->Bind();
 
-
-    Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
-    Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, 6);
+    Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
     
     m_frameBuffer->Unbind();
 }

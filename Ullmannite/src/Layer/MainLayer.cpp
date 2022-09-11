@@ -21,8 +21,6 @@ void MainLayer::Render()
     for (auto& element : m_layout->GetChildren())
     {
         element->Render();
-        static_cast<UiArea*>(element)->BindTargetTexture();
-        break;
     }
 
     m_layout->Render();
@@ -41,7 +39,6 @@ void MainLayer::HandleEvent(Event* event)
 void MainLayer::Init()
 {
     CreateLayout();
-    //m_layout->SetColor(glm::vec4(0.0f, 0.8f, 0.0f, 1.0f));
 }
 
 void MainLayer::CreateLayout()
@@ -54,15 +51,15 @@ void MainLayer::CreateLayout()
     m_viewMatrix = glm::ortho(0.0f, (float)initSize.x, (float)initSize.y, 0.0f, -1.0f, 1.0f);
 
     UiArea* topBarView = new UiArea("topBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
-    topBarView->SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+    topBarView->SetColor(glm::vec4(0.4f, 0.42f, 0.55f, 1.0f));
     m_layout->AddUiElement(topBarView);
 
     UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 30), glm::vec2(260, initSize.y - 30));
-    menuView->SetColor(glm::vec4(0.0f, 0.2f, 0.2f, 1.0f));
+    menuView->SetColor(glm::vec4(0.05f, 0.05f, 0.15f, 1.0f));
     m_layout->AddUiElement(menuView);
 
     UiArea* renderView = new UiArea("renderElement", glm::vec2(260, 30), glm::vec2(initSize.x - 260, initSize.y - 30));
-    renderView->SetColor(glm::vec4(0.0f, 0.35f, 0.35f, 1.0f));
+    renderView->SetColor(glm::vec4(0.35f, 0.22f, 0.31f, 1.0f));
     m_layout->AddUiElement(renderView);
 
     m_layout->CreateResources();
@@ -82,7 +79,6 @@ void MainLayer::Resize(const glm::uvec2& size)
         {
             element->SetSize(glm::vec2(size.x, 30));
         }
-        
         else if(currentElementName == "menuElement")
         {
             element->SetSize(glm::vec2(260, size.y - 30));

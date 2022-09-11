@@ -42,6 +42,8 @@ namespace Ull
 
             static IndexBuffer* Create(int size, unsigned int* data, GraphicsBufferType type);
 
+            virtual unsigned int GetSize() const = 0;
+
             virtual void Bind() const = 0;
             virtual void Unbind() const = 0;
 

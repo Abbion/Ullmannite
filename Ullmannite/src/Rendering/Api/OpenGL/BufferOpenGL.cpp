@@ -141,16 +141,21 @@ void VertexBufferOpenGL::Unbind() const
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type)
+IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type) : m_size(size)
 {
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertUsageType(type));
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, data, ConvertUsageType(type));
 }
 
 IndexBufferOpenGL::~IndexBufferOpenGL()
 {
     glDeleteBuffers(1, &m_bufferID);
+}
+
+unsigned int IndexBufferOpenGL::GetSize() const
+{
+    return m_size;
 }
 
 void IndexBufferOpenGL::Bind() const
@@ -245,6 +250,8 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
     auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, txId, 0);
 
+
+    //TODO: CHECK THIS
     //Attach depth target
     //if(enableDepth)
     //{
