@@ -9,7 +9,7 @@ namespace Ull
     class Mouse
     {
     public:
-        enum class Button
+        enum class Button : uint16_t
         {
             LEFT = GLFW_MOUSE_BUTTON_LEFT,
             RIGHT = GLFW_MOUSE_BUTTON_RIGHT,

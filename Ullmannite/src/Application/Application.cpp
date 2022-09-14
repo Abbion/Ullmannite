@@ -49,14 +49,16 @@ void Application::Run()
     while (m_window->IsOpen())
     {
         m_window->CheckCursorInteractions();
+        
         HandleEvents();
 
         if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window->Close();
         }
-
+        
         Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
+        
         m_layerManager->GetTopLayer()->Render();
 
         m_window->SwapBuffers();
@@ -94,7 +96,6 @@ void Application::InitApplciation()
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
     m_layerManager->PushLayer(std::make_shared<MainLayer>(m_window->GetSize()));
-    
 }
 
 void Application::InitWindow()
@@ -199,6 +200,9 @@ void Application::HandleEvents()
     Keyboard::GetInstance()->UpdateKeyMap(updatedKeyMap);
     Mouse::GetInstance()->UpdateButtonMap(updatedButtonMap);
     Mouse::GetInstance()->UpdateScroll(scroll);
+
+    updatedKeyMap.clear();
+    updatedButtonMap.clear();
 }
 
 void Application::WindowResizeHandler(const glm::uvec2& size)

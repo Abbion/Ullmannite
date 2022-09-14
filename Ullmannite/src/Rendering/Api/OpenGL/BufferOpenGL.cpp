@@ -186,7 +186,7 @@ VertexLayoutOpenGL::~VertexLayoutOpenGL()
     glDeleteVertexArrays(1, &m_layoutID);
 }
 
-void VertexLayoutOpenGL::Build() const
+void VertexLayoutOpenGL::Build()
 {
     if (!m_layoutCreated)
     {
@@ -198,7 +198,7 @@ void VertexLayoutOpenGL::Build() const
             index++;
         }
 
-        //TODO Clear element list????
+        m_elementList.clear();
         m_layoutCreated = true;
     }
 }
@@ -250,15 +250,13 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
     auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, txId, 0);
 
-
-    //TODO: CHECK THIS
     //Attach depth target
-    //if(enableDepth)
-    //{
+    if(enableDepth)
+    {
         m_depthTarget = new RenderBufferOpenGL(size, RenderBuffer::Format::DEPTH_STENCIL);
         auto rbo = static_cast<RenderBufferOpenGL*>(m_depthTarget)->GetOpenGLBufferID();
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-    //}
+    }
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         ULOGE("Framebuffer is not complete!");

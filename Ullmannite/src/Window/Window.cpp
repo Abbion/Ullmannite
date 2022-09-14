@@ -153,6 +153,8 @@ void Window::CheckResizeBorder()
     
     if (!m_isResized)
     {
+        glfwDestroyCursor(m_cursor);
+
         glm::dvec2 cursorPos;
         glfwGetCursorPos(m_renderWindow, &cursorPos.x, &cursorPos.y);
 

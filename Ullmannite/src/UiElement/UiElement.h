@@ -19,8 +19,8 @@ namespace Ull
         void HandleEvent(Event* event) override;
 
         void AddUiElement(UiElement* newElement);
-        UiElement* GetParent() { return m_parent; }
-        std::vector<UiElement*>& GetChildren() { return m_children; }
+        const UiElement* GetParent() const { return m_parent; }
+        const std::vector<UiElement*>& GetChildren() const { return m_children; }
 
         glm::uvec2 GetPosition() const      { return m_position; }
         glm::uvec2 GetSize() const          { return m_size; }

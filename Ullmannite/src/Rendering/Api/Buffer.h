@@ -60,7 +60,7 @@ namespace Ull
 
             static VertexLayout* Create(std::initializer_list<LayoutElement> initList);
 
-            virtual void Build() const = 0;
+            virtual void Build() = 0;
             virtual void Bind() const = 0;
             virtual void Unbind() const = 0;
     

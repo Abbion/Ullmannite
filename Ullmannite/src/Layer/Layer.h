@@ -20,6 +20,8 @@ namespace Ull
 
         std::string GetName() const { return m_name; }
 
+        const UiLayout* GetLayout() const { return m_layout; }
+
     private:
         std::string m_name;
 

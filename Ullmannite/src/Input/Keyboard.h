@@ -5,10 +5,10 @@
 
 namespace Ull
 {
-    class Keyboard
+    class Keyboard 
     {
     public:
-        enum class Key
+        enum class Key : uint16_t
         {
             SPACE = GLFW_KEY_SPACE,
             ZERO = GLFW_KEY_0,

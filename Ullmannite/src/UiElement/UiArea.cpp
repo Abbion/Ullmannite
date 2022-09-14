@@ -58,7 +58,7 @@ void UiArea::CreateResources()
     m_vertexBuffer->Unbind();
     m_layout->Unbind();
 
-
+    m_areaUpdated = true;
 }
 
 void UiArea::BindTargetTexture()
@@ -69,6 +69,7 @@ void UiArea::BindTargetTexture()
 void UiArea::SetColor(const glm::vec4& color)
 {
     m_color = color;
+    m_areaUpdated = true;
 }
 
 void UiArea::HandleEvent(Event* event)
@@ -83,18 +84,23 @@ void UiArea::Update()
 
 void UiArea::Render()
 {
-    m_frameBuffer->Bind();
+    if(m_areaUpdated)
+    {
+        m_frameBuffer->Bind();
 
-    Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
-    Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
+        Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
+        Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
 
-    m_shader->Bind();
+        m_shader->Bind();
 
-    m_shader->SetFloat4("ourColor", m_color);
-    
-    m_layout->Bind();
+        m_shader->SetFloat4("ourColor", m_color);
 
-    Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
-    
-    m_frameBuffer->Unbind();
+        m_layout->Bind();
+
+        Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+
+        m_frameBuffer->Unbind();
+
+        m_areaUpdated = false;
+    }
 }

@@ -4,6 +4,7 @@
 #include "Input/Mouse.h"
 
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace Ull
 {
@@ -29,7 +30,7 @@ namespace Ull
     };
 
     //==================================================================
-    class Event
+    class Event : public std::enable_shared_from_this<Event>
     {
     public:
         Event(EventType eventType) : m_type(eventType) {}

@@ -38,13 +38,13 @@ namespace Ull
         VertexLayoutOpenGL(std::initializer_list<LayoutElement> initList);
         ~VertexLayoutOpenGL();
 
-        void Build() const override;
+        void Build() override;
         void Bind() const override;
         void Unbind() const override;
     
     private:
         unsigned int m_layoutID{ 0 };
-        mutable bool m_layoutCreated{ false };
+        bool m_layoutCreated{ false };
         uint32_t m_totalSize{ 0 };
         std::vector<LayoutElement> m_elementList;
     };

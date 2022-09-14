@@ -1,5 +1,9 @@
 #include "Ullpch.h"
 #include "Logger.h"
+#include "Layer/Layer.h"
+#include "UiElement/UiLayout.h"
+#include "UiElement/UiArea.h"
+#include "UiElement/UiElement.h"
 
 plog::util::nstring Ull::SimpleTxtFormatterImpl::format(const plog::Record& record)
 {
@@ -41,4 +45,29 @@ void Ull::ClearLogs()
 #elif PLATFORM_LINUX
     system("clear");
 #endif
+}
+
+void Ull::LogLayerTree(const Ull::Layer& layer)
+{
+    std::stringstream ss;
+    ss << "\nLayer " << layer.GetName() << "\n\t+ "
+       << layer.GetLayout()->GetName() << "\n";
+
+    LogElements(ss, layer.GetLayout()->GetChildren(), 2);
+    
+
+   ULOGD(ss.str().c_str());
+}
+
+void Ull::LogElements(std::stringstream& ss, const std::vector<Ull::UiElement*> elements, unsigned int tabs)
+{
+    std::string depthStr;
+    depthStr.resize(tabs);
+    std::fill_n(depthStr.begin(), tabs, '\t');
+
+    for (const auto element : elements)
+    {
+        ss << depthStr << "+ " << element->GetName() << "\n";
+        LogElements(ss, element->GetChildren(), tabs + 1);
+    }
 }
