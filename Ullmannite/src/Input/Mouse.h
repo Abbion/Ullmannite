@@ -21,7 +21,7 @@ namespace Ull
 
         ~Mouse();
 
-        static Mouse* GetInstance();
+        static Mouse& GetInstance();
 
         bool IsButtonPressed(Button button) const;
         glm::ivec2 GetMousePosition() const { return m_mousePosition; }
@@ -30,7 +30,7 @@ namespace Ull
     protected:
         Mouse();
 
-        static Mouse* m_mouseInstance;
+        static Mouse m_mouseInstance;
 
     private:
         std::map<Button, bool> m_buttonMap;

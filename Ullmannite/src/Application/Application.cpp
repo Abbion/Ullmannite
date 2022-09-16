@@ -6,16 +6,14 @@
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
+#include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
 
-#include "glad/glad.h"
-
 #include <thread>
 #include <chrono>
-#include <functional>
 
 using namespace Ull;
 
@@ -35,29 +33,21 @@ Application::Application()
 
 Application::~Application()
 {
-    delete Keyboard::GetInstance();
-    delete Mouse::GetInstance();
-    delete Renderer::GetInstance();
-
     ULOGD("Application terminated");
 }
 
 void Application::Run()
 {    
-    Renderer::GetInstance()->SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-
     while (m_window->IsOpen())
     {
         m_window->CheckCursorInteractions();
         
         HandleEvents();
 
-        if (Keyboard::GetInstance()->IsKeyPressed(Keyboard::Key::ESCAPE))
+        if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window->Close();
         }
-        
-        Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
         
         m_layerManager->GetTopLayer()->Render();
 
@@ -70,7 +60,7 @@ void Application::Run()
 
 void Application::InitApplciation()
 {
-    Renderer::GetInstance()->SetApi(Renderer::API::OPEN_GL);
+    Renderer::GetInstance().SetApi(Renderer::API::OPEN_GL);
 
     //Window
     if (glfwInit() == -1)
@@ -86,12 +76,12 @@ void Application::InitApplciation()
     //Renderer
     glfwMakeContextCurrent(m_window->GetRenderContext());
 
-    Renderer::GetInstance()->Init();
-    Renderer::GetInstance()->SetViewPort(glm::uvec2(0, 0), m_window->GetSize());
+    Renderer::GetInstance().Init();
+    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window->GetSize());
 
     //Load Shaders
-    ShaderManager::GetInstance()->LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
-    ShaderManager::GetInstance()->LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
@@ -112,13 +102,13 @@ void Application::InitWindow()
     catch (const std::exception& e)
     {
         UASSERT(false, e.what());
-        m_ContextCreationFailed = true;
+        m_contextCreationFailed = true;
     }
 
     lock.unlock();
     m_initCV.notify_one();
 
-    if (m_ContextCreationFailed)
+    if (m_contextCreationFailed)
         return;
 
      while (m_window->IsOpen())
@@ -127,7 +117,7 @@ void Application::InitWindow()
 
 bool Application::RenderContextCreated()
 {
-    if (m_ContextCreationFailed)
+    if (m_contextCreationFailed)
     {
         if(m_eventPullThread.joinable())
             m_eventPullThread.join();
@@ -181,7 +171,7 @@ void Application::HandleEvents()
             break;
 
         case EventType::MouseMove:
-            Mouse::GetInstance()->UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
+            Mouse::GetInstance().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::MouseScroll:
@@ -197,9 +187,9 @@ void Application::HandleEvents()
     }
     m_eventQueue->UnlockAccess();
 
-    Keyboard::GetInstance()->UpdateKeyMap(updatedKeyMap);
-    Mouse::GetInstance()->UpdateButtonMap(updatedButtonMap);
-    Mouse::GetInstance()->UpdateScroll(scroll);
+    Keyboard::GetInstance().UpdateKeyMap(updatedKeyMap);
+    Mouse::GetInstance().UpdateButtonMap(updatedButtonMap);
+    Mouse::GetInstance().UpdateScroll(scroll);
 
     updatedKeyMap.clear();
     updatedButtonMap.clear();
@@ -207,5 +197,5 @@ void Application::HandleEvents()
 
 void Application::WindowResizeHandler(const glm::uvec2& size)
 {
-    Renderer::GetInstance()->SetViewPort(glm::uvec2(0, 0), size);
+    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), size);
 }

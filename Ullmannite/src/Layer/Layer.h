@@ -1,9 +1,6 @@
 #pragma once
-#include "Ullpch.h"
-#include "Logger/Logger.h"
 #include "Event/Event.h"
 #include "Event/EventHandler.h"
-#include "UiElement/UiArea.h"
 #include "UiElement/UiLayout.h"
 
 namespace Ull
@@ -18,7 +15,7 @@ namespace Ull
         virtual void Update() = 0;
         virtual void Render() = 0;
 
-        std::string GetName() const { return m_name; }
+        inline std::string GetName() const { return m_name; }
 
         const UiLayout* GetLayout() const { return m_layout; }
 
@@ -32,7 +29,3 @@ namespace Ull
         unsigned int m_focusedElement { 0 };
     };
 };
-
-//IDEAS:
-//Replace name with an enum
-//Less writing, but if we have to many layers it becomes harder to read

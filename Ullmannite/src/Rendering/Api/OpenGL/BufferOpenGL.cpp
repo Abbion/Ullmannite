@@ -190,12 +190,12 @@ void VertexLayoutOpenGL::Build()
 {
     if (!m_layoutCreated)
     {
-        uint8_t index = 0;
+        uint16_t index = 0;
         for (const auto& element : m_elementList)
         {
             glVertexAttribPointer(index, element.amount, ConvetDataType(element.dataType), element.normalized ? GL_TRUE : GL_FALSE, m_totalSize, (void*)element.offset);
             glEnableVertexAttribArray(index);
-            index++;
+            ++index;
         }
 
         m_elementList.clear();
@@ -247,6 +247,7 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
     m_colorTarget = new Texture2DOpenGL();
     m_colorTarget->SetData(size, ColorFormat::RGB, ColorFormat::RGB, nullptr);
     m_colorTarget->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
+
     auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, txId, 0);
 
@@ -261,7 +262,6 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         ULOGE("Framebuffer is not complete!");
 
-    
     Unbind();
 }
 

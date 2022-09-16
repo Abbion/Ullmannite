@@ -80,13 +80,13 @@ namespace Ull
 
         ~Keyboard();
 
-        static Keyboard* GetInstance();
+        static Keyboard& GetInstance();
         bool IsKeyPressed(Key key) const;
 
     protected:
         Keyboard();
         
-        static Keyboard* m_keyboardInstance;
+        static Keyboard m_keyboardInstance;
 
     private:
         std::map<Key, bool> m_keyMap;

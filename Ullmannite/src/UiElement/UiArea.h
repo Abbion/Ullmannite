@@ -19,6 +19,7 @@ namespace Ull
 
         void Update() override;
         void Render() override;
+
     private:
         glm::vec4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };
         FrameBuffer* m_frameBuffer{ nullptr };

@@ -15,6 +15,7 @@ namespace Ull
         void HandleEvent(Event* event) override;
 
         void Init();
+
     private:
         void CreateLayout();
         void Resize(const glm::uvec2& size);

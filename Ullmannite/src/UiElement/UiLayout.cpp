@@ -10,7 +10,7 @@ using namespace Ull;
 UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiElement(name, position, size)
 {
-	m_shader = ShaderManager::GetInstance()->GetShader(ShaderTag::FRAME_DISPLAY_SHADER);
+	m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::FRAME_DISPLAY_SHADER);
 	CreateResources();
 }
 
@@ -36,12 +36,12 @@ void UiLayout::Update()
 
 void UiLayout::Render()
 {
-    Renderer::GetInstance()->SetClearColor(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f)); //TODO: add as debug
-    Renderer::GetInstance()->SetDepth(Renderer::State::DISABLE);
-    Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
-    Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
+    Renderer::GetInstance().SetClearColor(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f)); //TODO: add as debug
+    Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
+    Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
+    Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), m_size);
 
-    Renderer::GetInstance()->SetClearColor(glm::vec4(0.5f, 0.0f, 0.5f, 1.0f)); //TODO: add as debug
+    Renderer::GetInstance().SetClearColor(glm::vec4(0.5f, 0.0f, 0.5f, 1.0f)); //TODO: add as debug
 
     m_shader->Bind();
     m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);
@@ -53,7 +53,7 @@ void UiLayout::Render()
         CreateRenderAreaForUiElements(i);
         m_layout->Bind();
         static_cast<UiArea*>(m_children[i])->BindTargetTexture();
-        Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+        Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
     }
 }
 

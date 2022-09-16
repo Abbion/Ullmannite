@@ -1,5 +1,4 @@
 #pragma once
-#include "Ullpch.h"
 #include "GraphicsTypes.h"
 
 namespace Ull

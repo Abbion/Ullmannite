@@ -22,22 +22,28 @@ namespace {
     }
 }
 
+Renderer Renderer::m_rendererInstance;
+
 Renderer::~Renderer()
 {
-    ULOGD("Renderer terminated");
 }
 
-Renderer* Renderer::GetInstance()
+Renderer& Renderer::GetInstance()
 {
-    if(m_rendererInstance == nullptr)
-        m_rendererInstance = new Renderer();
     return m_rendererInstance;
 }
 
 void Renderer::SetApi(API api)
 {
-    //TODO check if can change api
-    m_api = api;
+    if (m_apiLocked)
+    {
+        UASSERT(false, "Can't change the API durring program execution");
+    }
+    else
+    {
+        m_apiLocked = true;
+        m_api = api;
+    }
 }
 
 void Renderer::Init()

@@ -9,11 +9,12 @@
 #define MIN_WINDOW_WIDTH 1024
 #define MIN_WINDOW_HEIGHT 576
 
+#ifdef  PLATFORM_WINDOWS
+
 #include <Windows.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#define GLFW_EXPOSE_NATIVE_WGL
-#define GLFW_NATIVE_INCLUDE_NONE
-#include <GLFW/glfw3native.h>
+
+#endif
+
 
 using namespace Ull;
 
@@ -25,7 +26,7 @@ Window::Window(std::string title, glm::uvec2 size) : m_title(title)
     if(size.y < MIN_WINDOW_HEIGHT)
         size.y = MIN_WINDOW_HEIGHT;
 
-    if(Renderer::GetInstance()->GetApi() == Renderer::API::OPEN_GL)
+    if(Renderer::GetInstance().GetApi() == Renderer::API::OPEN_GL)
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -220,7 +221,7 @@ void Window::ResizeByCursor()
     if(m_isDragged)
         return;
 
-    if (m_resizeBorder != ResizeFrame::NONE && Mouse::GetInstance()->IsButtonPressed(Mouse::Button::LEFT))
+    if (m_resizeBorder != ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
     {
         if(!m_isResized) //Started resizing
         {
@@ -342,7 +343,7 @@ void Window::MovedByCursor()
     if(m_isResized)
         return;
 
-    if (m_resizeBorder == ResizeFrame::NONE && Mouse::GetInstance()->IsButtonPressed(Mouse::Button::LEFT))
+    if (m_resizeBorder == ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
     {
         if (!m_isDragged)   //Started draggins
         {
@@ -367,7 +368,7 @@ void Window::SwapBuffers()
 {
     if (m_isResized)
     {
-        Renderer::GetInstance()->FlushContext();
+        Renderer::GetInstance().FlushContext();
         glfwSwapInterval(2);
         glfwSwapBuffers(m_renderWindow);
         m_intervalRestored = false;

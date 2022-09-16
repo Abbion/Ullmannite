@@ -38,6 +38,8 @@ void LayerManager::HandleEvent(Event* event)
 
 std::shared_ptr<Layer> LayerManager::GetTopLayer()
 {
+    UASSERT(m_layers.size() != 0, "Layer queue is empty");
+
     return m_layers.back();
 }
 

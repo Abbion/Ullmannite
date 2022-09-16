@@ -1,17 +1,12 @@
 #include "Ullpch.h"
 #include "Keyboard.h"
 
-#include "Logger/Logger.h"
-
 using namespace Ull;
 
-Keyboard* Keyboard::m_keyboardInstance = nullptr;
+Keyboard Keyboard::m_keyboardInstance;
 
-Keyboard* Keyboard::GetInstance()
+Keyboard& Keyboard::GetInstance()
 {
-    if (m_keyboardInstance == nullptr)
-        m_keyboardInstance = new Keyboard();
-
     return m_keyboardInstance;
 }
 
@@ -23,7 +18,6 @@ Keyboard::Keyboard()
 Keyboard::~Keyboard()
 {
     m_keyMap.clear();
-    ULOGD("Keyboard terminated");
 }
 
 bool Keyboard::IsKeyPressed(Key key) const

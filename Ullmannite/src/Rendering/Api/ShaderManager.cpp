@@ -4,7 +4,7 @@
 
 using namespace Ull;
 
-ShaderManager* ShaderManager::m_shaderManagerInstance = nullptr;
+ShaderManager ShaderManager::m_shaderManagerInstance;
 
 ShaderManager::ShaderManager()
 {
@@ -18,11 +18,8 @@ ShaderManager::~ShaderManager()
 	m_shaderMap.clear();
 }
 
-ShaderManager* ShaderManager::GetInstance()
+ShaderManager& ShaderManager::GetInstance()
 {
-	if (m_shaderManagerInstance == nullptr)
-		m_shaderManagerInstance = new ShaderManager();
-
 	return m_shaderManagerInstance;
 }
 

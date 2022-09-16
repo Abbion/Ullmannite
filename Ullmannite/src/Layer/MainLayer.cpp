@@ -4,6 +4,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "Rendering/Api/ShaderManager.h"
 #include "Rendering/Api/Renderer.h"
+#include "UiElement/UiArea.h"
 
 using namespace Ull;
 
@@ -75,10 +76,12 @@ void MainLayer::Resize(const glm::uvec2& size)
     for(auto& element : m_layout->GetChildren())
     {
         auto currentElementName = element->GetName(); 
+
         if(currentElementName == "topBarElement")
         {
             element->SetSize(glm::vec2(size.x, 30));
         }
+
         else if(currentElementName == "menuElement")
         {
             element->SetSize(glm::vec2(260, size.y - 30));

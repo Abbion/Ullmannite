@@ -9,11 +9,11 @@ namespace Ull
     {
         std::string name;
         GraphicsDataType dataType;
-        uint8_t amount;
+        uint16_t amount;
         bool normalized;
-        uint16_t offset{ 0 };
+        uint32_t offset{ 0 };
 
-         LayoutElement(std::string name, GraphicsDataType dataType, uint8_t amount, bool normalized = false)
+         LayoutElement(std::string name, GraphicsDataType dataType, uint16_t amount, bool normalized = false)
          : name(name), dataType(dataType), amount(amount), normalized(normalized) {}
     };
 
@@ -77,6 +77,7 @@ namespace Ull
         };
 
     public:
+        //Allow for copy
         virtual ~RenderBuffer() {}
 
         glm::uvec2 GetSize() { return m_size; }

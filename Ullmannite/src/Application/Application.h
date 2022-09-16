@@ -2,10 +2,8 @@
 #include "Window/Window.h"
 #include "Event/EventQueue.h"
 #include "Layer/LayerManager.h"
-#include "Rendering/Api/Renderer.h"
-#include <memory>
 
-#include <glad/glad.h>
+#include <memory>
 #include <mutex>
 #include <condition_variable>
 
@@ -27,7 +25,7 @@ namespace Ull
 		std::unique_ptr<LayerManager> m_layerManager{ nullptr };
 
 		bool m_initFailed{ false };
-		bool m_ContextCreationFailed{ false };
+		bool m_contextCreationFailed{ false };
 
 		void InitApplciation();
 		void InitWindow();

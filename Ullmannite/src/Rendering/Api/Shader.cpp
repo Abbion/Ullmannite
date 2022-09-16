@@ -13,7 +13,7 @@ Shader* Shader::Create(const char* vertexShaderName, const char* fragmentShaderN
     std::string fragmentShaderNameStr(fragmentShaderName);
     std::string geometryShaderNameStr = geometryShaderName == nullptr ? std::string("") : std::string(geometryShaderName);
 
-    switch (Renderer::GetInstance()->GetApi())
+    switch (Renderer::GetInstance().GetApi())
     {
     case Renderer::API::OPEN_GL:
             return new ShaderOpenGL(vertexShaderNameStr, fragmentShaderNameStr, geometryShaderNameStr);

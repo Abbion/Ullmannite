@@ -9,7 +9,7 @@ using namespace Ull;
 UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiElement(name, position, size)
 {
-    m_shader = ShaderManager::GetInstance()->GetShader(ShaderTag::UI_SHADER);
+    m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_SHADER);
     CreateResources();
 }
 
@@ -88,8 +88,8 @@ void UiArea::Render()
     {
         m_frameBuffer->Bind();
 
-        Renderer::GetInstance()->Clear(Renderer::ClearBits::COLOR);
-        Renderer::GetInstance()->SetViewPort(glm::ivec2(0, 0), m_size);
+        Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
+        Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), m_size);
 
         m_shader->Bind();
 
@@ -97,7 +97,7 @@ void UiArea::Render()
 
         m_layout->Bind();
 
-        Renderer::GetInstance()->DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+        Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 
         m_frameBuffer->Unbind();
 

@@ -10,9 +10,10 @@ namespace Ull
     class Renderer
     {
     public:
-        enum class API
+        enum class API : uint8_t
         {
-            OPEN_GL = 0
+            NONE = 0,
+            OPEN_GL = 1
         };
 
         enum class ClearBits
@@ -33,7 +34,7 @@ namespace Ull
         
         ~Renderer();
 
-        static Renderer* GetInstance();
+        static Renderer& GetInstance();
 
         void SetApi(API api);
         void Init();
@@ -47,14 +48,15 @@ namespace Ull
         void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
         void FlushContext();
 
-        API inline GetApi() { return m_api; }
+        inline API GetApi() { return m_api; }
 
     protected:
         Renderer() = default;
-        inline static Renderer* m_rendererInstance{ nullptr };
+        static Renderer m_rendererInstance;
 
     private:
-        API m_api{ API::OPEN_GL };
+        API m_api{ API::NONE };
+        bool m_apiLocked{ false };
     };
 
     inline Renderer::ClearBits operator|(Renderer::ClearBits flagA, Renderer::ClearBits flagB)

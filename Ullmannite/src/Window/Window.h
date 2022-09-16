@@ -1,9 +1,10 @@
 #pragma once
+#include "Event/EventQueue.h"
+
 #include <string>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <memory>
-#include "Event/EventQueue.h"
 #include <chrono>
 
 namespace Ull
@@ -36,7 +37,6 @@ namespace Ull
         glm::ivec2 GetSize() const;
         std::string GetTitle() const { return m_title; }
 
-
         GLFWwindow* GetRenderContext() { return m_renderWindow; }
         GLFWwindow* GetEventContext()  { return m_eventContext; }
 
@@ -54,12 +54,12 @@ namespace Ull
     private:
         std::string m_title;
         bool m_isOpen{ true };
+
         GLFWwindow* m_renderWindow{ nullptr };
         GLFWwindow* m_eventContext{ nullptr };
         GLFWcursor* m_cursor{ nullptr };
 
         uint8_t m_resizeBorderSize{ 6 };
-
         glm::ivec2 m_startGrabPosition;
 
         bool m_isDragged{ false };

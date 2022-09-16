@@ -31,7 +31,7 @@ std::shared_ptr<Event> EventQueue::PopEvent()
 
 bool EventQueue::HasPenddingEvents() const
 {
-    return m_events.size() > 0;
+    return m_events.size() > 0u;
 }
 
 unsigned int EventQueue::GetSize() const

@@ -19,6 +19,7 @@ namespace Ull
         void HandleEvent(Event* event) override;
 
         std::shared_ptr<Layer> GetTopLayer();
+        std::deque<std::shared_ptr<Layer>>& GetAllLayers() { return m_layers; }
         unsigned int GetSize() const;
         
     private:

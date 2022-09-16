@@ -25,7 +25,7 @@ namespace Ull
         glm::uvec2 GetPosition() const      { return m_position; }
         glm::uvec2 GetSize() const          { return m_size; }
         float GetScale() const              { return m_scale; }
-        std::string GetName() const         { return m_name; }
+        inline std::string GetName() const  { return m_name; }
 
         void SetPositiion(const glm::uvec2& position)   { m_position = position; }
         void SetSize(const glm::uvec2& size)            { m_size = size; }
