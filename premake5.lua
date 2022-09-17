@@ -269,6 +269,11 @@ project "Ullmannite"
         {
             "PLATFORM_LINUX"
         }
+        
+        links
+        {
+            "X11"
+	}
 
     filter "configurations:Debug"
         defines "DEBUG"

@@ -22,11 +22,11 @@ namespace Ull
         BOTTOM_RIGHT
     };
 
-    class Window
+    class UllWindow
     {
     public:
-        Window(std::string title, glm::uvec2 size);
-        ~Window();
+        UllWindow(std::string title, glm::uvec2 size);
+        ~UllWindow();
 
         void SetTitle(const std::string& title);
         void SetSize(glm::ivec2 size);

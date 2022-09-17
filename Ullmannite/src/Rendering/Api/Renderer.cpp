@@ -78,7 +78,7 @@ void Renderer::Clear(ClearBits clearBits)
 {
     if (m_api == API::OPEN_GL)
     {
-        UINT bitSum = (clearBits & ClearBits::COLOR) ? GL_COLOR_BUFFER_BIT : 0;
+        unsigned int bitSum = (clearBits & ClearBits::COLOR) ? GL_COLOR_BUFFER_BIT : 0;
         bitSum |= (clearBits & ClearBits::DEPTH) ? GL_DEPTH_BUFFER_BIT : 0;
         bitSum |= (clearBits & ClearBits::SETNCIL) ? GL_STENCIL_BUFFER_BIT : 0;
         glClear(bitSum);

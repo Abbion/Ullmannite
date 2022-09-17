@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 #include <condition_variable>
+#include <thread>
 
 namespace Ull
 {
@@ -20,7 +21,7 @@ namespace Ull
 		void Run();
 
 	private:
-		std::unique_ptr<Window> m_window{ nullptr };
+		std::unique_ptr<UllWindow> m_window{ nullptr };
 		std::unique_ptr<EventQueue> m_eventQueue{ nullptr };
 		std::unique_ptr<LayerManager> m_layerManager{ nullptr };
 

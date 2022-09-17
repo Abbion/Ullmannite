@@ -94,7 +94,7 @@ void Application::InitWindow()
 
     try
     {
-        m_window = std::make_unique<Window>("Ullmanite 0.02", glm::ivec2(1280, 720));
+        m_window = std::make_unique<UllWindow>("Ullmanite 0.02", glm::ivec2(1280, 720));
 
         m_eventQueue = std::make_unique<EventQueue>();
         m_window->SetEventQueueDataPointer(m_eventQueue.get());

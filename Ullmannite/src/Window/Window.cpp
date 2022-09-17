@@ -5,20 +5,24 @@
 #include "Logger/Logger.h"
 #include "Event/Event.h"
 #include "Rendering/Api/Renderer.h"
+#include <thread>
 
 #define MIN_WINDOW_WIDTH 1024
 #define MIN_WINDOW_HEIGHT 576
 
 #ifdef  PLATFORM_WINDOWS
-
 #include <Windows.h>
-
 #endif
 
+#ifdef PLATFORM_LINUX
+#include <X11/Xlib.h>
+#define GLFW_EXPOSE_NATIVE_X11
+#include <GLFW/glfw3native.h>
+#endif
 
 using namespace Ull;
 
-Window::Window(std::string title, glm::uvec2 size) : m_title(title)
+UllWindow::UllWindow(std::string title, glm::uvec2 size) : m_title(title)
 {
     if(size.x < MIN_WINDOW_WIDTH)
         size.x = MIN_WINDOW_WIDTH;
@@ -68,7 +72,7 @@ Window::Window(std::string title, glm::uvec2 size) : m_title(title)
     m_lastRefresh = std::chrono::steady_clock::now();
 }
 
-Window::~Window()
+UllWindow::~UllWindow()
 {    
     glfwDestroyWindow(m_renderWindow);
     glfwDestroyWindow(m_eventContext);
@@ -77,13 +81,13 @@ Window::~Window()
     ULOGD("Window terminated");
 }
 
-void Window::SetTitle(const std::string& title)
+void UllWindow::SetTitle(const std::string& title)
 {
     m_title = title;
     glfwSetWindowTitle(m_renderWindow, m_title.c_str());
 }
 
-void Window::SetSize(glm::ivec2 size)
+void UllWindow::SetSize(glm::ivec2 size)
 {
     if(size.x < MIN_WINDOW_WIDTH)
         size.x = MIN_WINDOW_WIDTH;
@@ -94,17 +98,17 @@ void Window::SetSize(glm::ivec2 size)
     glfwSetWindowSize(m_renderWindow, size.x, size.y);
 }
 
-void Window::SetPosition(glm::ivec2 position)
+void UllWindow::SetPosition(glm::ivec2 position)
 {
     glfwSetWindowPos(m_renderWindow, position.x, position.y);
 }
 
-void Window::SetEventQueueDataPointer(EventQueue* eventQueue)
+void UllWindow::SetEventQueueDataPointer(EventQueue* eventQueue)
 {
     glfwSetWindowUserPointer(m_renderWindow, reinterpret_cast<void*>(eventQueue));
 }
 
-glm::ivec2 Window::GetPosition() const
+glm::ivec2 UllWindow::GetPosition() const
 {
     glm::ivec2 position;
     glfwGetWindowPos(m_renderWindow, &position.x, &position.y);
@@ -112,7 +116,7 @@ glm::ivec2 Window::GetPosition() const
     return position;
 }
 
-glm::ivec2 Window::GetSize() const
+glm::ivec2 UllWindow::GetSize() const
 {
     glm::ivec2 size;
     glfwGetWindowSize(m_renderWindow, &size.x, &size.y);
@@ -120,34 +124,34 @@ glm::ivec2 Window::GetSize() const
     return size;
 }
 
-void Window::Close()
+void UllWindow::Close()
 {
     m_isOpen = false;
 }
 
-void Window::Maximize()
+void UllWindow::Maximize()
 {
     glfwMaximizeWindow(m_renderWindow);
 }
 
-void Window::Minimize()
+void UllWindow::Minimize()
 {
     glfwIconifyWindow(m_renderWindow);
 }
 
-void Window::Restore()
+void UllWindow::Restore()
 {
     glfwRestoreWindow(m_renderWindow);
 }
 
-void Window::CheckCursorInteractions()
+void UllWindow::CheckCursorInteractions()
 {
     MovedByCursor();
     CheckResizeBorder();
     ResizeByCursor();
 }
 
-void Window::CheckResizeBorder()
+void UllWindow::CheckResizeBorder()
 {
     if(m_isDragged)
         return;
@@ -216,7 +220,7 @@ void Window::CheckResizeBorder()
     }
 }
 
-void Window::ResizeByCursor()
+void UllWindow::ResizeByCursor()
 {
     if(m_isDragged)
         return;
@@ -338,7 +342,7 @@ void Window::ResizeByCursor()
     }
 }
 
-void Window::MovedByCursor()
+void UllWindow::MovedByCursor()
 {
     if(m_isResized)
         return;
@@ -364,7 +368,7 @@ void Window::MovedByCursor()
     }
 }
 
-void Window::SwapBuffers()
+void UllWindow::SwapBuffers()
 {
     if (m_isResized)
     {
@@ -394,21 +398,36 @@ void Window::SwapBuffers()
     }
 }
 
-void Window::PullEvents()
+void UllWindow::PullEvents()
 {
     glfwWaitEvents();
 }
 
-glm::ivec2 Window::GetCursorScreenPosition()
+glm::ivec2 UllWindow::GetCursorScreenPosition()
 {
 #ifdef  PLATFORM_WINDOWS
     POINT cursorPosOnScreen;
     GetCursorPos(&cursorPosOnScreen);
     return glm::ivec2(cursorPosOnScreen.x, cursorPosOnScreen.y);
-#endif //  PLATFORM_WINDOWS
+#endif 
+
+#ifdef PLATFORM_LINUX
+    auto display = glfwGetX11Display();
+    auto window = glfwGetX11Window(m_renderWindow);
+
+    
+    Window windowReturned;
+    glm::ivec2 rootPos;
+    glm::ivec2 inWindowPos;
+    unsigned int maskReturn;
+
+    XQueryPointer(display, window, &windowReturned, &windowReturned, &rootPos.x, &rootPos.y, &inWindowPos.x, &inWindowPos.y, &maskReturn);
+
+    return rootPos;
+#endif
 }
 
-void Window::InitCallBacks()
+void UllWindow::InitCallBacks()
 {
     glfwSetWindowPosCallback(m_renderWindow, [](GLFWwindow* window, int positionX, int positionY){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
