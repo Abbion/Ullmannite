@@ -4,6 +4,7 @@
 #include "Input/Mouse.h"
 
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace Ull
 {
@@ -29,166 +30,53 @@ namespace Ull
     };
 
     //==================================================================
-    class Event
+    class Event : public std::enable_shared_from_this<Event>
     {
     public:
         Event(EventType eventType) : m_type(eventType) {}
         virtual ~Event() { /*ULOGD("event " << (int)m_type << " terminated");*/ }
 
+        void MarkHandeled(bool handeled) { m_handeled = handeled; } 
+
         EventType GetType() const { return m_type; }
+        bool IsHandeled() const { return m_handeled; }
 
     private:
         EventType m_type;
-    };
-    
-    //==================================================================
-    class WindowMoveEvent : public Event
-    {
-        public:
-            WindowMoveEvent(glm::ivec2 position) : m_position(position), Event(EventType::WindowMove) {}
-
-            glm::ivec2 GetPosition() const { return m_position; }
-
-        private:
-            glm::ivec2 m_position;
+        bool m_handeled{ false };
     };
 
-    //==================================================================
-    class WindowResizeEvent : public Event
-    {
-        public:
-            WindowResizeEvent(glm::uvec2 size) : m_size(size), Event(EventType::WindowResize) {}
-
-            glm::uvec2 GetSize() const { return m_size; }
-
-        private:
-            glm::uvec2 m_size;
-    };
-
-    //==================================================================
-    class WindowLostFocusEvent : public Event
-    {
-        public: 
-            WindowLostFocusEvent() : Event(EventType::WindowLostFocus) {}
-    };
-
-    //==================================================================
-    class WindowGainedFocusEvent : public Event
-    {
-        public: 
-            WindowGainedFocusEvent() : Event(EventType::WindowGainedFocus) {}
-    };
-
-     //==================================================================
-    class WindowMaximizedEvent : public Event
-    {
-        public: 
-            WindowMaximizedEvent() : Event(EventType::WindowMaximized) {}
-    };
-
-    //==================================================================
-    class WindowMinimizedEvent : public Event
-    {
-        public: 
-            WindowMinimizedEvent() : Event(EventType::WindowMinimized) {}
-    };
-
-    //==================================================================
-    class WindowRestoredEvent : public Event
-    {
-        public: 
-            WindowRestoredEvent() : Event(EventType::WindowRestored) {}
-    };
-
-    //==================================================================
-    class WindowClosedEvent : public Event
-    {
-        public: 
-            WindowClosedEvent() : Event(EventType::WindowClosed) {}
-    };  
-
-    //==================================================================
-    class KeyDownEvent : public Event
-    {
-        public: 
-            KeyDownEvent(Keyboard::Key key) : m_key(key), Event(EventType::KeyDown) {}
-
-            Keyboard::Key GetKey() const { return m_key; }
-
-        private:
-            Keyboard::Key m_key;
-    };
-
-    //==================================================================
-    class KeyUpEvent : public Event
-    {
-        public: 
-            KeyUpEvent(Keyboard::Key key) : m_key(key), Event(EventType::KeyUp) {}
-
-            Keyboard::Key GetKey() const { return m_key; }
-            
-        private:
-            Keyboard::Key m_key;
-    };
-
-    //==================================================================
-    class MouseDownEvent : public Event
-    {
-        public: 
-            MouseDownEvent(Mouse::Button button) : m_button(button), Event(EventType::MouseDown) {}
-
-            Mouse::Button GetButton() const { return m_button; }
-            
-        private:
-            Mouse::Button m_button;
-    };
-
-    //==================================================================
-    class MouseUpEvent : public Event
-    {
-        public: 
-            MouseUpEvent(Mouse::Button button) : m_button(button), Event(EventType::MouseUp) {}
-
-            Mouse::Button GetButton() const { return m_button; }
-            
-        private:
-            Mouse::Button m_button;
-    };
-
-    //==================================================================
-    class MouseScrollEvent : public Event
-    {
-        public: 
-            MouseScrollEvent(int scroll) : m_scroll(scroll), Event(EventType::MouseScroll) {}
-
-            int GetScroll() const { return m_scroll; }
-            
-        private:
-            int m_scroll;
-    };
-
-    //==================================================================
-    class MouseMoveEvent : public Event
-    {
-        public: 
-            MouseMoveEvent(glm::ivec2 position) : m_position(position), Event(EventType::MouseMove) {}
-
-            glm::ivec2 GetPosition() const { return m_position; }
-            
-        private:
-            glm::ivec2 m_position;
-    };
-    
     //==================================================================
     template<typename T>
-    class VariableEvent : public Event
+    class ValueEvent : public Event
     {
     public:
-        VariableEvent(EventType eventType, T var) : Event(eventType), m_var(var) {}
+        ValueEvent(EventType eventType, T val) : Event(eventType), m_val(val) {}
 
-        T GetVar() const { return m_var; }
+        T GetVal() const { return m_val; }
 
     private:
-        T m_var;
+        T m_val;
     };
+
+    //==================================================================
+    typedef ValueEvent<glm::ivec2> WindowMoveEvent;
+    typedef ValueEvent<glm::uvec2> WindowResizeEvent;
+    typedef Event WindowLostFocusEvent;
+    typedef Event WindowGainedFocusEvent;
+    typedef Event WindowMaximizedEvent;
+    typedef Event WindowMinimizedEvent;
+    typedef Event WindowRestoredEvent;
+    typedef Event WindowClosedEvent;
+    typedef Event WindowMinimized;
+    typedef Event WindowRestored;
+
+    typedef ValueEvent<Keyboard::Key> KeyDownEvent;
+    typedef ValueEvent<Keyboard::Key> KeyUpEvent;
+
+    typedef ValueEvent<Mouse::Button> MouseDownEvent;
+    typedef ValueEvent<Mouse::Button> MouseUpEvent;
+    typedef ValueEvent<int> MouseScrollEvent;
+    typedef ValueEvent<glm::ivec2> MouseMoveEvent;
+
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "Ullpch.h"
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <map>
@@ -8,7 +9,7 @@ namespace Ull
     class Mouse
     {
     public:
-        enum class Button
+        enum class Button : uint16_t
         {
             LEFT = GLFW_MOUSE_BUTTON_LEFT,
             RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
@@ -16,21 +17,20 @@ namespace Ull
         };
 
     public:
-        static Mouse* GetInstance();
+        NON_COPYABLE(Mouse);
+
+        ~Mouse();
+
+        static Mouse& GetInstance();
 
         bool IsButtonPressed(Button button) const;
         glm::ivec2 GetMousePosition() const { return m_mousePosition; }
         int GetScrollDelta() const { return m_scroll; }
 
-        ~Mouse();
-        void operator=(const Mouse&) = delete;
-        Mouse(Mouse&) = delete;
-        Mouse(Mouse&&) = delete;
-
     protected:
         Mouse();
 
-        static Mouse* m_mouseInstance;
+        static Mouse m_mouseInstance;
 
     private:
         std::map<Button, bool> m_buttonMap;

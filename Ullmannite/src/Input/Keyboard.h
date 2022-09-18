@@ -1,13 +1,14 @@
 #pragma once
+#include "Ullpch.h"
 #include <GLFW/glfw3.h>
 #include <map>
 
 namespace Ull
 {
-    class Keyboard
+    class Keyboard 
     {
     public:
-        enum class Key
+        enum class Key : uint16_t
         {
             SPACE = GLFW_KEY_SPACE,
             ZERO = GLFW_KEY_0,
@@ -43,6 +44,7 @@ namespace Ull
             U = GLFW_KEY_U,
             V = GLFW_KEY_V,
             W = GLFW_KEY_W,
+            X = GLFW_KEY_X,
             Y = GLFW_KEY_Y,
             Z = GLFW_KEY_Z,
             ESCAPE = GLFW_KEY_ESCAPE,
@@ -74,18 +76,17 @@ namespace Ull
         };
 
     public:
-        static Keyboard* GetInstance();
-        bool IsKeyPressed(Key key) const;
+        NON_COPYABLE(Keyboard);
 
         ~Keyboard();
-        void operator=(const Keyboard&) = delete;
-        Keyboard(Keyboard&) = delete;
-        Keyboard(Keyboard&&) = delete;
+
+        static Keyboard& GetInstance();
+        bool IsKeyPressed(Key key) const;
 
     protected:
         Keyboard();
         
-        static Keyboard* m_keyboardInstance;
+        static Keyboard m_keyboardInstance;
 
     private:
         std::map<Key, bool> m_keyMap;

@@ -5,6 +5,9 @@
 
 namespace Ull
 {
+	class Layer;
+	class UiElement;
+
 	class SimpleTxtFormatterImpl
 	{
 	public:
@@ -15,6 +18,9 @@ namespace Ull
 	void InitLog();
 	void SetLogSeverity(plog::Severity serverity);
 	void ClearLogs();
+
+	void LogLayerTree(const Layer& layer);
+	void LogElements(std::stringstream& ss, const std::vector<Ull::UiElement*> elements, unsigned int tabs = 0);
 }
 
 #define ULOGF(message) PLOGF << message

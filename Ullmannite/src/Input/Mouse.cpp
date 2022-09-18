@@ -1,17 +1,12 @@
 #include "Ullpch.h"
 #include "Mouse.h"
 
-#include "Logger/Logger.h"
-
 using namespace Ull;
 
-Mouse* Mouse::m_mouseInstance = nullptr;
+Mouse Mouse::m_mouseInstance;
 
-Mouse* Mouse::GetInstance()
+Mouse& Mouse::GetInstance()
 {
-    if (m_mouseInstance == nullptr)
-        m_mouseInstance = new Mouse();
-
     return m_mouseInstance;
 }
 
@@ -23,7 +18,6 @@ Mouse::Mouse() : m_mousePosition(0, 0), m_scroll(0)
 Mouse::~Mouse()
 {
     m_buttonMap.clear();
-    ULOGD("Mouse terminated");
 }
 
 bool Mouse::IsButtonPressed(Button button) const
