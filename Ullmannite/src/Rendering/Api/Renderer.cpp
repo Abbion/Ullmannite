@@ -52,7 +52,7 @@ void Renderer::Init()
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             throw InitializationException("Can't initialize GLAD");
-
+        
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(MessageCallback, nullptr);
     }

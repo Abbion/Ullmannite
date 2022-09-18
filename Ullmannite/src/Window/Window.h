@@ -57,7 +57,9 @@ namespace Ull
 
         GLFWwindow* m_renderWindow{ nullptr };
         GLFWwindow* m_eventContext{ nullptr };
+
         GLFWcursor* m_cursor{ nullptr };
+        int m_currentCursorShape{ GLFW_ARROW_CURSOR };
 
         uint8_t m_resizeBorderSize{ 6 };
         glm::ivec2 m_startGrabPosition;
@@ -74,6 +76,7 @@ namespace Ull
         void CheckResizeBorder();
         void ResizeByCursor();
         void MovedByCursor();
+        void ChangeCursorShape(int shape);
 
         glm::ivec2 GetCursorScreenPosition();
 

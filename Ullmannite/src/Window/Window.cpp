@@ -127,6 +127,10 @@ glm::ivec2 UllWindow::GetSize() const
 void UllWindow::Close()
 {
     m_isOpen = false;
+
+    glfwSetWindowShouldClose(m_renderWindow, GLFW_TRUE);
+    glfwSetWindowShouldClose(m_eventContext, GLFW_TRUE);
+    glfwPostEmptyEvent();
 }
 
 void UllWindow::Maximize()
@@ -151,6 +155,41 @@ void UllWindow::CheckCursorInteractions()
     ResizeByCursor();
 }
 
+void UllWindow::SwapBuffers()
+{
+    if (m_isResized)
+    {
+        Renderer::GetInstance().FlushContext();
+        glfwSwapInterval(2);
+        glfwSwapBuffers(m_renderWindow);
+        m_intervalRestored = false;
+
+        //Synchronization for resizing
+        auto now = std::chrono::steady_clock::now();
+        auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastRefresh);
+        auto waitForMs = 20 - durationMs.count();
+
+        if (waitForMs > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(waitForMs));
+        m_lastRefresh = std::chrono::steady_clock::now();
+    }
+    else
+    {
+        glfwSwapBuffers(m_renderWindow);
+
+        if (m_intervalRestored)
+        {
+            glfwSwapInterval(0);
+            m_intervalRestored = true;
+        }
+    }
+}
+
+void UllWindow::PullEvents()
+{
+    glfwWaitEvents();
+}
+
 void UllWindow::CheckResizeBorder()
 {
     if(m_isDragged)
@@ -158,8 +197,6 @@ void UllWindow::CheckResizeBorder()
     
     if (!m_isResized)
     {
-        glfwDestroyCursor(m_cursor);
-
         glm::dvec2 cursorPos;
         glfwGetCursorPos(m_renderWindow, &cursorPos.x, &cursorPos.y);
 
@@ -173,50 +210,48 @@ void UllWindow::CheckResizeBorder()
         if ((cursorPos.x < cornerBias && cursorPos.y < cornerBias))
         {
             m_resizeBorder = ResizeFrame::TOP_LEFT;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_NWSE_CURSOR);
         }
         else if ((cursorPos.x > windowSize.x - cornerBias && cursorPos.y > windowSize.y - cornerBias))
         {
             m_resizeBorder = ResizeFrame::BOTTOM_RIGHT;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_NWSE_CURSOR);
         }
         else if ((cursorPos.x < cornerBias && cursorPos.y > windowSize.y - cornerBias))
         {
             m_resizeBorder = ResizeFrame::BOTTOM_LEFT;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_NESW_CURSOR);
         }
         else if ((cursorPos.x > windowSize.x - cornerBias && cursorPos.y < cornerBias))
         {
             m_resizeBorder = ResizeFrame::TOP_RIGHT;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_NESW_CURSOR);
         }
         else if (cursorPos.x < m_resizeBorderSize)
         {
             m_resizeBorder = ResizeFrame::LEFT;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_EW_CURSOR);
         }
         else if (cursorPos.x > windowSize.x - m_resizeBorderSize)
         {
             m_resizeBorder = ResizeFrame::RIGHT;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_EW_CURSOR);
         }
         else if (cursorPos.y < m_resizeBorderSize)
         {
             m_resizeBorder = ResizeFrame::TOP;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_NS_CURSOR);
         }
         else if (cursorPos.y > windowSize.y - m_resizeBorderSize)
         {
             m_resizeBorder = ResizeFrame::BOTTOM;
-            m_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR);
+            ChangeCursorShape(GLFW_RESIZE_NS_CURSOR);
         }
         else
         {
             m_resizeBorder = ResizeFrame::NONE;
-            m_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+            ChangeCursorShape(GLFW_ARROW_CURSOR);
         }
-
-        glfwSetCursor(m_renderWindow, m_cursor);
     }
 }
 
@@ -368,39 +403,16 @@ void UllWindow::MovedByCursor()
     }
 }
 
-void UllWindow::SwapBuffers()
+void UllWindow::ChangeCursorShape(int shape)
 {
-    if (m_isResized)
+    if (m_currentCursorShape != shape)
     {
-        Renderer::GetInstance().FlushContext();
-        glfwSwapInterval(2);
-        glfwSwapBuffers(m_renderWindow);
-        m_intervalRestored = false;
+        glfwDestroyCursor(m_cursor);
+        m_currentCursorShape = shape;
+        m_cursor = glfwCreateStandardCursor(m_currentCursorShape);
 
-        //Synchronization for resizing
-        auto now = std::chrono::steady_clock::now();
-        auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastRefresh);
-        auto waitForMs = 20 - durationMs.count();
-
-        if (waitForMs > 0)
-            std::this_thread::sleep_for(std::chrono::milliseconds(waitForMs));
-        m_lastRefresh = std::chrono::steady_clock::now();
+        glfwSetCursor(m_renderWindow, m_cursor);
     }
-    else
-    {
-        glfwSwapBuffers(m_renderWindow);
-
-        if (m_intervalRestored)
-        {
-            glfwSwapInterval(0);
-            m_intervalRestored = true;
-        }
-    }
-}
-
-void UllWindow::PullEvents()
-{
-    glfwWaitEvents();
 }
 
 glm::ivec2 UllWindow::GetCursorScreenPosition()

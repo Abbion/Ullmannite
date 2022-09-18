@@ -50,7 +50,7 @@ void Application::Run()
         }
         
         m_layerManager->GetTopLayer()->Render();
-
+        
         m_window->SwapBuffers();
     }
 
@@ -111,7 +111,7 @@ void Application::InitWindow()
     if (m_contextCreationFailed)
         return;
 
-     while (m_window->IsOpen())
+    while (m_window->IsOpen())
         m_window->PullEvents();
 }
 
