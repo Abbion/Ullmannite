@@ -1,6 +1,10 @@
 #include "Ullpch.h"
 #include "Application.h"
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 #include "Logger/Logger.h"
 #include "Event/Event.h"
 #include "Input/Keyboard.h"
@@ -33,6 +37,10 @@ Application::Application()
 
 Application::~Application()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     ULOGD("Application terminated");
 }
 
@@ -79,6 +87,14 @@ void Application::InitApplciation()
     Renderer::GetInstance().Init();
     Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window->GetSize());
 
+    //ImGui
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    const char* glsl_version = "#version 140";
+    ImGui_ImplGlfw_InitForOpenGL(m_window->GetRenderContext(), false);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
     //Load Shaders
     ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
     ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
@@ -94,7 +110,7 @@ void Application::InitWindow()
 
     try
     {
-        m_window = std::make_unique<UllWindow>("Ullmanite 0.02", glm::ivec2(1280, 720));
+        m_window = std::make_shared<UllWindow>("Ullmanite 0.02", glm::ivec2(1280, 720));
 
         m_eventQueue = std::make_unique<EventQueue>();
         m_window->SetEventQueueDataPointer(m_eventQueue.get());
@@ -171,7 +187,14 @@ void Application::HandleEvents()
             break;
 
         case EventType::MouseMove:
+        {
             Mouse::GetInstance().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
+            
+            auto mousePos = Mouse::GetInstance().GetMousePosition();
+
+            ImGuiIO& io = ImGui::GetIO();
+            io.AddMousePosEvent((float)mousePos.x, (float)mousePos.y);
+        }
             break;
 
         case EventType::MouseScroll:

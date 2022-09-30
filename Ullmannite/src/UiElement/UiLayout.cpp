@@ -26,7 +26,10 @@ void UiLayout::CreateResources()
 
 void UiLayout::HandleEvent(Event* event)
 {
-
+    for (const auto& uiElement : m_children)
+    {
+        uiElement->HandleEvent(event);
+    }
 }
 
 void UiLayout::Update()

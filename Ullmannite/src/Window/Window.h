@@ -37,8 +37,8 @@ namespace Ull
         glm::ivec2 GetSize() const;
         std::string GetTitle() const { return m_title; }
 
-        GLFWwindow* GetRenderContext() { return m_renderWindow; }
-        GLFWwindow* GetEventContext()  { return m_eventContext; }
+        GLFWwindow* GetRenderContext() const { return m_renderWindow; }
+        GLFWwindow* GetEventContext() const { return m_eventContext; }
 
         bool IsOpen() const { return m_isOpen; }
         void Close();

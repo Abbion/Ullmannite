@@ -5,6 +5,9 @@
 #include "Logger/Logger.h"
 #include "Event/Event.h"
 #include "Rendering/Api/Renderer.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <thread>
 
 #define MIN_WINDOW_WIDTH 1024
@@ -175,6 +178,7 @@ void UllWindow::SwapBuffers()
     }
     else
     {
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(m_renderWindow);
 
         if (m_intervalRestored)

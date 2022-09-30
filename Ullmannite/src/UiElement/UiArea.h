@@ -12,17 +12,19 @@ namespace Ull
         ~UiArea();
 
         void CreateResources() override;
-        void SetColor(const glm::vec4& color);
+        void SetBackgroundColor(const glm::vec4& color);
         void BindTargetTexture();
 
-        void HandleEvent(Event* event) override;
+        void HandleEvent(Event* event) override {};
 
-        void Update() override;
+        void Update() override {};
         void Render() override;
 
-    private:
-        glm::vec4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };
+        void RenderBackground();
+
+    protected:
         FrameBuffer* m_frameBuffer{ nullptr };
         bool m_areaUpdated{ false };
+        glm::vec4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };
     };
 }
