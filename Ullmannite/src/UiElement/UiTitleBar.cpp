@@ -56,6 +56,11 @@ void UiTitleBar::HandleEvent(Event* event)
 	}
 	if (event->GetType() == EventType::MouseDown)
 	{
+		if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize() - glm::uvec2(3 * buttonWidth, 0)))
+			m_onDragArea = true;
+		else
+			m_onDragArea = false;
+
 		m_areaUpdated = true;
 	}
 	if (event->GetType() == EventType::MouseUp)
@@ -150,10 +155,7 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	
 	if (ImGui::Button("X", ImVec2(buttonWidth, buttonHeight)))
-	{
-		ULOGD("X");
 		m_closePressed = true;
-	}
 
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();

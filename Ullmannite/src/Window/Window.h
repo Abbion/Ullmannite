@@ -32,6 +32,7 @@ namespace Ull
         void SetSize(glm::ivec2 size);
         void SetPosition(glm::ivec2 position);
         void SetEventQueueDataPointer(EventQueue* eventQueue);
+        void EnableDrag(bool enable) { m_dragEnabled = enable; }
 
         glm::ivec2 GetPosition() const;
         glm::ivec2 GetSize() const;
@@ -69,6 +70,7 @@ namespace Ull
         uint8_t m_resizeBorderSize{ 6 };
         glm::ivec2 m_startGrabPosition;
 
+        bool m_dragEnabled{ false };
         bool m_isDragged{ false };
         bool m_isResized{ false };
         glm::ivec2 m_windowPositionWithMinSize;

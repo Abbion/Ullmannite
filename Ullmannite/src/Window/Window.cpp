@@ -395,7 +395,7 @@ void UllWindow::MovedByCursor()
     if(m_isResized)
         return;
 
-    if (m_resizeBorder == ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
+    if ((m_dragEnabled || m_isDragged) && m_resizeBorder == ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
     {
         if (!m_isDragged)   //Started draggins
         {

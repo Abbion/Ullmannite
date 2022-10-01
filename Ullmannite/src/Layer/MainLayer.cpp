@@ -16,7 +16,7 @@ MainLayer::MainLayer(glm::uvec2 size) : Layer("main", size)
 
 void MainLayer::Update()
 {
-//    if(m_checkClickInteractions)
+    //if(m_checkClickInteractions)
     {
         auto titleBarElement = std::find_if(m_layout->GetChildren().begin(), m_layout->GetChildren().end(), [](const auto& element) { return element->GetName() == "titleBarElement"; });
 
@@ -37,6 +37,11 @@ void MainLayer::Update()
                 else
                     m_window->Maximize();
             }
+
+            if (titleBar->IsOnDragArea())
+                m_window->EnableDrag(true);
+            else
+                m_window->EnableDrag(false);
         }
 
         m_checkClickInteractions = false;
@@ -62,8 +67,11 @@ void MainLayer::HandleEvent(Event* event)
     break;
 
     case EventType::MouseDown:
-        if (static_cast<MouseDownEvent*>(event)->GetVal() == Mouse::Button::LEFT)
-            m_checkClickInteractions = true;
+        m_checkClickInteractions = true;
+    break;
+
+    case EventType::MouseUp:
+        m_checkClickInteractions = true;
     break;
     }
 

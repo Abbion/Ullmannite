@@ -13,6 +13,7 @@ namespace Ull
 		bool WasClosePressed();
 		bool WasMinimizePressed();
 		bool WasMaximizeRestorePressed();
+		bool IsOnDragArea() { return m_onDragArea; }
 
 		void CreateResources() override;
 
@@ -24,6 +25,7 @@ namespace Ull
 		void RenderUI();
 	private:
 
+		bool m_onDragArea{ false };
 		bool m_closePressed{ false };
 		bool m_minimizePressed{ false };
 		bool m_maximizeRestorPressed{ false };
