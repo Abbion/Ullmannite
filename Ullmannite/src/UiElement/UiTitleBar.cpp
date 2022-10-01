@@ -12,12 +12,34 @@ using namespace Ull;
 namespace
 {
 	constexpr float buttonWidth = 45.f;
+
+	inline bool ResetAndReturnPressState(bool& pressState)
+	{
+		bool currentPressState = pressState;
+		pressState = false;
+		return currentPressState;
+	}
 }
 
 UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiArea(name, position, size)
 {
 	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+}
+
+bool UiTitleBar::WasClosePressed()
+{
+	return ResetAndReturnPressState(m_closePressed);
+}
+
+bool UiTitleBar::WasMaximizeRestorePressed()
+{
+	return ResetAndReturnPressState(m_maximizeRestorPressed);
+}
+
+bool UiTitleBar::WasMinimizePressed()
+{
+	return ResetAndReturnPressState(m_minimizePressed);
 }
 
 void UiTitleBar::CreateResources()
@@ -31,6 +53,14 @@ void UiTitleBar::HandleEvent(Event* event)
 	{
 		if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
 			m_areaUpdated = true;
+	}
+	if (event->GetType() == EventType::MouseDown)
+	{
+		m_areaUpdated = true;
+	}
+	if (event->GetType() == EventType::MouseUp)
+	{
+		m_areaUpdated = true;
 	}
 }
 
@@ -101,11 +131,15 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 
 	ImGui::SameLine(nextPos);
-	ImGui::Button("_", ImVec2(buttonWidth, buttonHeight));
+	if (ImGui::Button("_", ImVec2(buttonWidth, buttonHeight)))
+		m_minimizePressed = true;
+
 	nextPos += buttonWidth;
 
 	ImGui::SameLine(nextPos);
-	ImGui::Button("O", ImVec2(buttonWidth, buttonHeight));
+	if (ImGui::Button("O", ImVec2(buttonWidth, buttonHeight)))
+		m_maximizeRestorPressed = true;
+
 	nextPos += buttonWidth;
 
 	ImGui::PopStyleColor();
@@ -114,7 +148,12 @@ void UiTitleBar::RenderUI()
 	ImGui::SameLine(nextPos);
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
-	ImGui::Button("X", ImVec2(buttonWidth, buttonHeight));
+	
+	if (ImGui::Button("X", ImVec2(buttonWidth, buttonHeight)))
+	{
+		ULOGD("X");
+		m_closePressed = true;
+	}
 
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();

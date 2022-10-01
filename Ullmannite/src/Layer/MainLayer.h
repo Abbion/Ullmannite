@@ -10,6 +10,8 @@ namespace Ull
     public:
         MainLayer(glm::uvec2 size);
 
+        void SetWindow(std::shared_ptr<UllWindow> window) { m_window = window; }
+
         void Update();
         void Render();
 
@@ -21,7 +23,10 @@ namespace Ull
         void CreateLayout();
         void Resize(const glm::uvec2& size);
 
+        bool m_checkClickInteractions{ false };
+
         glm::mat4 m_viewMatrix;
+        std::shared_ptr<UllWindow> m_window;
     };
     
 }

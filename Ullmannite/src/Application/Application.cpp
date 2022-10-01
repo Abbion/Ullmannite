@@ -50,16 +50,20 @@ void Application::Run()
     {
         m_window->CheckCursorInteractions();
         
-        HandleEvents();
-
         if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window->Close();
         }
+
+        HandleEvents();
+        m_layerManager->GetTopLayer()->Update();
         
-        m_layerManager->GetTopLayer()->Render();
-        
-        m_window->SwapBuffers();
+        if (!m_window->IsMinimized())
+        {
+            m_layerManager->GetTopLayer()->Render();
+            
+            m_window->SwapBuffers();
+        }
     }
 
     if(m_eventPullThread.joinable())
@@ -92,7 +96,7 @@ void Application::InitApplciation()
     ImGui::StyleColorsDark();
 
     const char* glsl_version = "#version 140";
-    ImGui_ImplGlfw_InitForOpenGL(m_window->GetRenderContext(), false);
+    ImGui_ImplGlfw_InitForOpenGL(m_window->GetRenderContext(), true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     //Load Shaders
@@ -101,7 +105,9 @@ void Application::InitApplciation()
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
-    m_layerManager->PushLayer(std::make_shared<MainLayer>(m_window->GetSize()));
+    auto mainLayer = std::make_shared<MainLayer>(m_window->GetSize());
+    mainLayer->SetWindow(m_window);
+    m_layerManager->PushLayer(mainLayer);
 }
 
 void Application::InitWindow()
@@ -167,7 +173,10 @@ void Application::HandleEvents()
             break;
 
         case EventType::WindowResize:
-            WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
+            if (m_window->IsMinimized())
+                currentEvent->MarkHandeled(true);
+            else
+                WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::KeyDown:
@@ -178,23 +187,16 @@ void Application::HandleEvents()
             updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
             break;
 
-        case EventType::MouseDown: {
+        case EventType::MouseDown:
             updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
-            break; }
+            break;
 
         case EventType::MouseUp:
             updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
             break;
 
         case EventType::MouseMove:
-        {
             Mouse::GetInstance().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
-            
-            auto mousePos = Mouse::GetInstance().GetMousePosition();
-
-            ImGuiIO& io = ImGui::GetIO();
-            io.AddMousePosEvent((float)mousePos.x, (float)mousePos.y);
-        }
             break;
 
         case EventType::MouseScroll:

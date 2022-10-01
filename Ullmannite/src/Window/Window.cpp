@@ -133,22 +133,29 @@ void UllWindow::Close()
 
     glfwSetWindowShouldClose(m_renderWindow, GLFW_TRUE);
     glfwSetWindowShouldClose(m_eventContext, GLFW_TRUE);
+    
     glfwPostEmptyEvent();
 }
 
 void UllWindow::Maximize()
 {
     glfwMaximizeWindow(m_renderWindow);
+    m_isMaximized = true;
+    m_isMinimized = false;
 }
 
 void UllWindow::Minimize()
 {
     glfwIconifyWindow(m_renderWindow);
+    m_isMaximized = false;
+    m_isMinimized = true;
 }
 
 void UllWindow::Restore()
 {
     glfwRestoreWindow(m_renderWindow);
+    m_isMaximized = false;
+    m_isMinimized = false;
 }
 
 void UllWindow::CheckCursorInteractions()
@@ -164,6 +171,7 @@ void UllWindow::SwapBuffers()
     {
         Renderer::GetInstance().FlushContext();
         glfwSwapInterval(2);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(m_renderWindow);
         m_intervalRestored = false;
 
@@ -192,6 +200,7 @@ void UllWindow::SwapBuffers()
 void UllWindow::PullEvents()
 {
     glfwWaitEvents();
+    //glfwWaitEventsTimeout(0.);
 }
 
 void UllWindow::CheckResizeBorder()

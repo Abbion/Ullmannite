@@ -10,6 +10,10 @@ namespace Ull
 		UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size);
 		~UiTitleBar() {}
 
+		bool WasClosePressed();
+		bool WasMinimizePressed();
+		bool WasMaximizeRestorePressed();
+
 		void CreateResources() override;
 
 		void HandleEvent(Event* event) override;
@@ -20,5 +24,8 @@ namespace Ull
 		void RenderUI();
 	private:
 
+		bool m_closePressed{ false };
+		bool m_minimizePressed{ false };
+		bool m_maximizeRestorPressed{ false };
 	};
 }

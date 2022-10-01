@@ -41,6 +41,9 @@ namespace Ull
         GLFWwindow* GetEventContext() const { return m_eventContext; }
 
         bool IsOpen() const { return m_isOpen; }
+        bool IsMinimized() const { return m_isMinimized; }
+        bool IsMaximized() const { return m_isMaximized; }
+
         void Close();
         void Maximize();
         void Minimize();
@@ -54,6 +57,8 @@ namespace Ull
     private:
         std::string m_title;
         bool m_isOpen{ true };
+        bool m_isMinimized{ false };
+        bool m_isMaximized{ false };
 
         GLFWwindow* m_renderWindow{ nullptr };
         GLFWwindow* m_eventContext{ nullptr };
