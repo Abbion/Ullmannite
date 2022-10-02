@@ -134,7 +134,11 @@ void UllWindow::Close()
     glfwSetWindowShouldClose(m_renderWindow, GLFW_TRUE);
     glfwSetWindowShouldClose(m_eventContext, GLFW_TRUE);
     
-    glfwPostEmptyEvent();
+
+    //glfwPostEmptyEvent() Works only if the event polling is run on the main thread.
+    //glfwPostEmptyEvent();
+    //For now just move the window 1 pixel to the right to get the window moved event
+    SetPosition(GetPosition() + glm::ivec2(1, 0));
 }
 
 void UllWindow::Maximize()
@@ -270,7 +274,7 @@ void UllWindow::CheckResizeBorder()
 
 void UllWindow::ResizeByCursor()
 {
-    if(m_isDragged)
+    if(m_isDragged || m_isMaximized)
         return;
 
     if (m_resizeBorder != ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
@@ -402,6 +406,17 @@ void UllWindow::MovedByCursor()
             glm::dvec2 startGrapPosGetter;
             glfwGetCursorPos(m_renderWindow, &startGrapPosGetter.x, &startGrapPosGetter.y);
             m_startGrabPosition = glm::ivec2(startGrapPosGetter);
+
+            if (m_isMaximized)
+            {
+                //Reposition the window after it was Restored to be grabbet at the same poit as it was when it was maximized
+                auto originalSize = GetSize();
+                Restore();
+                auto afterRestoreSize = GetSize();
+                auto sizeScale = (float)afterRestoreSize.x / (float)originalSize.x;
+                m_startGrabPosition.x *= sizeScale;
+            }
+
             m_isDragged = true;
         }
 

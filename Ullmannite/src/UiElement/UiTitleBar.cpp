@@ -3,6 +3,8 @@
 #include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
 
+#include "Rendering/IconsCode/IconCodes.h"
+
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
@@ -136,13 +138,13 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 
 	ImGui::SameLine(nextPos);
-	if (ImGui::Button("_", ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(ICON_FA_WINDOW_MINIMIZE, ImVec2(buttonWidth, buttonHeight)))
 		m_minimizePressed = true;
 
 	nextPos += buttonWidth;
 
 	ImGui::SameLine(nextPos);
-	if (ImGui::Button("O", ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(ICON_FA_WINDOW_MAXIMIZE, ImVec2(buttonWidth, buttonHeight)))
 		m_maximizeRestorPressed = true;
 
 	nextPos += buttonWidth;
@@ -154,7 +156,7 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	
-	if (ImGui::Button("X", ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(ICON_FA_WINDOW_CLOSE, ImVec2(buttonWidth, buttonHeight)))
 		m_closePressed = true;
 
 	ImGui::PopStyleColor();
