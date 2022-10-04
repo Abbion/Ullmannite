@@ -14,37 +14,21 @@ MainLayer::MainLayer(glm::uvec2 size) : Layer("main", size)
     Init();
 }
 
+void MainLayer::SetWindow(const std::shared_ptr<UllWindow>& window)
+{
+    auto titleElement = std::find_if(m_layout->GetChildren().begin(), m_layout->GetChildren().end(), [](const auto& element) { return element->GetName() == "titleBarElement"; });
+    if (m_layout->GetChildren().end() != titleElement)
+    {
+        auto titleBar = static_cast<UiTitleBar*>(*titleElement);
+        titleBar->SetWindow(window);
+    }
+}
+
 void MainLayer::Update()
 {
-    //if(m_checkClickInteractions)
+    for (auto& element : m_layout->GetChildren())
     {
-        auto titleBarElement = std::find_if(m_layout->GetChildren().begin(), m_layout->GetChildren().end(), [](const auto& element) { return element->GetName() == "titleBarElement"; });
-
-        if (m_layout->GetChildren().end() != titleBarElement)
-        {
-            auto titleBar = static_cast<UiTitleBar*>(*titleBarElement);
-            
-            if (titleBar->WasClosePressed())
-                m_window->Close();
-            
-            else if (titleBar->WasMinimizePressed())
-                m_window->Minimize();
-
-            else if (titleBar->WasMaximizeRestorePressed())
-            {
-                if (m_window->IsMaximized())
-                    m_window->Restore();
-                else
-                    m_window->Maximize();
-            }
-
-            if (titleBar->IsOnDragArea())
-                m_window->EnableDrag(true);
-            else
-                m_window->EnableDrag(false);
-        }
-
-        m_checkClickInteractions = false;
+        element->Update();
     }
 }
 
@@ -64,14 +48,6 @@ void MainLayer::HandleEvent(Event* event)
     {
     case EventType::WindowResize:
         Resize(static_cast<WindowResizeEvent*>(event)->GetVal());
-    break;
-
-    case EventType::MouseDown:
-        m_checkClickInteractions = true;
-    break;
-
-    case EventType::MouseUp:
-        m_checkClickInteractions = true;
     break;
     }
 
@@ -95,12 +71,12 @@ void MainLayer::CreateLayout()
     UiTitleBar* titleBarView = new UiTitleBar("titleBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
     m_layout->AddUiElement(titleBarView);
 
-    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 30), glm::vec2(260, initSize.y - 30));
-    menuView->SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.15f, 1.0f));
+    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31));
+    menuView->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     m_layout->AddUiElement(menuView);
 
-    UiArea* renderView = new UiArea("renderElement", glm::vec2(260, 30), glm::vec2(initSize.x - 260, initSize.y - 30));
-    renderView->SetBackgroundColor(glm::vec4(0.35f, 0.22f, 0.31f, 1.0f));
+    UiArea* renderView = new UiArea("renderElement", glm::vec2(261, 30), glm::vec2(initSize.x - 261, initSize.y - 30));
+    renderView->SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
     m_layout->AddUiElement(renderView);
 
     m_layout->CreateResources();
@@ -124,13 +100,13 @@ void MainLayer::Resize(const glm::uvec2& size)
 
         else if(currentElementName == "menuElement")
         {
-            element->SetSize(glm::vec2(260, size.y - 30));
+            element->SetSize(glm::vec2(260, size.y - 31));
         }
 
         else if(currentElementName == "renderElement")
         {
-            element->SetPositiion(glm::vec2(260, 30));
-            element->SetSize(glm::vec2(size.x - 260, size.y - 30));
+            element->SetPositiion(glm::vec2(261, 30));
+            element->SetSize(glm::vec2(size.x - 261, size.y - 30));
         }
 
         element->CreateResources();

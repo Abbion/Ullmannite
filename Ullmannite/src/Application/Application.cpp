@@ -64,16 +64,6 @@ void Application::Run()
         {
             m_layerManager->GetTopLayer()->Render();
             
-            
-            //ImGui_ImplOpenGL3_NewFrame();
-            //ImGui_ImplGlfw_NewFrame();
-            //ImGui::NewFrame();
-            //
-            //bool a = true;
-            //ImGui::ShowDemoWindow(&a);
-            //
-            //ImGui::Render();
-            
             m_window->SwapBuffers();
         }
     }
@@ -116,9 +106,9 @@ void Application::InitApplciation()
     io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans-Regular-Short.ttf", 13.0f);
     ImFontConfig config;
     config.MergeMode = true;
-    config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    io.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+    config.GlyphMinAdvanceX = 14.0f; // Use if you want to make the icon monospaced
+    static const ImWchar icon_ranges[] = { ICON_START, ICON_END, 0 };
+    io.Fonts->AddFontFromFileTTF("Assets/Fonts/UllIcon.ttf", 14.0f, &config, icon_ranges);
 
     //Load Shaders
     ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");

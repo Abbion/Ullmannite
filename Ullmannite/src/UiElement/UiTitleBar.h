@@ -1,6 +1,7 @@
 #pragma once
 #include "UiArea.h"
 #include "Window/Window.h"
+#include <memory>
 
 namespace Ull
 {
@@ -10,9 +11,8 @@ namespace Ull
 		UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size);
 		~UiTitleBar() {}
 
-		bool WasClosePressed();
-		bool WasMinimizePressed();
-		bool WasMaximizeRestorePressed();
+		void SetWindow(const std::shared_ptr<UllWindow>& window) { m_window = window; }
+
 		bool IsOnDragArea() { return m_onDragArea; }
 
 		void CreateResources() override;
@@ -24,6 +24,7 @@ namespace Ull
 
 		void RenderUI();
 	private:
+		std::shared_ptr<UllWindow> m_window;
 
 		bool m_onDragArea{ false };
 		bool m_closePressed{ false };

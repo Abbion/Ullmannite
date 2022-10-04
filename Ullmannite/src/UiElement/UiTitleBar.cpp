@@ -14,34 +14,12 @@ using namespace Ull;
 namespace
 {
 	constexpr float buttonWidth = 45.f;
-
-	inline bool ResetAndReturnPressState(bool& pressState)
-	{
-		bool currentPressState = pressState;
-		pressState = false;
-		return currentPressState;
-	}
 }
 
 UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiArea(name, position, size)
 {
 	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
-}
-
-bool UiTitleBar::WasClosePressed()
-{
-	return ResetAndReturnPressState(m_closePressed);
-}
-
-bool UiTitleBar::WasMaximizeRestorePressed()
-{
-	return ResetAndReturnPressState(m_maximizeRestorPressed);
-}
-
-bool UiTitleBar::WasMinimizePressed()
-{
-	return ResetAndReturnPressState(m_minimizePressed);
 }
 
 void UiTitleBar::CreateResources()
@@ -51,29 +29,54 @@ void UiTitleBar::CreateResources()
 
 void UiTitleBar::HandleEvent(Event* event)
 {
-	if (event->GetType() == EventType::MouseMove)
+	switch (event->GetType())
 	{
+	case EventType::MouseMove:
 		if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
 			m_areaUpdated = true;
-	}
-	if (event->GetType() == EventType::MouseDown)
-	{
+		break;
+	
+	case EventType::MouseDown:
 		if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize() - glm::uvec2(3 * buttonWidth, 0)))
-			m_onDragArea = true;
+			m_window->EnableDrag(true);
 		else
-			m_onDragArea = false;
+			m_window->EnableDrag(false);
 
 		m_areaUpdated = true;
-	}
-	if (event->GetType() == EventType::MouseUp)
-	{
+		break;
+
+	case EventType::MouseUp:
+		m_window->EnableDrag(false);
 		m_areaUpdated = true;
+		break;
+
+	case EventType::WindowRestored:
+		m_areaUpdated = true;
+		break;
 	}
 }
 
 void UiTitleBar::Update()
 {
-	
+	if (m_minimizePressed)
+	{
+		m_window->Minimize();
+		m_minimizePressed = false;
+	}
+	else if (m_maximizeRestorPressed)
+	{
+		if (m_window->IsMaximized())
+			m_window->Restore();
+		else
+			m_window->Maximize();
+		
+		m_maximizeRestorPressed = false;
+	}
+	else if (m_closePressed)
+	{
+		m_window->Close();
+		m_closePressed = false;
+	}
 }
 
 void UiTitleBar::Render()
@@ -138,13 +141,15 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 
 	ImGui::SameLine(nextPos);
-	if (ImGui::Button(ICON_FA_WINDOW_MINIMIZE, ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(ICON_MINIMIZE, ImVec2(buttonWidth, buttonHeight)))
 		m_minimizePressed = true;
 
 	nextPos += buttonWidth;
 
 	ImGui::SameLine(nextPos);
-	if (ImGui::Button(ICON_FA_WINDOW_MAXIMIZE, ImVec2(buttonWidth, buttonHeight)))
+	auto maximizeRestoreIcon = m_window->IsMaximized() ? ICON_RESTORE : ICON_MAXIMIZE;
+
+	if (ImGui::Button(maximizeRestoreIcon, ImVec2(buttonWidth, buttonHeight)))
 		m_maximizeRestorPressed = true;
 
 	nextPos += buttonWidth;
@@ -156,7 +161,7 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	
-	if (ImGui::Button(ICON_FA_WINDOW_CLOSE, ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(ICON_CLOSE, ImVec2(buttonWidth, buttonHeight)))
 		m_closePressed = true;
 
 	ImGui::PopStyleColor();
