@@ -1,10 +1,13 @@
 #include "Ullpch.h"
-#include "Window.h"
+#include "UllWindow.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Event/Event.h"
 #include "Rendering/Api/Renderer.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <thread>
 
 #define MIN_WINDOW_WIDTH 1024
@@ -130,22 +133,33 @@ void UllWindow::Close()
 
     glfwSetWindowShouldClose(m_renderWindow, GLFW_TRUE);
     glfwSetWindowShouldClose(m_eventContext, GLFW_TRUE);
-    glfwPostEmptyEvent();
+    
+
+    //glfwPostEmptyEvent() Works only if the event polling is run on the main thread.
+    //glfwPostEmptyEvent();
+    //For now just move the window 1 pixel to the right to get the window moved event
+    SetPosition(GetPosition() + glm::ivec2(1, 0));
 }
 
 void UllWindow::Maximize()
 {
     glfwMaximizeWindow(m_renderWindow);
+    m_isMaximized = true;
+    m_isMinimized = false;
 }
 
 void UllWindow::Minimize()
 {
     glfwIconifyWindow(m_renderWindow);
+    m_isMaximized = false;
+    m_isMinimized = true;
 }
 
 void UllWindow::Restore()
 {
     glfwRestoreWindow(m_renderWindow);
+    m_isMaximized = false;
+    m_isMinimized = false;
 }
 
 void UllWindow::CheckCursorInteractions()
@@ -161,6 +175,7 @@ void UllWindow::SwapBuffers()
     {
         Renderer::GetInstance().FlushContext();
         glfwSwapInterval(2);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(m_renderWindow);
         m_intervalRestored = false;
 
@@ -175,6 +190,7 @@ void UllWindow::SwapBuffers()
     }
     else
     {
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(m_renderWindow);
 
         if (m_intervalRestored)
@@ -188,6 +204,7 @@ void UllWindow::SwapBuffers()
 void UllWindow::PullEvents()
 {
     glfwWaitEvents();
+    //glfwWaitEventsTimeout(0.);
 }
 
 void UllWindow::CheckResizeBorder()
@@ -257,7 +274,7 @@ void UllWindow::CheckResizeBorder()
 
 void UllWindow::ResizeByCursor()
 {
-    if(m_isDragged)
+    if(m_isDragged || m_isMaximized)
         return;
 
     if (m_resizeBorder != ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
@@ -382,13 +399,24 @@ void UllWindow::MovedByCursor()
     if(m_isResized)
         return;
 
-    if (m_resizeBorder == ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
+    if ((m_dragEnabled || m_isDragged) && m_resizeBorder == ResizeFrame::NONE && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
     {
         if (!m_isDragged)   //Started draggins
         {
             glm::dvec2 startGrapPosGetter;
             glfwGetCursorPos(m_renderWindow, &startGrapPosGetter.x, &startGrapPosGetter.y);
             m_startGrabPosition = glm::ivec2(startGrapPosGetter);
+
+            if (m_isMaximized)
+            {
+                //Reposition the window after it was Restored to be grabbet at the same poit as it was when it was maximized
+                auto originalSize = GetSize();
+                Restore();
+                auto afterRestoreSize = GetSize();
+                auto sizeScale = (float)afterRestoreSize.x / (float)originalSize.x;
+                m_startGrabPosition.x *= sizeScale;
+            }
+
             m_isDragged = true;
         }
 

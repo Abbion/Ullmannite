@@ -1,5 +1,6 @@
 #pragma once
 #include "Layer.h"
+#include "Window/UllWindow.h"
 #include <glm/glm.hpp>
 
 namespace Ull
@@ -8,6 +9,8 @@ namespace Ull
     {
     public:
         MainLayer(glm::uvec2 size);
+
+        void SetWindow(const std::shared_ptr<UllWindow>& window);
 
         void Update();
         void Render();

@@ -5,6 +5,7 @@
 #include "Rendering/Api/ShaderManager.h"
 #include "Rendering/Api/Renderer.h"
 #include "UiElement/UiArea.h"
+#include "UiElement/UiTitleBar.h"
 
 using namespace Ull;
 
@@ -13,8 +14,22 @@ MainLayer::MainLayer(glm::uvec2 size) : Layer("main", size)
     Init();
 }
 
+void MainLayer::SetWindow(const std::shared_ptr<UllWindow>& window)
+{
+    auto titleElement = std::find_if(m_layout->GetChildren().begin(), m_layout->GetChildren().end(), [](const auto& element) { return element->GetName() == "titleBarElement"; });
+    if (m_layout->GetChildren().end() != titleElement)
+    {
+        auto titleBar = static_cast<UiTitleBar*>(*titleElement);
+        titleBar->SetWindow(window);
+    }
+}
+
 void MainLayer::Update()
 {
+    for (auto& element : m_layout->GetChildren())
+    {
+        element->Update();
+    }
 }
 
 void MainLayer::Render()
@@ -35,6 +50,8 @@ void MainLayer::HandleEvent(Event* event)
         Resize(static_cast<WindowResizeEvent*>(event)->GetVal());
     break;
     }
+
+    m_layout->HandleEvent(event);
 }
 
 void MainLayer::Init()
@@ -51,16 +68,15 @@ void MainLayer::CreateLayout()
 
     m_viewMatrix = glm::ortho(0.0f, (float)initSize.x, (float)initSize.y, 0.0f, -1.0f, 1.0f);
 
-    UiArea* topBarView = new UiArea("topBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
-    topBarView->SetColor(glm::vec4(0.4f, 0.42f, 0.55f, 1.0f));
-    m_layout->AddUiElement(topBarView);
+    UiTitleBar* titleBarView = new UiTitleBar("titleBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
+    m_layout->AddUiElement(titleBarView);
 
-    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 30), glm::vec2(260, initSize.y - 30));
-    menuView->SetColor(glm::vec4(0.05f, 0.05f, 0.15f, 1.0f));
+    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31));
+    menuView->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     m_layout->AddUiElement(menuView);
 
-    UiArea* renderView = new UiArea("renderElement", glm::vec2(260, 30), glm::vec2(initSize.x - 260, initSize.y - 30));
-    renderView->SetColor(glm::vec4(0.35f, 0.22f, 0.31f, 1.0f));
+    UiArea* renderView = new UiArea("renderElement", glm::vec2(261, 30), glm::vec2(initSize.x - 261, initSize.y - 30));
+    renderView->SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
     m_layout->AddUiElement(renderView);
 
     m_layout->CreateResources();
@@ -77,20 +93,20 @@ void MainLayer::Resize(const glm::uvec2& size)
     {
         auto currentElementName = element->GetName(); 
 
-        if(currentElementName == "topBarElement")
+        if(currentElementName == "titleBarElement")
         {
             element->SetSize(glm::vec2(size.x, 30));
         }
 
         else if(currentElementName == "menuElement")
         {
-            element->SetSize(glm::vec2(260, size.y - 30));
+            element->SetSize(glm::vec2(260, size.y - 31));
         }
 
         else if(currentElementName == "renderElement")
         {
-            element->SetPositiion(glm::vec2(260, 30));
-            element->SetSize(glm::vec2(size.x - 260, size.y - 30));
+            element->SetPositiion(glm::vec2(261, 30));
+            element->SetSize(glm::vec2(size.x - 261, size.y - 30));
         }
 
         element->CreateResources();

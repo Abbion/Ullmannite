@@ -26,7 +26,10 @@ void UiLayout::CreateResources()
 
 void UiLayout::HandleEvent(Event* event)
 {
-
+    for (const auto& uiElement : m_children)
+    {
+        uiElement->HandleEvent(event);
+    }
 }
 
 void UiLayout::Update()
@@ -36,12 +39,12 @@ void UiLayout::Update()
 
 void UiLayout::Render()
 {
-    Renderer::GetInstance().SetClearColor(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f)); //TODO: add as debug
+    Renderer::GetInstance().SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
     Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
     Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), m_size);
 
-    Renderer::GetInstance().SetClearColor(glm::vec4(0.5f, 0.0f, 0.5f, 1.0f)); //TODO: add as debug
+    Renderer::GetInstance().SetClearColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
 
     m_shader->Bind();
     m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);

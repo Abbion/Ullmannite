@@ -1,6 +1,10 @@
 #include "Ullpch.h"
 #include "Application.h"
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 #include "Logger/Logger.h"
 #include "Event/Event.h"
 #include "Input/Keyboard.h"
@@ -11,6 +15,8 @@
 
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
+
+#include "Rendering/IconsCode/IconCodes.h"
 
 #include <thread>
 #include <chrono>
@@ -33,6 +39,10 @@ Application::Application()
 
 Application::~Application()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     ULOGD("Application terminated");
 }
 
@@ -42,16 +52,20 @@ void Application::Run()
     {
         m_window->CheckCursorInteractions();
         
-        HandleEvents();
-
         if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window->Close();
         }
+
+        HandleEvents();
+        m_layerManager->GetTopLayer()->Update();
         
-        m_layerManager->GetTopLayer()->Render();
-        
-        m_window->SwapBuffers();
+        if (!m_window->IsMinimized())
+        {
+            m_layerManager->GetTopLayer()->Render();
+            
+            m_window->SwapBuffers();
+        }
     }
 
     if(m_eventPullThread.joinable())
@@ -79,13 +93,31 @@ void Application::InitApplciation()
     Renderer::GetInstance().Init();
     Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window->GetSize());
 
+    //ImGui
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    const char* glsl_version = "#version 140";
+    ImGui_ImplGlfw_InitForOpenGL(m_window->GetRenderContext(), true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans-Regular-Short.ttf", 13.0f);
+    ImFontConfig config;
+    config.MergeMode = true;
+    config.GlyphMinAdvanceX = 14.0f;
+    static const ImWchar icon_ranges[] = { ICON_START, ICON_END, 0 };
+    io.Fonts->AddFontFromFileTTF("Assets/Fonts/UllIcon.ttf", 14.0f, &config, icon_ranges);
+
     //Load Shaders
     ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
     ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();
-    m_layerManager->PushLayer(std::make_shared<MainLayer>(m_window->GetSize()));
+    auto mainLayer = std::make_shared<MainLayer>(m_window->GetSize());
+    mainLayer->SetWindow(m_window);
+    m_layerManager->PushLayer(mainLayer);
 }
 
 void Application::InitWindow()
@@ -94,7 +126,7 @@ void Application::InitWindow()
 
     try
     {
-        m_window = std::make_unique<UllWindow>("Ullmanite 0.02", glm::ivec2(1280, 720));
+        m_window = std::make_shared<UllWindow>("Ullmanite 0.02", glm::ivec2(1280, 720));
 
         m_eventQueue = std::make_unique<EventQueue>();
         m_window->SetEventQueueDataPointer(m_eventQueue.get());
@@ -151,7 +183,10 @@ void Application::HandleEvents()
             break;
 
         case EventType::WindowResize:
-            WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
+            if (m_window->IsMinimized())
+                currentEvent->MarkHandeled(true);
+            else
+                WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::KeyDown:
@@ -162,9 +197,9 @@ void Application::HandleEvents()
             updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
             break;
 
-        case EventType::MouseDown: {
+        case EventType::MouseDown:
             updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
-            break; }
+            break;
 
         case EventType::MouseUp:
             updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;

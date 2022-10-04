@@ -32,15 +32,19 @@ namespace Ull
         void SetSize(glm::ivec2 size);
         void SetPosition(glm::ivec2 position);
         void SetEventQueueDataPointer(EventQueue* eventQueue);
+        void EnableDrag(bool enable) { m_dragEnabled = enable; }
 
         glm::ivec2 GetPosition() const;
         glm::ivec2 GetSize() const;
         std::string GetTitle() const { return m_title; }
 
-        GLFWwindow* GetRenderContext() { return m_renderWindow; }
-        GLFWwindow* GetEventContext()  { return m_eventContext; }
+        GLFWwindow* GetRenderContext() const { return m_renderWindow; }
+        GLFWwindow* GetEventContext() const { return m_eventContext; }
 
         bool IsOpen() const { return m_isOpen; }
+        bool IsMinimized() const { return m_isMinimized; }
+        bool IsMaximized() const { return m_isMaximized; }
+
         void Close();
         void Maximize();
         void Minimize();
@@ -54,6 +58,8 @@ namespace Ull
     private:
         std::string m_title;
         bool m_isOpen{ true };
+        bool m_isMinimized{ false };
+        bool m_isMaximized{ false };
 
         GLFWwindow* m_renderWindow{ nullptr };
         GLFWwindow* m_eventContext{ nullptr };
@@ -64,6 +70,7 @@ namespace Ull
         uint8_t m_resizeBorderSize{ 6 };
         glm::ivec2 m_startGrabPosition;
 
+        bool m_dragEnabled{ false };
         bool m_isDragged{ false };
         bool m_isResized{ false };
         glm::ivec2 m_windowPositionWithMinSize;
