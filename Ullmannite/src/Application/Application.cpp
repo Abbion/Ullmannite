@@ -102,11 +102,10 @@ void Application::InitApplciation()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     ImGuiIO& io = ImGui::GetIO();
-    //io.Fonts->AddFontDefault();
     io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans-Regular-Short.ttf", 13.0f);
     ImFontConfig config;
     config.MergeMode = true;
-    config.GlyphMinAdvanceX = 14.0f; // Use if you want to make the icon monospaced
+    config.GlyphMinAdvanceX = 14.0f;
     static const ImWchar icon_ranges[] = { ICON_START, ICON_END, 0 };
     io.Fonts->AddFontFromFileTTF("Assets/Fonts/UllIcon.ttf", 14.0f, &config, icon_ranges);
 

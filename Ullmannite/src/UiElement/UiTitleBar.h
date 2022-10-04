@@ -1,6 +1,6 @@
 #pragma once
 #include "UiArea.h"
-#include "Window/Window.h"
+#include "Window/UllWindow.h"
 #include <memory>
 
 namespace Ull
