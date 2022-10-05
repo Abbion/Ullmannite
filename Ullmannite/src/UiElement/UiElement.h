@@ -1,10 +1,11 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "Event/EventHandler.h"
+#include "Rendering/Drawable/Drawable.h"
 
 namespace Ull
 {
-    class UiElement : public EventHandler
+    class UiElement : public EventHandler, public DrawableInterface
     {
     public:
         UiElement(std::string name, glm::uvec2 position, glm::uvec2 size) :
@@ -14,6 +15,7 @@ namespace Ull
         virtual void CreateResources() = 0;
 
         virtual void Update() = 0;
+        void Render() override {}
 
         void HandleEvent(Event* event) override;
 
@@ -40,5 +42,7 @@ namespace Ull
 
         UiElement* m_parent{ nullptr };
         std::vector<UiElement*> m_children;
+
+        using DrawableInterface::DrawableInterface;
     };
 }

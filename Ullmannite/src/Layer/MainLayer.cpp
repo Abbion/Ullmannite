@@ -37,7 +37,7 @@ void MainLayer::Render()
 {
     for (auto& element : m_layout->GetChildren())
     {
-        ((DrawableInterface*)element)->Render();
+        element->Render();
     }
 
     m_layout->Render();

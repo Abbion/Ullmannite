@@ -4,7 +4,7 @@
 
 namespace Ull
 {
-	class UiLayout : public UiElement, DrawableInterface
+	class UiLayout : public UiElement
 	{
 	public:
 		UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size);
