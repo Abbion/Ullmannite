@@ -6,6 +6,7 @@
 #include "Rendering/Api/Renderer.h"
 #include "UiElement/UiArea.h"
 #include "UiElement/UiTitleBar.h"
+#include "UiView/UiView3D.h"
 
 using namespace Ull;
 
@@ -36,7 +37,7 @@ void MainLayer::Render()
 {
     for (auto& element : m_layout->GetChildren())
     {
-        element->Render();
+        ((DrawableInterface*)element)->Render();
     }
 
     m_layout->Render();
@@ -75,8 +76,7 @@ void MainLayer::CreateLayout()
     menuView->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     m_layout->AddUiElement(menuView);
 
-    UiArea* renderView = new UiArea("renderElement", glm::vec2(261, 30), glm::vec2(initSize.x - 261, initSize.y - 30));
-    renderView->SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
+    UiView3D* renderView = new UiView3D("renderElement", glm::vec2(261, 30), glm::vec2(initSize.x - 261, initSize.y - 30));
     m_layout->AddUiElement(renderView);
 
     m_layout->CreateResources();

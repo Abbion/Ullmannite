@@ -14,7 +14,6 @@ namespace Ull
         virtual void CreateResources() = 0;
 
         virtual void Update() = 0;
-        virtual void Render() = 0;
 
         void HandleEvent(Event* event) override;
 
@@ -22,11 +21,12 @@ namespace Ull
         const UiElement* GetParent() const { return m_parent; }
         const std::vector<UiElement*>& GetChildren() const { return m_children; }
 
-        glm::uvec2 GetPosition() const      { return m_position; }
-        glm::uvec2 GetSize() const          { return m_size; }
-        float GetScale() const              { return m_scale; }
-        inline std::string GetName() const  { return m_name; }
+        glm::uvec2 GetPosition() const              { return m_position; }
+        glm::uvec2 GetSize() const                  { return m_size; }
+        float GetScale() const                      { return m_scale; }
+        inline const std::string GetName() const    { return m_name; }
 
+        //TODO Put this to node 2D
         void SetPositiion(const glm::uvec2& position)   { m_position = position; }
         void SetSize(const glm::uvec2& size)            { m_size = size; }
         void SetScale(const float& scale)               { m_scale = scale; }

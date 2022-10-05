@@ -8,15 +8,20 @@ namespace Ull
     class DrawableInterface
     {
     public:
-        //TODO: NON COPYABLE???
+        DrawableInterface() {};
         virtual ~DrawableInterface();
+
+        inline bool IsVisible() { return m_visible; }
+        void SetVisible(bool visible) { m_visible = visible; }
+
+        virtual void Render() = 0;
         
     protected:
-        DrawableInterface() {};
-
         VertexBuffer* m_vertexBuffer{ nullptr };
         IndexBuffer* m_indexBuffer{ nullptr };
         VertexLayout* m_layout{ nullptr };
         Shader* m_shader{ nullptr };
+
+        bool m_visible{ true };
     };
 }
