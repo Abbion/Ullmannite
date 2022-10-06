@@ -2,16 +2,17 @@
 #include <memory>
 #include "glm/glm.hpp"
 #include "Node.h"
+#include "RenderableNode.h"
 
 namespace Ull
 {
     class Scene;
 
-    class Node3D : public Node
+    class Node3D : public RenderableNode
     {
     public:
-        Node3D(std::shared_ptr<Scene>);
-        ~Node3D();
+        Node3D();
+        virtual ~Node3D() {}
 
         glm::vec3 GetPosition() const               { return m_position; }
         glm::vec3 GetScale() const                  { return m_scale; }

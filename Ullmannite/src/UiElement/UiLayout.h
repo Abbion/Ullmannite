@@ -1,6 +1,5 @@
 #pragma once
 #include "UiElement/UiElement.h"
-#include "Rendering/Drawable/Drawable.h"
 
 namespace Ull
 {
@@ -20,5 +19,10 @@ namespace Ull
 		void CreateRenderAreaForUiElements(unsigned int elementID);
 
 		glm::mat4 m_viewMatrix;
+
+		VertexBuffer* m_vertexBuffer{ nullptr };
+		IndexBuffer* m_indexBuffer{ nullptr };
+		VertexLayout* m_layout{ nullptr };
+		Shader* m_shader{ nullptr };
 	};
 }

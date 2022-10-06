@@ -112,6 +112,7 @@ void Application::InitApplciation()
     //Load Shaders
     ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
     ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::MARKER, "MarkerVS", "MarkerPS");
 
     //Layers
     m_layerManager = std::make_unique<LayerManager>();

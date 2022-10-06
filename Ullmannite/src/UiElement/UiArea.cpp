@@ -32,7 +32,6 @@ void UiArea::CreateResources()
 
     m_frameBuffer = FrameBuffer::Create(m_size);
 
-    //Abstract this to a plane
     float vertices[] = { 
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,

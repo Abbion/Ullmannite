@@ -5,18 +5,20 @@
 
 using namespace Ull;
 
-Node::Node(const std::shared_ptr<Scene>& scene) :
-    m_scene(scene)
+Node::Node()
 {
     static unsigned long long newID = 0;
     m_id = newID++;
 
-    ULOGD("Creeated node with ID" << m_id);
+    ULOGD("Creeated node with ID " << m_id);
 }
 
 Node::~Node()
 {
-    ULOGD("Removed node with ID" << m_id);
+    for (auto node : m_children)
+        delete node;
+
+    ULOGD("Removed node with ID " << m_id);
 }
 
 void Node::SetParent(Node* node)

@@ -4,16 +4,14 @@
 
 namespace Ull
 {
-    class Scene;
-
     class Node
     {
     public:
-        Node(const std::shared_ptr<Scene>& scene);
-        ~Node();
+        Node();
+        virtual ~Node();
 
-        const Node* GetParent() const { return m_parent; }
-        const std::vector<Node*>& GetChildren() const { return m_children; }
+        Node* GetParent() const { return m_parent; }
+        std::vector<Node*> GetChildren() { return m_children; }
 
         void SetParent(Node* node);
         void AddNode(Node* node);
@@ -28,6 +26,6 @@ namespace Ull
         Node* m_parent;
         std::vector<Node*> m_children;
 
-        std::shared_ptr<Scene> m_scene;
+        Node* m_root;   //TODO init this
     };
 }

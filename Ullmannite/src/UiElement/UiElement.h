@@ -1,11 +1,11 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "Event/EventHandler.h"
-#include "Rendering/Drawable/Drawable.h"
+#include "Rendering/DrawInterfaces/Drawable.h"
 
 namespace Ull
 {
-    class UiElement : public EventHandler, public DrawableInterface
+    class UiElement : public EventHandler, public Drawable
     {
     public:
         UiElement(std::string name, glm::uvec2 position, glm::uvec2 size) :
@@ -43,6 +43,6 @@ namespace Ull
         UiElement* m_parent{ nullptr };
         std::vector<UiElement*> m_children;
 
-        using DrawableInterface::DrawableInterface;
+        using Drawable::Drawable;
     };
 }

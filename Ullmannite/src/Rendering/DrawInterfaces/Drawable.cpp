@@ -3,12 +3,12 @@
 
 using namespace Ull;
 
-DrawableInterface::~DrawableInterface()
+Drawable::~Drawable()
 {
-    if(m_vertexBuffer != nullptr)
+    if (m_vertexBuffer != nullptr)
         delete m_vertexBuffer;
-    
-    if(m_vertexBuffer != nullptr)
+
+    if (m_vertexBuffer != nullptr)
         delete m_indexBuffer;
 
     if (m_layout != nullptr)

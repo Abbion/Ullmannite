@@ -5,8 +5,7 @@
 
 using namespace Ull;
 
-Node3D::Node3D(std::shared_ptr<Scene> scene) :
-    Node(scene)
+Node3D::Node3D()
 {
     m_transformationMatrix = glm::mat4x4(1.0f);
 }

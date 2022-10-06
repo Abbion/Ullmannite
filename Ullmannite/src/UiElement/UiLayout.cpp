@@ -16,7 +16,7 @@ UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
 
 UiLayout::~UiLayout()
 {
-    
+
 }
 
 void UiLayout::CreateResources()
