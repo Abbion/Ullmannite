@@ -3,11 +3,6 @@
 
 using namespace Ull;
 
-RenderableNode::RenderableNode()
-{
-
-}
-
 void RenderableNode::Render()
 {
     for (auto node : GetChildren())

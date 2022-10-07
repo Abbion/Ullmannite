@@ -5,7 +5,8 @@
 
 using namespace Ull;
 
-Cube::Cube()
+Cube::Cube(const std::string& name, const Scene* scene) :
+	Node3D(name, scene)
 {
 	m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::MARKER);
 	CreateResources();
@@ -24,10 +25,10 @@ void Cube::CreateResources()
 
     float vertices[] = {
 		//Front
-		-0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		-0.5f, -0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f
+		-0.5f, 0.5f, -2.0f,
+		0.5f, 0.5f, -2.0f,
+		-0.5f, -0.5f, -2.0f,
+		0.5f, -0.5f, -2.0f
     };
 
 	unsigned int indices[] = {
@@ -52,7 +53,11 @@ void Cube::Render()
 
 	m_shader->Bind();
 
+	auto mainCamera = GetScene()->GetMainCamera();
+
 	m_shader->SetFloat4("shaderColor", m_color);
+	m_shader->SetFloat4x4("projectionMatrix", mainCamera->GetProjectionMatrix());
+	m_shader->SetFloat4x4("viewMatrix", mainCamera->GetViewMatrix());
 
 	m_layout->Bind();
 

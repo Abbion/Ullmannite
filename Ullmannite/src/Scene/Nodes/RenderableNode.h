@@ -7,7 +7,7 @@ namespace Ull
 	class RenderableNode : public Node, public Renderable
 	{
 	public:
-		RenderableNode();
+		RenderableNode(const std::string& name, const Scene* scene) : Node(name, scene) {}
 
 		void Render() override;
 	};

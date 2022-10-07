@@ -6,16 +6,42 @@
 
 using namespace Ull;
 
+namespace 
+{
+    Node* DeepSearch(const std::string& name, Node* startNode)
+    {
+        for (auto& child : startNode->GetChildren())
+        {
+            if(child->GetName() == name)
+                return child;
+
+            return DeepSearch(name, child);
+        }
+
+        return nullptr;
+    }
+}
+
 Scene::Scene(std::string name) :
     m_name(name)
 {
-    m_root = new Node();
+    m_root = new Node("3D scene", this);
     m_root->SetParent(nullptr);
 }
 
 Scene::~Scene()
 {
     delete m_root;
+}
+
+Node* Scene::GetNodeByName(const std::string& name)
+{
+    return DeepSearch(name, m_root);
+}
+
+void Scene::Update()
+{
+    m_mainCamera->Update();
 }
 
 void Scene::Render()

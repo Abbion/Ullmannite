@@ -5,7 +5,9 @@
 
 using namespace Ull;
 
-Node::Node()
+Node::Node(const std::string& name, const Scene* scene) :
+    m_scene(scene),
+    m_name(name)
 {
     static unsigned long long newID = 0;
     m_id = newID++;

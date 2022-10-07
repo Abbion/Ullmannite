@@ -5,7 +5,8 @@
 
 using namespace Ull;
 
-Node3D::Node3D()
+Node3D::Node3D(const std::string& name, const Scene* scene) : 
+    RenderableNode(name, scene)
 {
     m_transformationMatrix = glm::mat4x4(1.0f);
 }

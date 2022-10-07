@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene/Nodes/Node3D.h"
-#include "Scene/Nodes/RenderableNode.h"
 #include "Scene/Scene.h"
 #include "Rendering/DrawInterfaces/Drawable.h"
 #include <memory>
@@ -8,10 +7,10 @@
 
 namespace Ull
 {
-	class Cube : public RenderableNode, virtual public Drawable
+	class Cube : public Node3D, virtual public Drawable
 	{
 	public:
-		Cube();
+		Cube(const std::string& name, const Scene* scene);
 		~Cube() {}
 
 		void CreateResources();
