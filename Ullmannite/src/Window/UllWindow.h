@@ -1,5 +1,6 @@
 #pragma once
 #include "Event/EventQueue.h"
+#include "Event/EventHandler.h"
 
 #include <string>
 #include <glm/glm.hpp>
@@ -22,7 +23,7 @@ namespace Ull
         BOTTOM_RIGHT
     };
 
-    class UllWindow
+    class UllWindow : public EventHandler
     {
     public:
         UllWindow(std::string title, glm::uvec2 size);
@@ -34,16 +35,18 @@ namespace Ull
         void SetEventQueueDataPointer(EventQueue* eventQueue);
         void EnableDrag(bool enable) { m_dragEnabled = enable; }
 
+        void HandleEvent(Event* event) override;
+
         glm::ivec2 GetPosition() const;
         glm::ivec2 GetSize() const;
         std::string GetTitle() const { return m_title; }
 
-        GLFWwindow* GetRenderContext() const { return m_renderWindow; }
-        GLFWwindow* GetEventContext() const { return m_eventContext; }
+        GLFWwindow* GetWindowContext() const { return m_window; }
 
         bool IsOpen() const { return m_isOpen; }
         bool IsMinimized() const { return m_isMinimized; }
         bool IsMaximized() const { return m_isMaximized; }
+        bool IsCursorLocked() const { return m_cursorLocked; }
 
         void Close();
         void Maximize();
@@ -60,9 +63,9 @@ namespace Ull
         bool m_isOpen{ true };
         bool m_isMinimized{ false };
         bool m_isMaximized{ false };
+        bool m_cursorLocked{ false };
 
-        GLFWwindow* m_renderWindow{ nullptr };
-        GLFWwindow* m_eventContext{ nullptr };
+        GLFWwindow* m_window{ nullptr };
 
         GLFWcursor* m_cursor{ nullptr };
         int m_currentCursorShape{ GLFW_ARROW_CURSOR };
@@ -84,6 +87,7 @@ namespace Ull
         void ResizeByCursor();
         void MovedByCursor();
         void ChangeCursorShape(int shape);
+        void SwitchHiddenCursor();
 
         glm::ivec2 GetCursorScreenPosition();
 

@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 #include "Node.h"
 #include "RenderableNode.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace Ull
 {
@@ -38,6 +39,6 @@ namespace Ull
         glm::vec3 m_scale{ 1.0f, 1.0f, 1.0f };
         glm::vec3 m_rotation{ 0.0f, 0.0f, 0.0f }; //TODO: Use quaterion
 
-        glm::mat4x4 m_transformationMatrix;
+        glm::mat4 m_transformationMatrix;
     };
 }

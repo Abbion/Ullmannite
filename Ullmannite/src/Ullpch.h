@@ -20,3 +20,4 @@
 								className(const className&&) = delete; \
 								className& operator=(className&) = delete; \
 								className& operator=(className&&) = delete;
+

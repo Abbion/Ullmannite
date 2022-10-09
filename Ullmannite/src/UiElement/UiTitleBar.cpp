@@ -84,9 +84,9 @@ void UiTitleBar::Render()
 	if (m_areaUpdated)
 	{
 		m_frameBuffer->Bind();
-
+		
 		RenderBackground();
-
+		
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -94,7 +94,7 @@ void UiTitleBar::Render()
 		RenderUI();
 
 		ImGui::Render();
-	
+		
 		m_frameBuffer->Unbind();
 
 		m_areaUpdated = false;

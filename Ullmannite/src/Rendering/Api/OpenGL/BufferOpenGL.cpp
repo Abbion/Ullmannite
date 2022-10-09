@@ -141,11 +141,11 @@ void VertexBufferOpenGL::Unbind() const
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type) : m_size(size)
+IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type) : m_size(size / sizeof(unsigned int))
 {
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, data, ConvertUsageType(type));
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertUsageType(type));
 }
 
 IndexBufferOpenGL::~IndexBufferOpenGL()

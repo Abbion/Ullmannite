@@ -47,6 +47,12 @@ bool Node::RemoveNode(Node* node)
     return false;
 }
 
+void Node::HandleEvent(Event* event)
+{
+    for(auto node : m_children)
+        node->HandleEvent(event);
+}
+
 bool Node::operator==(Node* node)
 {
     return this->m_id == node->m_id;

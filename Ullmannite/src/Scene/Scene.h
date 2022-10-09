@@ -20,7 +20,7 @@ namespace Ull
 
         void SetMainCamera(Camera* camera) { m_mainCamera = camera; }
 
-        void HandleEvent(Event* event) override {}
+        void HandleEvent(Event* event) override;
         void Update();
         void Render() override;
 

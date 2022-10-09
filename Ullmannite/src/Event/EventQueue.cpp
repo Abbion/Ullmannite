@@ -17,9 +17,7 @@ EventQueue::~EventQueue()
 
 void EventQueue::PushEvent(const std::shared_ptr<Event>& newEvent)
 {
-    LockAccess();
     m_events.push_back(newEvent);
-    UnlockAccess();
 }
 
 std::shared_ptr<Event> EventQueue::PopEvent()

@@ -1,7 +1,6 @@
 #pragma once
 #include "Event.h"
 #include <deque>
-#include <mutex>
 
 namespace Ull
 {
@@ -21,11 +20,7 @@ namespace Ull
         void MakeEventUnique(EventType eventType);
         void ClearEventQueue();
 
-        inline void LockAccess() { m_mutex.lock(); }
-        inline void UnlockAccess() { m_mutex.unlock(); }
-
     private:
         std::deque<std::shared_ptr<Event>> m_events;
-        std::mutex m_mutex;
     };
 };

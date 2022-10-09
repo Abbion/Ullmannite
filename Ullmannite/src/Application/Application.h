@@ -4,9 +4,6 @@
 #include "Layer/LayerManager.h"
 
 #include <memory>
-#include <mutex>
-#include <condition_variable>
-#include <thread>
 
 namespace Ull
 {
@@ -26,16 +23,8 @@ namespace Ull
 		std::unique_ptr<LayerManager> m_layerManager{ nullptr };
 
 		bool m_initFailed{ false };
-		bool m_contextCreationFailed{ false };
 
 		void InitApplciation();
-		void InitWindow();
-		bool RenderContextCreated();
-
-		std::thread m_eventPullThread;
-		std::mutex m_initMutex;
-		std::condition_variable m_initCV;
-
 		void HandleEvents();
 
 		void WindowResizeHandler(const glm::uvec2& size);

@@ -24,7 +24,7 @@ namespace Ull
         void AddNode(Node* node);
         bool RemoveNode(Node* node);
 
-        virtual void HandleEvent(Event* event) override {};
+        virtual void HandleEvent(Event* event) override;
         virtual void Update() {};
 
         bool operator==(Node* node);

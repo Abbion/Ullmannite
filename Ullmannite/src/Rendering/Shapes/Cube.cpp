@@ -25,15 +25,24 @@ void Cube::CreateResources()
 
     float vertices[] = {
 		//Front
-		-0.5f, 0.5f, -2.0f,
-		0.5f, 0.5f, -2.0f,
-		-0.5f, -0.5f, -2.0f,
-		0.5f, -0.5f, -2.0f
+		-0.5f, 0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+		-0.5f, -0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f,
+
+		-0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f
     };
 
 	unsigned int indices[] = {
 		0, 1, 2,
-		1, 3, 2
+		1, 3, 2,
+		0, 2, 4,
+		2, 6, 4,
+		1, 3, 5,
+		3, 7, 5
 	};
 
 	m_layout = VertexLayout::Create({LayoutElement("Position", GraphicsDataType::FLOAT, 3)});
@@ -50,12 +59,15 @@ void Cube::CreateResources()
 
 void Cube::Render()
 {
-
 	m_shader->Bind();
 
 	auto mainCamera = GetScene()->GetMainCamera();
 
+	m_transformationMatrix = glm::identity<glm::mat4>();
+	m_transformationMatrix = glm::translate(m_transformationMatrix, m_position);
+
 	m_shader->SetFloat4("shaderColor", m_color);
+	m_shader->SetFloat4x4("modelMatrix", m_transformationMatrix);
 	m_shader->SetFloat4x4("projectionMatrix", mainCamera->GetProjectionMatrix());
 	m_shader->SetFloat4x4("viewMatrix", mainCamera->GetViewMatrix());
 

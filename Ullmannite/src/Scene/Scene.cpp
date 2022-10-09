@@ -39,6 +39,11 @@ Node* Scene::GetNodeByName(const std::string& name)
     return DeepSearch(name, m_root);
 }
 
+void Scene::HandleEvent(Event* event)
+{
+    m_root->HandleEvent(event);
+}
+
 void Scene::Update()
 {
     m_mainCamera->Update();
