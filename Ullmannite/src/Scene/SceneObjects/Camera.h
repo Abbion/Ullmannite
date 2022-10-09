@@ -34,8 +34,6 @@ namespace Ull
 		void HandleEvent(Event* event) override;
 		void Update() override;
 
-		void ResetCamera();
-
 		void SetSensitivity(float sensitivity) { m_sensitivity = sensitivity; }
 		void SetFreeModeSpeed(float speed) { m_speed = speed; }
 
@@ -52,6 +50,7 @@ namespace Ull
 	private:
 		void UpdateVectors();
 		void CalculatePitchAndYaw(float sensitivityScale = 1.0f);
+		void ResetCamera();
 
 		ProjectionType m_projectionType{ ProjectionType::PERSPECTIVE };
 		CameraType m_cameraType{ CameraType::LOCKED };
@@ -72,9 +71,9 @@ namespace Ull
 
 		float m_yaw{ -90.0f };
 		float m_pitch{ 0.0f };
-		float m_speed{ 0.05f };
+		float m_fov{ 45.0f };
 		float m_sensitivity{ 0.05f };
-		float m_fov{ 45 };
+		float m_speed{ 0.05f };
 
 		const float m_maxFov{ 75.0f };
 		const float m_minFov{ 20.0f };

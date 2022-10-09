@@ -25,9 +25,15 @@ void Camera::HandleEvent(Event* event)
 {
 	if(event->GetType() == EventType::KeyDown)
 	{
-		if(static_cast<KeyDownEvent*>(event)->GetVal() == Keyboard::Key::F && Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
+		auto key = static_cast<KeyDownEvent*>(event)->GetVal();
+
+		if(key == Keyboard::Key::F && Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
 		{
 			m_cameraType = m_cameraType == CameraType::LOCKED ? CameraType::FREE : CameraType::LOCKED; 
+		}
+		else if(key == Keyboard::Key::R)
+		{
+			ResetCamera();
 		}
 	}
 	else if(event->GetType() == EventType::MouseMove)
@@ -58,7 +64,7 @@ void Camera::HandleEvent(Event* event)
 	}
 	else if(event->GetType() == EventType::MouseScroll)
 	{
-		m_fov += static_cast<MouseScrollEvent*>(event)->GetVal();
+		m_distanceToTarget += static_cast<MouseScrollEvent*>(event)->GetVal();
 		m_fov = std::clamp(m_fov, m_minFov, m_maxFov);
 		CalculateProjectionMatrix();
 	}
@@ -152,4 +158,20 @@ void Camera::CalculatePitchAndYaw(float sensitivityScale)
 
     if (m_pitch < -89.0f)
         m_pitch = -89.0f;
+}
+
+void Camera::ResetCamera()
+{
+	m_distanceToTarget = 3.0f;
+	m_position = glm::vec3(0.0f, 0.0f, m_distanceToTarget);
+	m_target = glm::vec3(0.0f, 0.0f, 0.0f);
+	m_front = glm::vec3(0.0f, 0.0f, -1.0f);
+	m_up = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_right = glm::vec3(1.0f, 0.0f, 0.0f);
+
+	m_yaw = -90.0f;
+	m_pitch = 0.0f;
+	m_fov = 45.f;
+
+	UpdateVectors();
 }
