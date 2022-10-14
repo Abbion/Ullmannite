@@ -112,6 +112,8 @@ float vertices[] = {
 	m_layout->Build();
 	m_vertexBuffer->Unbind();
 	m_layout->Unbind();
+
+	m_scene->SetUpdated(true);
 }
 
 void Cube::Update()

@@ -13,4 +13,7 @@ Drawable::~Drawable()
 
     if (m_layout != nullptr)
         delete m_layout;
+
+    if (m_shader != nullptr)
+        delete m_shader;
 }

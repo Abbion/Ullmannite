@@ -13,6 +13,9 @@ namespace Ull
         Scene(std::string name);
         ~Scene();
         
+        bool IsUpdated() const { return m_isUpdated; }
+        void SetUpdated(bool updated) const { m_isUpdated = updated; }
+
         Node* GetNodeByName(const std::string& name) const;
         Node* GetRootNode() const { return m_root; }
         const Camera* GetMainCamera() const { return m_mainCamera; }
@@ -28,5 +31,6 @@ namespace Ull
         Node* m_root{ nullptr };
         Camera* m_mainCamera{ nullptr };
         std::string m_name;
+        mutable bool m_isUpdated{ false };
     };
 } 

@@ -38,11 +38,15 @@ void Camera::HandleEvent(Event* event)
 					m_target = m_position + distanceFromFront;
 					m_orbitPosition = -distanceFromFront;
 				}
+
 				m_cameraType = m_cameraType == CameraType::LOCKED ? CameraType::FREE : CameraType::LOCKED;
+
+				m_scene->SetUpdated(true);
 			}
 			else if(key == Keyboard::Key::R)
 			{
 				ResetCamera();
+				m_scene->SetUpdated(true);
 			}
 		}
 	}
@@ -52,15 +56,19 @@ void Camera::HandleEvent(Event* event)
 		{
 			CalculatePitchAndYaw();
 			UpdateVectors();
+
+			m_scene->SetUpdated(true);
 		}
 		else if( m_cameraType == CameraType::LOCKED)
 		{
-			if(Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
+			if(Mouse::GetInstance().IsButtonPressed(Mouse::Button::RIGHT))
 			{
 				CalculatePitchAndYaw(cameraRotationSensitivityScale);
 				UpdateVectors();
 
 				m_orbitPosition = m_front * -m_distanceToTarget;
+
+				m_scene->SetUpdated(true);
 			}
 			else if(Mouse::GetInstance().IsButtonPressed(Mouse::Button::MIDDLE))
 			{
@@ -70,6 +78,8 @@ void Camera::HandleEvent(Event* event)
 
 				m_target += m_right * -xSens; //X is inverted
 				m_target += m_up * ySens;
+
+				m_scene->SetUpdated(true);
 			}
 		}
 	}
@@ -78,6 +88,8 @@ void Camera::HandleEvent(Event* event)
 		m_fov += static_cast<MouseScrollEvent*>(event)->GetVal();
 		m_fov = std::clamp(m_fov, m_minFov, m_maxFov);
 		CalculateProjectionMatrix();
+
+		m_scene->SetUpdated(true);
 	}
 
 	Node::HandleEvent(event);
@@ -90,18 +102,22 @@ void Camera::Update()
 		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::W))
 		{
 			m_position += m_front * m_speed;
+			m_scene->SetUpdated(true);
 		}
 		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::S))
 		{
 			m_position -= m_front * m_speed;
+			m_scene->SetUpdated(true);
 		}
 		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::A))
 		{
 			m_position -= m_right * m_speed;
+			m_scene->SetUpdated(true);
 		}
 		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::D))
 		{
 			m_position += m_right * m_speed;
+			m_scene->SetUpdated(true);
 		}
 	}
 

@@ -47,6 +47,7 @@ namespace Ull
         bool IsMinimized() const { return m_isMinimized; }
         bool IsMaximized() const { return m_isMaximized; }
         bool IsCursorLocked() const { return m_cursorLocked; }
+        bool IsDragged() const { return m_isDragged; }
 
         void Close();
         void Maximize();

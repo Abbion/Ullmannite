@@ -32,6 +32,9 @@ void UiArea::CreateResources()
     if (m_layout != nullptr)
         delete m_layout;
 
+    if(m_frameBuffer != nullptr)
+        delete m_frameBuffer;
+
     m_frameBuffer = FrameBuffer::Create(m_size, m_usesDepth);
 
     float vertices[] = { 

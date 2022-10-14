@@ -4,6 +4,7 @@
 #include "Rendering/Objects/DirectionalLight.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Rendering/Api/Renderer.h"
+#include "Utilities/CollisionCheckers.h"
 #include <string>
 
 using namespace Ull;
@@ -35,15 +36,32 @@ void UiView3D::Init()
 
 void UiView3D:: HandleEvent(Event* event)
 {
-    if(event->GetType() == EventType::WindowResize)
+    switch (event->GetType())
     {
-        auto cameraNode = m_scene.GetNodeByName("Main camera");
+    case EventType::WindowResize:
+    {
+         auto cameraNode = m_scene.GetNodeByName("Main camera");
         
         if(cameraNode != nullptr)
         {
             auto camera = static_cast<Camera*>(cameraNode);
             camera->SetRenderAreaSize(UiArea::GetSize());
         }
+    }
+    break;
+    
+    case EventType::MouseMove:
+    case EventType::MouseDown:
+    case EventType::MouseUp:
+    case EventType::MouseScroll:
+    {
+        if(!PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()) && !m_window->IsCursorLocked())
+            return;
+    }
+    break;
+
+    default:
+        break;
     }
 
     m_scene.HandleEvent(event);
@@ -52,7 +70,12 @@ void UiView3D:: HandleEvent(Event* event)
 void UiView3D::Update()
 {
     m_scene.Update();
-    m_areaUpdated = true;
+
+    if(m_scene.IsUpdated())
+    {
+        m_areaUpdated = true;
+        m_scene.SetUpdated(false);
+    }
 }
 
 void UiView3D::SetWindow(const std::shared_ptr<UllWindow>& window)
@@ -79,10 +102,10 @@ void UiView3D::Render()
         //Renderer::GetInstance().SetFaceWinding(Renderer::FaceWinding::COUNTER_CLOCKWISE);
         m_scene.Render();
         //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::NONE);
-        Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
+        //Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
 
 		m_frameBuffer->Unbind();
 
-		//m_areaUpdated = false;
+		m_areaUpdated = false;
     }
 }
