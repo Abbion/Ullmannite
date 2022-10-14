@@ -60,6 +60,7 @@ namespace Ull
 		glm::vec3 m_up{ 0.0f, 1.0f, 0.0f };
 		glm::vec3 m_right{ 1.0f, 0.0f, 0.0f };
 		float m_distanceToTarget{ 3.0f };
+		glm::vec3 m_orbitPosition{ 0.0f, 0.0f, 3.0f };
 
 		const glm::vec3 m_worldUP{ 0.0f, 1.0f, 0.0f };
 
@@ -75,8 +76,11 @@ namespace Ull
 		float m_sensitivity{ 0.05f };
 		float m_speed{ 0.05f };
 
+		float m_polar{0.0f};
+		float m_azimuth{90.0f};
+
 		const float m_maxFov{ 75.0f };
-		const float m_minFov{ 20.0f };
+		const float m_minFov{ 10.0f };
 
 		std::shared_ptr<UllWindow> m_window;
 	};

@@ -15,9 +15,11 @@ namespace
             if(child->GetName() == name)
                 return child;
 
-            return DeepSearch(name, child);
+            auto subChild = DeepSearch(name, child);
+            
+            if (subChild != nullptr)
+                return subChild;
         }
-
         return nullptr;
     }
 }
@@ -34,7 +36,7 @@ Scene::~Scene()
     delete m_root;
 }
 
-Node* Scene::GetNodeByName(const std::string& name)
+Node* Scene::GetNodeByName(const std::string& name) const
 {
     return DeepSearch(name, m_root);
 }

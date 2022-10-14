@@ -1,6 +1,7 @@
 #include "Ullpch.h"
 #include "UiView3D.h"
-#include "Rendering/Shapes/Cube.h"
+#include "Rendering/Objects/Cube.h"
+#include "Rendering/Objects/DirectionalLight.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Rendering/Api/Renderer.h"
 #include <string>
@@ -8,7 +9,7 @@
 using namespace Ull;
 
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiArea(name, position, size),
+    UiArea(name, position, size, true),
     m_scene("Scene 3D")
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
@@ -73,9 +74,12 @@ void UiView3D::Render()
 
 		RenderBackground();
 
-        //Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
+        Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
+        //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::BACK);
+        //Renderer::GetInstance().SetFaceWinding(Renderer::FaceWinding::COUNTER_CLOCKWISE);
         m_scene.Render();
-        //Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
+        //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::NONE);
+        Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
 
 		m_frameBuffer->Unbind();
 

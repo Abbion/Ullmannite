@@ -105,7 +105,7 @@ namespace Ull
         Texture2D* GetColorTarget() const { return m_colorTarget; }
         RenderBuffer* GetDepthTarget() const { return m_depthTarget; }
         
-        static FrameBuffer* Create(glm::uvec2 size, bool enableDepth = false);
+        static FrameBuffer* Create(glm::uvec2 size, bool enableDepth);
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;

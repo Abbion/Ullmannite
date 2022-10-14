@@ -3,6 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
+#include "Scene/Scene.h"
 #include <algorithm>
 
 using namespace Ull;
@@ -10,7 +11,7 @@ using namespace Ull;
 namespace
 {
 	constexpr float cameraRotationSensitivityScale = 15.0f;
-	constexpr float cameraPanSensitivityScale = 0.2f;
+	constexpr float cameraPanSensitivityScale = 0.1f;
 }
 
 Camera::Camera(const std::string& name, const Scene* scene, glm::uvec2 renderAreaSize) :
@@ -27,13 +28,22 @@ void Camera::HandleEvent(Event* event)
 	{
 		auto key = static_cast<KeyDownEvent*>(event)->GetVal();
 
-		if(key == Keyboard::Key::F && Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
+		if(Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
 		{
-			m_cameraType = m_cameraType == CameraType::LOCKED ? CameraType::FREE : CameraType::LOCKED; 
-		}
-		else if(key == Keyboard::Key::R)
-		{
-			ResetCamera();
+			if(key == Keyboard::Key::F)
+			{
+				if (m_cameraType == CameraType::FREE)
+				{
+					auto distanceFromFront = m_front * m_distanceToTarget;
+					m_target = m_position + distanceFromFront;
+					m_orbitPosition = -distanceFromFront;
+				}
+				m_cameraType = m_cameraType == CameraType::LOCKED ? CameraType::FREE : CameraType::LOCKED;
+			}
+			else if(key == Keyboard::Key::R)
+			{
+				ResetCamera();
+			}
 		}
 	}
 	else if(event->GetType() == EventType::MouseMove)
@@ -49,22 +59,23 @@ void Camera::HandleEvent(Event* event)
 			{
 				CalculatePitchAndYaw(cameraRotationSensitivityScale);
 				UpdateVectors();
-				m_position = m_target - glm::vec3(m_front.x * m_distanceToTarget, m_front.y * m_distanceToTarget, m_front.z * m_distanceToTarget);
+
+				m_orbitPosition = m_front * -m_distanceToTarget;
 			}
 			else if(Mouse::GetInstance().IsButtonPressed(Mouse::Button::MIDDLE))
 			{
 				auto mouseDelta = Mouse::GetInstance().GetMousePositionDelta();
-				auto xSens = -mouseDelta.x * m_sensitivity * cameraPanSensitivityScale;
+				auto xSens = mouseDelta.x * m_sensitivity * cameraPanSensitivityScale;
 				auto ySens = mouseDelta.y * m_sensitivity * cameraPanSensitivityScale;
 
-				m_target += glm::vec3(xSens * m_right.x, xSens * m_right.y, xSens * m_right.z);
-				m_target += glm::vec3(ySens * m_up.x, ySens * m_up.y, ySens * m_up.z);
+				m_target += m_right * -xSens; //X is inverted
+				m_target += m_up * ySens;
 			}
 		}
 	}
 	else if(event->GetType() == EventType::MouseScroll)
 	{
-		m_distanceToTarget += static_cast<MouseScrollEvent*>(event)->GetVal();
+		m_fov += static_cast<MouseScrollEvent*>(event)->GetVal();
 		m_fov = std::clamp(m_fov, m_minFov, m_maxFov);
 		CalculateProjectionMatrix();
 	}
@@ -74,12 +85,7 @@ void Camera::HandleEvent(Event* event)
 
 void Camera::Update()
 {
-	if(m_cameraType == CameraType::LOCKED && Mouse::GetInstance().IsButtonPressed(Mouse::Button::LEFT))
-	{
-
-	}
-
-	else if(m_cameraType == CameraType::FREE && m_window->IsCursorLocked())
+	 if(m_cameraType == CameraType::FREE && m_window->IsCursorLocked())
 	{
 		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::W))
 		{
@@ -97,8 +103,6 @@ void Camera::Update()
 		{
 			m_position += m_right * m_speed;
 		}
-
-		UpdateVectors();
 	}
 
 	CalculateViewMatrix();
@@ -107,14 +111,16 @@ void Camera::Update()
 void Camera::SetRenderAreaSize(glm::uvec2 renderAreaSize)
 {
 	m_renderAreaSize = renderAreaSize;
-	m_aspectRatio = (float)m_renderAreaSize.x / (float)m_renderAreaSize.x;
+	m_aspectRatio = (float)m_renderAreaSize.x / (float)m_renderAreaSize.y;
+	CalculateProjectionMatrix();
 }
 
 void Camera::CalculateViewMatrix()
 {
 	if(m_cameraType == CameraType::LOCKED)
 	{
-		m_view = glm::lookAt(m_position + m_target, m_target, m_up);
+		m_position = m_orbitPosition + m_target;
+		m_view = glm::lookAt(m_position, m_target, m_up);
 	}
 	else
 	{
@@ -126,7 +132,7 @@ void Camera::CalculateProjectionMatrix()
 {
 	if (m_projectionType == ProjectionType::PERSPECTIVE)
 	{
-		m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, 0.1f, 10.f);
+		m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, 0.1f, 10.0f);
 	}
 	else
 	{
@@ -151,19 +157,25 @@ void Camera::CalculatePitchAndYaw(float sensitivityScale)
 	auto mouseDelta = Mouse::GetInstance().GetMousePositionDelta();
 
 	m_yaw += mouseDelta.x * m_sensitivity * sensitivityScale;
-	m_pitch += -mouseDelta.y * m_sensitivity * sensitivityScale;
+	m_pitch -= mouseDelta.y * m_sensitivity * sensitivityScale;
 
-    if (m_pitch > 89.0f)
-        m_pitch = 89.0f;
+    if (m_pitch > 89.9f)
+        m_pitch = 89.9f;
 
-    if (m_pitch < -89.0f)
-        m_pitch = -89.0f;
+    if (m_pitch < -89.9f)
+        m_pitch = -89.9f;
+
+	if(m_yaw > 360)
+		m_yaw = m_yaw - 360;
+	else if(m_yaw < -360)
+		m_yaw = m_yaw + 360;
 }
 
 void Camera::ResetCamera()
 {
 	m_distanceToTarget = 3.0f;
 	m_position = glm::vec3(0.0f, 0.0f, m_distanceToTarget);
+	m_orbitPosition = glm::vec3(0.0f, 0.0f, m_distanceToTarget);
 	m_target = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_front = glm::vec3(0.0f, 0.0f, -1.0f);
 	m_up = glm::vec3(0.0f, 1.0f, 0.0f);

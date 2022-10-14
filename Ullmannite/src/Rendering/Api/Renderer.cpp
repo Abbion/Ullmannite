@@ -81,7 +81,7 @@ void Renderer::Clear(ClearBits clearBits)
         unsigned int bitSum = (clearBits & ClearBits::COLOR) ? GL_COLOR_BUFFER_BIT : 0;
         bitSum |= (clearBits & ClearBits::DEPTH) ? GL_DEPTH_BUFFER_BIT : 0;
         bitSum |= (clearBits & ClearBits::SETNCIL) ? GL_STENCIL_BUFFER_BIT : 0;
-        glClear(bitSum);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 }
 
@@ -96,11 +96,53 @@ void Renderer::SetDepth(State state)
     }
 }
 
+void Renderer::SetFaceCulling(FaceCulling culling)
+{
+    if(m_api == API::OPEN_GL)
+    {
+        if(culling == FaceCulling::NONE)
+            glDisable(GL_CULL_FACE);
+        else
+        {
+            glEnable(GL_CULL_FACE);
+
+            if(culling == FaceCulling::FRONT)
+                glCullFace(GL_FRONT);
+
+            else if(culling == FaceCulling::BACK)
+                glCullFace(GL_BACK);
+
+            else if(culling == FaceCulling::FRONT_AND_BACK)
+                glCullFace(GL_FRONT_AND_BACK);
+        }
+    }
+}
+
+void Renderer::SetFaceWinding(FaceWinding winding)
+{
+    if(m_api == API::OPEN_GL)
+    {
+        if(winding == FaceWinding::CLOCKWISE)
+            glFrontFace(GL_CW);
+
+        else
+            glFrontFace(GL_CCW);
+    }
+}
+
 void Renderer::DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type, unsigned int skip)
 {
     if (m_api == API::OPEN_GL)
     {
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0); //TODO: primive to triangles and types
+    }
+}
+
+void Renderer::DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count,  unsigned int skip)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        glDrawArrays(GL_TRIANGLES, 0, count);
     }
 }
 

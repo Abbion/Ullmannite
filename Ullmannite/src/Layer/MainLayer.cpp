@@ -80,7 +80,7 @@ void MainLayer::CreateLayout()
     UiTitleBar* titleBarView = new UiTitleBar("titleBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
     m_layout->AddUiElement(titleBarView);
 
-    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31));
+    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31), false);
     menuView->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     m_layout->AddUiElement(menuView);
 

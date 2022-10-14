@@ -1,10 +1,11 @@
 #version 330 core
 
 out vec4 FragColor;
+uniform vec3 materialColor;
 
-uniform vec4 shaderColor;
+in vec3 testColor;
 
 void main()
 {
-	FragColor = shaderColor;
+	FragColor = vec4(testColor, 1.0f);
 }

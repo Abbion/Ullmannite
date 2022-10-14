@@ -13,7 +13,7 @@ namespace Ull
         Scene(std::string name);
         ~Scene();
         
-        Node* GetNodeByName(const std::string& name);
+        Node* GetNodeByName(const std::string& name) const;
         Node* GetRootNode() const { return m_root; }
         const Camera* GetMainCamera() const { return m_mainCamera; }
         inline const std::string GetName() const { return m_name; } 

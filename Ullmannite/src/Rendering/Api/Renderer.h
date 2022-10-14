@@ -29,6 +29,20 @@ namespace Ull
             DISABLE
         };
 
+        enum class FaceCulling
+        {
+            NONE,
+            FRONT,
+            BACK,
+            FRONT_AND_BACK
+        };
+
+        enum class FaceWinding
+        {
+            CLOCKWISE,
+            COUNTER_CLOCKWISE
+        };
+
     public:
         NON_COPYABLE(Renderer);
         
@@ -44,8 +58,11 @@ namespace Ull
         void Clear(ClearBits clearBits);
 
         void SetDepth(State state);
+        void SetFaceCulling(FaceCulling culling);
+        void SetFaceWinding(FaceWinding winding);
 
         void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
+        void DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count, unsigned int skip = 0);
         void FlushContext();
 
         inline API GetApi() { return m_api; }

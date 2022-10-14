@@ -17,7 +17,7 @@ namespace
 }
 
 UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
-	UiArea(name, position, size)
+	UiArea(name, position, size, false)
 {
 	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
 }
@@ -30,12 +30,7 @@ void UiTitleBar::CreateResources()
 void UiTitleBar::HandleEvent(Event* event)
 {
 	switch (event->GetType())
-	{
-	case EventType::MouseMove:
-		if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
-			m_areaUpdated = true;
-		break;
-	
+	{	
 	case EventType::MouseDown:
 		if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize() - glm::uvec2(3 * buttonWidth, 0)))
 			m_window->EnableDrag(true);
@@ -54,6 +49,8 @@ void UiTitleBar::HandleEvent(Event* event)
 		m_areaUpdated = true;
 		break;
 	}
+
+	UiArea::HandleEvent(event);
 }
 
 void UiTitleBar::Update()

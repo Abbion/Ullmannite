@@ -3,11 +3,13 @@
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Utilities/CollisionCheckers.h"
 
 using namespace Ull;
 
-UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiElement(name, position, size)
+UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth) :
+    UiElement(name, position, size),
+    m_usesDepth(usesDepth)
 {
     m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_SHADER);
     CreateResources();
@@ -30,7 +32,7 @@ void UiArea::CreateResources()
     if (m_layout != nullptr)
         delete m_layout;
 
-    m_frameBuffer = FrameBuffer::Create(m_size);
+    m_frameBuffer = FrameBuffer::Create(m_size, m_usesDepth);
 
     float vertices[] = { 
         -1.0f, -1.0f, 0.0f,
@@ -69,6 +71,24 @@ void UiArea::SetBackgroundColor(const glm::vec4& color)
 {
     m_color = color;
     m_areaUpdated = true;
+}
+
+void UiArea::HandleEvent(Event* event)
+{
+    if(event->GetType() == EventType::MouseMove)
+    {
+        if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
+        {
+            m_areaUpdated = true;
+            m_inArea = true;
+        }
+        else
+        {
+            if (m_inArea = true)
+                m_areaUpdated = true;
+            m_inArea = false;
+        }
+    }
 }
 
 void UiArea::Render()
