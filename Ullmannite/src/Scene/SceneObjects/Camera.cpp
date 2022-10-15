@@ -24,6 +24,9 @@ Camera::Camera(const std::string& name, NotOwner<Scene> scene, glm::uvec2 render
 
 void Camera::HandleEvent(Event* event)
 {
+	if (event->IsHandeled())
+		return;
+
 	if(event->GetType() == EventType::KeyDown)
 	{
 		auto key = static_cast<KeyDownEvent*>(event)->GetVal();

@@ -78,6 +78,9 @@ void UiArea::SetBackgroundColor(const glm::vec4& color)
 
 void UiArea::HandleEvent(Event* event)
 {
+    if (event->IsHandeled())
+        return;
+
     if(event->GetType() == EventType::MouseMove)
     {
         if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))

@@ -49,6 +49,9 @@ bool Node::RemoveNode(Node* node)
 
 void Node::HandleEvent(Event* event)
 {
+    if (event->IsHandeled())
+        return;
+
     for(auto node : m_children)
         node->HandleEvent(event);
 }

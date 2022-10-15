@@ -14,6 +14,9 @@ UiElement::~UiElement()
 
 void UiElement::HandleEvent(Event* event)
 {
+    if (event->IsHandeled())
+        return;
+
     for(auto& child : m_children)
         child->HandleEvent(event);
 }

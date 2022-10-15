@@ -29,6 +29,9 @@ void UiTitleBar::CreateResources()
 
 void UiTitleBar::HandleEvent(Event* event)
 {
+	if (event->IsHandeled())
+		return;
+
 	switch (event->GetType())
 	{	
 	case EventType::MouseDown:

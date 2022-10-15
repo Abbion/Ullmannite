@@ -43,6 +43,9 @@ Node* Scene::GetNodeByName(const std::string& name) const
 
 void Scene::HandleEvent(Event* event)
 {
+    if (event->IsHandeled())
+        return;
+
     m_root->HandleEvent(event);
 }
 
