@@ -472,7 +472,7 @@ glm::ivec2 UllWindow::GetCursorScreenPosition()
 
 #ifdef PLATFORM_LINUX
     auto display = glfwGetX11Display();
-    auto window = glfwGetX11Window(m_renderWindow);
+    auto window = glfwGetX11Window(m_window);
 
     
     Window windowReturned;

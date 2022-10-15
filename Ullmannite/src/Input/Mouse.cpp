@@ -1,6 +1,5 @@
 #include "Ullpch.h"
 #include "Mouse.h"
-#include <Windows.h>
 #include "Logger/Logger.h"
 
 using namespace Ull;
