@@ -39,6 +39,7 @@ namespace Ull
         glm::ivec2 m_mousePositionDelta{ 0, 0 };
         int m_scroll;
 
+    private:
         void UpdatePosition(const glm::ivec2& position); 
         void UpdateScroll(int scroll) { m_scroll = scroll; }
         void UpdateButtonMap(const std::map<Button, bool>& updatedButtonMap);

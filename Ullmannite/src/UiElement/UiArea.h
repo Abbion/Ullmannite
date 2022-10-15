@@ -16,7 +16,6 @@ namespace Ull
         void BindTargetTexture();
 
         void HandleEvent(Event* event) override;
-
         void Update() override {};
         void Render() override;
 

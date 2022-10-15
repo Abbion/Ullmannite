@@ -25,15 +25,21 @@
 
 using namespace Ull;
 
-UllWindow::UllWindow(std::string title, glm::uvec2 size) : m_title(title)
+UllWindow::UllWindow()
 {
-    if(size.x < MIN_WINDOW_WIDTH)
+}
+
+void UllWindow::Create(std::string title, glm::uvec2 size)
+{
+    m_title = title;
+
+    if (size.x < MIN_WINDOW_WIDTH)
         size.x = MIN_WINDOW_WIDTH;
 
-    if(size.y < MIN_WINDOW_HEIGHT)
+    if (size.y < MIN_WINDOW_HEIGHT)
         size.y = MIN_WINDOW_HEIGHT;
 
-    if(Renderer::GetInstance().GetApi() == Renderer::API::OPEN_GL)
+    if (Renderer::GetInstance().GetApi() == Renderer::API::OPEN_GL)
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -105,6 +111,9 @@ void UllWindow::SetEventQueueDataPointer(EventQueue* eventQueue)
 
 void UllWindow::HandleEvent(Event* event)
 {
+    if(event->IsHandeled())
+        return;
+    
     if(event->GetType() == EventType::KeyDown)
     {
         if(static_cast<KeyDownEvent*>(event)->GetVal() == Keyboard::Key::F)
@@ -424,7 +433,7 @@ void UllWindow::MovedByCursor()
                 Restore();
                 auto afterRestoreSize = GetSize();
                 auto sizeScale = (float)afterRestoreSize.x / (float)originalSize.x;
-                m_startGrabPosition.x *= sizeScale;
+                m_startGrabPosition.x = int((float)m_startGrabPosition.x * sizeScale);
             }
 
             m_isDragged = true;

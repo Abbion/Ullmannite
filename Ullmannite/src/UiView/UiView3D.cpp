@@ -78,7 +78,7 @@ void UiView3D::Update()
     }
 }
 
-void UiView3D::SetWindow(const std::shared_ptr<UllWindow>& window)
+void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
 {
     m_window = window;
     auto cameraNode = m_scene.GetNodeByName("Main camera");
@@ -98,6 +98,8 @@ void UiView3D::Render()
 		RenderBackground();
 
         Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
+        Renderer::GetInstance().Clear(Renderer::ClearBits::DEPTH);
+
         //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::BACK);
         //Renderer::GetInstance().SetFaceWinding(Renderer::FaceWinding::COUNTER_CLOCKWISE);
         m_scene.Render();

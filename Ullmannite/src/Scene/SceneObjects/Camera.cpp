@@ -14,7 +14,7 @@ namespace
 	constexpr float cameraPanSensitivityScale = 0.1f;
 }
 
-Camera::Camera(const std::string& name, const Scene* scene, glm::uvec2 renderAreaSize) :
+Camera::Camera(const std::string& name, NotOwner<Scene> scene, glm::uvec2 renderAreaSize) :
 	 Node3D(name, scene),
 	 m_renderAreaSize(renderAreaSize),
 	 m_aspectRatio((float)renderAreaSize.x / (float)renderAreaSize.y)

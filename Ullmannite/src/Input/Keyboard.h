@@ -91,6 +91,7 @@ namespace Ull
     private:
         std::map<Key, bool> m_keyMap;
 
+    private:
         void UpdateKeyMap(const std::map<Key, bool>& updatedKeyMap);
         void InitKeyMap();
 

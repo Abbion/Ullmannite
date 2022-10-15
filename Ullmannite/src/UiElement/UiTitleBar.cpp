@@ -100,7 +100,7 @@ void UiTitleBar::Render()
 
 void UiTitleBar::RenderUI()
 {
-	ImGui::SetNextWindowSize(ImVec2(m_size.x, m_size.y));
+	ImGui::SetNextWindowSize(ImVec2((float)m_size.x, (float)m_size.y));
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
 
 	//Move this out of here???
@@ -138,7 +138,7 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 
 	ImGui::SameLine(nextPos);
-	if (ImGui::Button(ICON_MINIMIZE, ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(ICON_MINIMIZE, ImVec2(buttonWidth, (float)buttonHeight)))
 		m_minimizePressed = true;
 
 	nextPos += buttonWidth;
@@ -146,7 +146,7 @@ void UiTitleBar::RenderUI()
 	ImGui::SameLine(nextPos);
 	auto maximizeRestoreIcon = m_window->IsMaximized() ? ICON_RESTORE : ICON_MAXIMIZE;
 
-	if (ImGui::Button(maximizeRestoreIcon, ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(maximizeRestoreIcon, ImVec2(buttonWidth, (float)buttonHeight)))
 		m_maximizeRestorPressed = true;
 
 	nextPos += buttonWidth;
@@ -158,7 +158,7 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.909f, 0.282f, 0.345f, 1.0f));
 	
-	if (ImGui::Button(ICON_CLOSE, ImVec2(buttonWidth, buttonHeight)))
+	if (ImGui::Button(ICON_CLOSE, ImVec2(buttonWidth, (float)buttonHeight)))
 		m_closePressed = true;
 
 	ImGui::PopStyleColor();

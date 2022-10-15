@@ -11,7 +11,6 @@ namespace Ull
         ~EventQueue();
 
         void PushEvent(const std::shared_ptr<Event>& newEvent);
-
         std::shared_ptr<Event> PopEvent();
         
         bool HasPenddingEvents() const;

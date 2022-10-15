@@ -5,14 +5,14 @@
 
 using namespace Ull;
 
-Node::Node(const std::string& name, const Scene* scene) :
+Node::Node(const std::string& name, NotOwner<Scene> scene) :
     m_scene(scene),
     m_name(name)
 {
     static unsigned long long newID = 0;
     m_id = newID++;
 
-    ULOGD("Creeated node with ID " << m_id);
+    ULOGD("Creeated node with ID " << m_id << " name " << m_name);
 }
 
 Node::~Node()
@@ -20,10 +20,10 @@ Node::~Node()
     for (auto node : m_children)
         delete node;
 
-    ULOGD("Removed node with ID " << m_id);
+    ULOGD("Removed node with ID " << m_id << " name " << m_name);
 }
 
-void Node::SetParent(Node* node)
+void Node::SetParent(NotOwner<Node> node)
 {
     m_parent = node;
 }

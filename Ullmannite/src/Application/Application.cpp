@@ -18,9 +18,6 @@
 
 #include "Rendering/IconsCode/IconCodes.h"
 
-#include <thread>
-#include <chrono>
-
 using namespace Ull;
 
 Application::Application()
@@ -48,54 +45,51 @@ Application::~Application()
 
 void Application::Run()
 {    
-    while (m_window->IsOpen())
+    while (m_window.IsOpen())
     {
-        m_window->CheckCursorInteractions();
+        m_window.CheckCursorInteractions();
         
         if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::ESCAPE))
         {
-            m_window->Close();
+            m_window.Close();
         }
 
-        m_window->PullEvents();
+        m_window.PullEvents();
         HandleEvents();
         
-        m_layerManager->GetTopLayer()->Update();
+        m_layerManager.GetTopLayer()->Update();
         
-        if (!m_window->IsMinimized())
+        if (!m_window.IsMinimized())
         {
-            m_layerManager->GetTopLayer()->Render();
-            
-            m_window->SwapBuffers();
+            m_layerManager.GetTopLayer()->Render();
+            m_window.SwapBuffers();
         }
     }
 }
 
 void Application::InitApplciation()
 {
-    Renderer::GetInstance().SetApi(Renderer::API::OPEN_GL);
+    Ull::Renderer::GetInstance().SetApi(Ull::Renderer::API::OPEN_GL);
 
     //Window
     if (glfwInit() == -1)
         throw InitializationException("Can't initialize GLFW");
 
-    m_window = std::make_shared<UllWindow>("Ullmanite 0.02", glm::ivec2(1280, 720));
-
-    m_eventQueue = std::make_unique<EventQueue>();
-    m_window->SetEventQueueDataPointer(m_eventQueue.get());
+    m_window.Create("Ullmanite 0.3v", glm::uvec2(1280, 720));
+    m_window.SetEventQueueDataPointer(&m_eventQueue);
 
     //Renderer
-    glfwMakeContextCurrent(m_window->GetWindowContext());
+    glfwMakeContextCurrent(m_window.GetWindowContext());
 
     Renderer::GetInstance().Init();
-    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window->GetSize());
+    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window.GetSize());
 
     //ImGui
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
 
     const char* glsl_version = "#version 140";
-    ImGui_ImplGlfw_InitForOpenGL(m_window->GetWindowContext(), true);
+    ImGui_ImplGlfw_InitForOpenGL(m_window.GetWindowContext(), true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -112,35 +106,34 @@ void Application::InitApplciation()
     ShaderManager::GetInstance().LoadShader(ShaderTag::MARKER, "MarkerVS", "MarkerPS");
 
     //Layers
-    m_layerManager = std::make_unique<LayerManager>();
-    auto mainLayer = std::make_shared<MainLayer>(m_window->GetSize());
-    mainLayer->SetWindow(m_window);
-    m_layerManager->PushLayer(mainLayer);
+    auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());
+    mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));
+    m_layerManager.PushLayer(mainLayer);
 }
 
 void Application::HandleEvents()
 {
-    m_eventQueue->MakeEventUnique(EventType::WindowResize);
+    m_eventQueue.MakeEventUnique(EventType::WindowResize);
 
     std::map<Keyboard::Key, bool> updatedKeyMap;
     std::map<Mouse::Button, bool> updatedButtonMap;
     int scroll = 0;
 
-    while (m_eventQueue->HasPenddingEvents())
+    while (m_eventQueue.HasPenddingEvents())
     {
-        auto currentEvent = m_eventQueue->PopEvent();
+        auto currentEvent = m_eventQueue.PopEvent();
 
         switch (currentEvent->GetType())
         {
         case EventType::WindowClosed:
-            m_window->Close();
+            m_window.Close();
             break;
         case EventType::WindowRestored:
-            m_window->Restore();
+            m_window.Restore();
             break;
 
         case EventType::WindowResize:
-            if (m_window->IsMinimized())
+            if (m_window.IsMinimized())
                 currentEvent->MarkHandeled(true);
             else
                 WindowResizeHandler(static_cast<WindowResizeEvent*>(currentEvent.get())->GetVal());
@@ -174,11 +167,8 @@ void Application::HandleEvents()
             break;
         }
 
-        if(!currentEvent->IsHandeled())
-            m_window->HandleEvent(currentEvent.get());
-
-        if (!currentEvent->IsHandeled())
-            m_layerManager->HandleEvent(currentEvent.get());
+         m_window.HandleEvent(currentEvent.get());
+         m_layerManager.HandleEvent(currentEvent.get());
     }
 
     Keyboard::GetInstance().UpdateKeyMap(updatedKeyMap);

@@ -2,7 +2,6 @@
 #include "Window/UllWindow.h"
 #include "Event/EventQueue.h"
 #include "Layer/LayerManager.h"
-
 #include <memory>
 
 namespace Ull
@@ -13,20 +12,19 @@ namespace Ull
 		Application();
 		~Application();
 
+		void Run();
 		bool FailedToInitialize() const { return m_initFailed; }
 
-		void Run();
-
 	private:
-		std::shared_ptr<UllWindow> m_window{ nullptr };
-		std::unique_ptr<EventQueue> m_eventQueue{ nullptr };
-		std::unique_ptr<LayerManager> m_layerManager{ nullptr };
+		UllWindow m_window;
+		EventQueue m_eventQueue;
+		LayerManager m_layerManager;
 
 		bool m_initFailed{ false };
 
+	private:
 		void InitApplciation();
 		void HandleEvents();
-
 		void WindowResizeHandler(const glm::uvec2& size);
 	};
 }

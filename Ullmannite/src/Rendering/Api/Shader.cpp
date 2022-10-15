@@ -16,9 +16,8 @@ Shader* Shader::Create(const char* vertexShaderName, const char* fragmentShaderN
     switch (Renderer::GetInstance().GetApi())
     {
     case Renderer::API::OPEN_GL:
-            return new ShaderOpenGL(vertexShaderNameStr, fragmentShaderNameStr, geometryShaderNameStr);
-    break;
-    
+        return new ShaderOpenGL(vertexShaderNameStr, fragmentShaderNameStr, geometryShaderNameStr);
+        break;
     }
 
     ULOGE("Current API didn't implement shader");

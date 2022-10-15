@@ -25,17 +25,6 @@ void LayerManager::PopLayer()
     m_layers.pop_back();
 }
 
-void LayerManager::HandleEvent(Event* event)
-{
-    for(auto & layer : m_layers)
-    {
-        layer->HandleEvent(event);
-
-        if(event->IsHandeled())
-            break;
-    }
-}
-
 std::shared_ptr<Layer> LayerManager::GetTopLayer()
 {
     UASSERT(m_layers.size() != 0, "Layer queue is empty");
@@ -46,4 +35,18 @@ std::shared_ptr<Layer> LayerManager::GetTopLayer()
 unsigned int LayerManager::GetSize() const
 {
     return static_cast<unsigned int>(m_layers.size());
+}
+
+void LayerManager::HandleEvent(Event* event)
+{
+    if(event->IsHandeled())
+        return;
+
+    for(auto & layer : m_layers)
+    {
+        layer->HandleEvent(event);
+
+        if(event->IsHandeled())
+            break;
+    }
 }

@@ -12,10 +12,10 @@ using namespace Ull;
 
 MainLayer::MainLayer(glm::uvec2 size) : Layer("main", size)
 {
-    Init();
+    CreateLayout();
 }
 
-void MainLayer::SetWindow(const std::shared_ptr<UllWindow>& window)
+void MainLayer::SetWindow(const NotOwner<UllWindow>& window)
 {
     auto titleElement = std::find_if(m_layout->GetChildren().begin(), m_layout->GetChildren().end(), [](const auto& element) { return element->GetName() == "titleBarElement"; });
     if (m_layout->GetChildren().end() != titleElement)
@@ -31,6 +31,21 @@ void MainLayer::SetWindow(const std::shared_ptr<UllWindow>& window)
         auto view3D = static_cast<UiView3D*>(*view3DElement);
         view3D->SetWindow(window);
     }
+}
+
+void MainLayer::HandleEvent(Event* event)
+{
+    if(event->IsHandeled())
+        return;
+
+    switch (event->GetType())
+    {
+    case EventType::WindowResize:
+        Resize(static_cast<WindowResizeEvent*>(event)->GetVal());
+    break;
+    }
+
+    m_layout->HandleEvent(event);
 }
 
 void MainLayer::Update()
@@ -51,26 +66,9 @@ void MainLayer::Render()
     m_layout->Render();
 }
 
-void MainLayer::HandleEvent(Event* event)
-{
-    switch (event->GetType())
-    {
-    case EventType::WindowResize:
-        Resize(static_cast<WindowResizeEvent*>(event)->GetVal());
-    break;
-    }
-
-    m_layout->HandleEvent(event);
-}
-
-void MainLayer::Init()
-{
-    CreateLayout();
-}
-
 void MainLayer::CreateLayout()
 {
-    //Assuming we are woring with a 1280 x 720 pixel window
+    //Assuming we are working with a 1280 x 720 pixel window
     //Then we can scale content up and down
 
     auto initSize = m_layout->GetSize();

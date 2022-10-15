@@ -4,6 +4,7 @@
 #include "Node.h"
 #include "RenderableNode.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Utilities/PointerHelper.h"
 
 namespace Ull
 {
@@ -12,7 +13,7 @@ namespace Ull
     class Node3D : public RenderableNode
     {
     public:
-        Node3D(const std::string& name, const Scene* scene);
+        Node3D(const std::string& name, NotOwner<Scene> scene);
         virtual ~Node3D() {}
 
         glm::vec3 GetPosition() const               { return m_position; }

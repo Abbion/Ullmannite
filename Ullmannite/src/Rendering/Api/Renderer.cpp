@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Logger/Logger.h"
+#include "OpenGL/DataConverterOpenGL.h"
 
 using namespace Ull;
 
@@ -66,25 +67,6 @@ void Renderer::SetViewPort(const glm::uvec2& position, const glm::uvec2& size)
     }
 }
 
-void Renderer::SetClearColor(glm::vec4 color)
-{
-    if (m_api == API::OPEN_GL)
-    {
-        glClearColor(color.r, color.g, color.b, color.a);
-    }
-}
-
-void Renderer::Clear(ClearBits clearBits)
-{
-    if (m_api == API::OPEN_GL)
-    {
-        unsigned int bitSum = (clearBits & ClearBits::COLOR) ? GL_COLOR_BUFFER_BIT : 0;
-        bitSum |= (clearBits & ClearBits::DEPTH) ? GL_DEPTH_BUFFER_BIT : 0;
-        bitSum |= (clearBits & ClearBits::SETNCIL) ? GL_STENCIL_BUFFER_BIT : 0;
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-}
-
 void Renderer::SetDepth(State state)
 {
     if(m_api == API::OPEN_GL)
@@ -130,11 +112,30 @@ void Renderer::SetFaceWinding(FaceWinding winding)
     }
 }
 
+void Renderer::SetClearColor(glm::vec4 color)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        glClearColor(color.r, color.g, color.b, color.a);
+    }
+}
+
+void Renderer::Clear(ClearBits clearBits)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        unsigned int bitSum = (clearBits & ClearBits::COLOR) ? GL_COLOR_BUFFER_BIT : 0;
+        bitSum |= (clearBits & ClearBits::DEPTH) ? GL_DEPTH_BUFFER_BIT : 0;
+        bitSum |= (clearBits & ClearBits::SETNCIL) ? GL_STENCIL_BUFFER_BIT : 0;
+        glClear(bitSum);
+    }
+}
+
 void Renderer::DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type, unsigned int skip)
 {
     if (m_api == API::OPEN_GL)
     {
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0); //TODO: primive to triangles and types
+        glDrawElements(ConvertPrimitive(primitive), count, ConvetDataType(type), (void*)skip);
     }
 }
 
@@ -142,7 +143,7 @@ void Renderer::DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count
 {
     if (m_api == API::OPEN_GL)
     {
-        glDrawArrays(GL_TRIANGLES, 0, count);
+        glDrawArrays(ConvertPrimitive(primitive), skip, count);
     }
 }
 

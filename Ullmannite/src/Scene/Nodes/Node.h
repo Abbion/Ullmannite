@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include "Event/EventHandler.h"
+#include "Utilities/PointerHelper.h"
 
 namespace Ull
 {
@@ -10,17 +11,18 @@ namespace Ull
     class Node : public EventHandler
     {
     public:
-        Node(const std::string& name, const Scene* scene);
+        Node(const std::string& name, NotOwner<Scene> scene);
         virtual ~Node();
 
-        Node* GetParent() const { return m_parent; }
-        std::vector<Node*> GetChildren() { return m_children; }
-        const Scene* GetScene() const { return m_scene; }
-        const std::string GetName() const { return m_name; }
-
         void SetName(const std::string& name) { m_name = name; }
+        void SetParent(NotOwner<Node> node);
         
-        void SetParent(Node* node);
+        inline bool IsRenerable() const     { return m_isRenderable; }
+        NotOwner<Node> GetParent() const    { return m_parent; }
+        std::vector<Node*>& GetChildren()   { return m_children; }
+        NotOwner<Scene> GetScene() const    { return m_scene; }
+        const std::string GetName() const   { return m_name; }
+
         void AddNode(Node* node);
         bool RemoveNode(Node* node);
 
@@ -31,11 +33,14 @@ namespace Ull
         bool operator!=(Node* node);
 
     protected:
-        unsigned long long m_id; //TODO: Think if this is needed if we have name
+        unsigned long long m_id;
 
-        Node* m_parent;
+        NotOwner<Scene> m_scene{ nullptr };
+
+        NotOwner<Node> m_parent{ nullptr };
         std::vector<Node*> m_children;
-        const Scene* m_scene;
         std::string m_name;
+
+        bool m_isRenderable{ false };
     };
 }

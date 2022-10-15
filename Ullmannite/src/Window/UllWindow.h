@@ -26,9 +26,10 @@ namespace Ull
     class UllWindow : public EventHandler
     {
     public:
-        UllWindow(std::string title, glm::uvec2 size);
+        UllWindow();
         ~UllWindow();
 
+        void Create(std::string title, glm::uvec2 size);
         void SetTitle(const std::string& title);
         void SetSize(glm::ivec2 size);
         void SetPosition(glm::ivec2 position);
