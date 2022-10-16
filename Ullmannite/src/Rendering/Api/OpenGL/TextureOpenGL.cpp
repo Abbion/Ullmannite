@@ -2,84 +2,9 @@
 #include "TextureOpenGL.h"
 #include "glad/glad.h"
 #include "Logger/Logger.h"
+#include "DataConverterOpenGL.h"
 
 using namespace Ull;
-
-namespace
-{
-	constexpr GLenum ConverterChannel(ColorFormat channel)
-	{
-		switch (channel)
-		{
-		case ColorFormat::R:
-			return GL_RED;
-		break;
-
-		case ColorFormat::RG:
-			return GL_RG;
-		break;
-
-		case ColorFormat::RGB:
-			return GL_RGB;
-		break;
-
-		case ColorFormat::RGBA:
-			return GL_RGBA;
-		break;
-
-		default:
-			ULOGE("Can't conver this channel");
-            return 0;
-        break;
-		}
-	}
-
-	constexpr GLenum ConverterWrap(WrapMode wrap)
-	{
-		switch(wrap)
-		{
-		case WrapMode::BORDER:
-			return GL_CLAMP_TO_BORDER;
-		break;
-
-		case WrapMode::CLAMP:
-			return GL_CLAMP_TO_EDGE;
-		break;
-
-		case WrapMode::MIRROR_REPEAT:
-			return GL_MIRRORED_REPEAT;
-		break;
-
-		case WrapMode::REPAT:
-			return GL_REPEAT;
-		break;
-
-		default:
-			ULOGE("Can't conver this wrap type");
-            return 0;
-        break;
-		}
-	}
-
-	constexpr GLenum SamplerConverter(Sampling sampling)
-	{
-		switch (sampling)
-		{
-		case Sampling::LINEAR:
-			return GL_LINEAR;
-		break;
-
-		case Sampling::NEAREST:
-			return GL_NEAREST;
-		break;
-		
-		default:
-			ULOGE("Can't conver this sampling type");
-			return 0;
-		break;
-		}
-	}
-}
 
 Texture2DOpenGL::Texture2DOpenGL()
 {

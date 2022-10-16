@@ -1,10 +1,9 @@
 #pragma once
 #include "UiElement/UiElement.h"
-#include "Rendering/Drawable/Drawable.h"
 
 namespace Ull
 {
-	class UiLayout : public UiElement, public DrawableInterface
+	class UiLayout : public UiElement
 	{
 	public:
 		UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size);

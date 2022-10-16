@@ -3,121 +3,9 @@
 #include "BufferOpenGL.h"
 #include "Logger/Logger.h"
 #include "TextureOpenGL.h"
+#include "DataConverterOpenGL.h"
 
 using namespace Ull;
-
-namespace
-{
-    constexpr GLenum ConvertUsageType(const GraphicsBufferType& type)
-    {
-        switch (type)
-        {
-        case GraphicsBufferType::STATIC_DRAW:
-            return GL_STATIC_DRAW;
-        break;
-
-        case GraphicsBufferType::DYNAMIC_DRAW:
-            return GL_DYNAMIC_DRAW;
-        break;
-        case GraphicsBufferType::STREAM_DRAW:
-            return GL_STREAM_DRAW;
-        break;
-
-        default:
-            ULOGE("Cannot convert this type");
-            return 0;
-        break;
-        }
-    }
-
-    constexpr GLenum ConvetDataType(const GraphicsDataType& type)
-    {
-        switch (type)
-        {
-        case GraphicsDataType::FLOAT:
-            return GL_FLOAT;
-        break;
-
-        case GraphicsDataType::DOUBLE:
-            return GL_DOUBLE;
-        break;
-
-        case GraphicsDataType::INT:
-            return GL_INT;
-        break;
-
-        case GraphicsDataType::UINT:
-            return GL_UNSIGNED_INT;
-        break;
-
-        case GraphicsDataType::HALF:
-            return GL_HALF_FLOAT;
-        break;
-
-        case GraphicsDataType::BYTE:
-            return GL_BYTE;
-        break;
-
-        case GraphicsDataType::UBYTE:
-            return GL_UNSIGNED_BYTE;
-        break;
-        
-        default:
-            ULOGE("Cannot convert this type");
-            return 0;
-        break;
-        }
-    }
-
-    constexpr uint16_t SizeOfDataType(const GraphicsDataType& type)
-    {
-        switch (type)
-        {
-        case GraphicsDataType::INT:
-        case GraphicsDataType::UINT:
-        case GraphicsDataType::FLOAT:
-            return sizeof(int32_t);
-        break;
-
-        case GraphicsDataType::DOUBLE:
-            return sizeof(int64_t);
-        break;
-
-        case GraphicsDataType::HALF:
-            return sizeof(int16_t);
-        break;
-
-        case GraphicsDataType::BYTE:
-        case GraphicsDataType::UBYTE:
-            return sizeof(int8_t);
-        break;
-        
-        default:
-            ULOGE("Cannot convert this type");
-            return 0;
-        break;
-        }
-    }
-
-    constexpr GLenum ConvertRenderFufferFormat(RenderBuffer::Format format)
-    {
-        switch (format)
-        {
-        case RenderBuffer::Format::DEPTH:
-            return GL_DEPTH_COMPONENT24;
-        break;
-
-        case RenderBuffer::Format::DEPTH_STENCIL:
-            return GL_DEPTH24_STENCIL8;
-        break;
-        
-        default:
-            ULOGE("Cannot convert this type");
-            return 0;
-        break;
-        }
-    }
-}
 
 VertexBufferOpenGL::VertexBufferOpenGL(int size, float* data, GraphicsBufferType type)
 {
@@ -141,11 +29,11 @@ void VertexBufferOpenGL::Unbind() const
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type) : m_size(size)
+IndexBufferOpenGL::IndexBufferOpenGL(int size, unsigned int* data, GraphicsBufferType type) : m_size(size / sizeof(unsigned int))
 {
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, data, ConvertUsageType(type));
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, ConvertUsageType(type));
 }
 
 IndexBufferOpenGL::~IndexBufferOpenGL()

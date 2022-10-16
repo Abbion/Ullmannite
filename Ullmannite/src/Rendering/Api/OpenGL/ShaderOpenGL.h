@@ -16,6 +16,7 @@ namespace Ull
         void SetInt(std::string uniformName, int value) const override;
         void SetFloat(std::string uniformName, float value) const override;
         void SetFloat4(std::string uniformName, glm::vec4 value) const override;
+        void SetFloat3(std::string uniformName, glm::vec3 value) const override;
         void SetFloat4x4(std::string uniformName, glm::mat4x4 value) const override;
         void SetDouble(std::string uniformName, double value) const override;
         void SetBool(std::string uniformName, bool value) const override;

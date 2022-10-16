@@ -1,10 +1,12 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "Event/EventHandler.h"
+#include "Rendering/DrawInterfaces/Drawable.h"
+#include "Utilities/PointerHelper.h"
 
 namespace Ull
 {
-    class UiElement : public EventHandler
+    class UiElement : public EventHandler, public Drawable
     {
     public:
         UiElement(std::string name, glm::uvec2 position, glm::uvec2 size) :
@@ -13,23 +15,22 @@ namespace Ull
 
         virtual void CreateResources() = 0;
 
-        virtual void Update() = 0;
-        virtual void Render() = 0;
-
-        void HandleEvent(Event* event) override;
-
         void AddUiElement(UiElement* newElement);
-        const UiElement* GetParent() const { return m_parent; }
-        const std::vector<UiElement*>& GetChildren() const { return m_children; }
-
-        glm::uvec2 GetPosition() const      { return m_position; }
-        glm::uvec2 GetSize() const          { return m_size; }
-        float GetScale() const              { return m_scale; }
-        inline std::string GetName() const  { return m_name; }
+        NotOwner<UiElement> GetParent() const                   { return m_parent; }
+        const std::vector<UiElement*>& GetChildren() const      { return m_children; }
 
         void SetPositiion(const glm::uvec2& position)   { m_position = position; }
         void SetSize(const glm::uvec2& size)            { m_size = size; }
         void SetScale(const float& scale)               { m_scale = scale; }
+
+        glm::uvec2 GetPosition() const              { return m_position; }
+        glm::uvec2 GetSize() const                  { return m_size; }
+        float GetScale() const                      { return m_scale; }
+        inline const std::string GetName() const    { return m_name; }
+
+        void HandleEvent(Event* event) override;
+        virtual void Update() = 0;
+        void Render() override {}
 
     protected:
         glm::uvec2 m_position;
@@ -38,7 +39,9 @@ namespace Ull
 
         std::string m_name;
 
-        UiElement* m_parent{ nullptr };
+        NotOwner<UiElement> m_parent{ nullptr };
         std::vector<UiElement*> m_children;
+
+        using Drawable::Drawable;
     };
 }

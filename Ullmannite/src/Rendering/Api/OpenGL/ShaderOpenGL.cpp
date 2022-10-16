@@ -160,6 +160,12 @@ void ShaderOpenGL::SetFloat4(std::string uniformName, glm::vec4 value) const
     glUniform4f(locator, value.r, value.g, value.b, value.a);
 }
 
+void  ShaderOpenGL::SetFloat3(std::string uniformName, glm::vec3 value) const
+{
+    auto locator = glGetUniformLocation(m_shaderID, uniformName.c_str());
+    glUniform3f(locator, value.r, value.g, value.b);
+}
+
 void ShaderOpenGL::SetFloat4x4(std::string uniformName, glm::mat4x4 value) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_shaderID, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(value));

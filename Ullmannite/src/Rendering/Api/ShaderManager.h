@@ -11,9 +11,10 @@ namespace Ull
 		~ShaderManager();
 
 		static ShaderManager& GetInstance();
+		Shader* GetShader(ShaderTag tag);
+
 		void LoadShader(ShaderTag tag, std::string vertexShaderName, std::string pixelShaderName, std::string geometryShaderName = "");
 		void UnloadShader(ShaderTag tag);
-		Shader* GetShader(ShaderTag tag);
 
 	protected:
 		ShaderManager();

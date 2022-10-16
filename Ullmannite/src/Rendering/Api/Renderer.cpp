@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Logger/Logger.h"
+#include "OpenGL/DataConverterOpenGL.h"
 
 using namespace Ull;
 
@@ -66,6 +67,51 @@ void Renderer::SetViewPort(const glm::uvec2& position, const glm::uvec2& size)
     }
 }
 
+void Renderer::SetDepth(State state)
+{
+    if(m_api == API::OPEN_GL)
+    {
+        if(state == State::ENABLE)
+            glEnable(GL_DEPTH_TEST);
+        else
+            glDisable(GL_DEPTH_TEST);
+    }
+}
+
+void Renderer::SetFaceCulling(FaceCulling culling)
+{
+    if(m_api == API::OPEN_GL)
+    {
+        if(culling == FaceCulling::NONE)
+            glDisable(GL_CULL_FACE);
+        else
+        {
+            glEnable(GL_CULL_FACE);
+
+            if(culling == FaceCulling::FRONT)
+                glCullFace(GL_FRONT);
+
+            else if(culling == FaceCulling::BACK)
+                glCullFace(GL_BACK);
+
+            else if(culling == FaceCulling::FRONT_AND_BACK)
+                glCullFace(GL_FRONT_AND_BACK);
+        }
+    }
+}
+
+void Renderer::SetFaceWinding(FaceWinding winding)
+{
+    if(m_api == API::OPEN_GL)
+    {
+        if(winding == FaceWinding::CLOCKWISE)
+            glFrontFace(GL_CW);
+
+        else
+            glFrontFace(GL_CCW);
+    }
+}
+
 void Renderer::SetClearColor(glm::vec4 color)
 {
     if (m_api == API::OPEN_GL)
@@ -85,22 +131,19 @@ void Renderer::Clear(ClearBits clearBits)
     }
 }
 
-void Renderer::SetDepth(State state)
-{
-    if(m_api == API::OPEN_GL)
-    {
-        if(state == State::ENABLE)
-            glEnable(GL_DEPTH_TEST);
-        else
-            glDisable(GL_DEPTH_TEST);
-    }
-}
-
 void Renderer::DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type, unsigned int skip)
 {
     if (m_api == API::OPEN_GL)
     {
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+        glDrawElements(ConvertPrimitive(primitive), count, ConvetDataType(type), (void*)skip);
+    }
+}
+
+void Renderer::DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count,  unsigned int skip)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        glDrawArrays(ConvertPrimitive(primitive), skip, count);
     }
 }
 

@@ -23,6 +23,11 @@ ShaderManager& ShaderManager::GetInstance()
 	return m_shaderManagerInstance;
 }
 
+Shader* ShaderManager::GetShader(ShaderTag tag)
+{
+	return m_shaderMap[tag];
+}
+
 void ShaderManager::LoadShader(ShaderTag tag, std::string vertexShaderName, std::string pixelShaderName, std::string geometryShaderName)
 {
 	if (m_shaderMap[tag] != nullptr)
@@ -38,9 +43,4 @@ void ShaderManager::UnloadShader(ShaderTag tag)
 {
 	delete m_shaderMap[tag];
 	m_shaderMap[tag] = nullptr;
-}
-
-Shader* ShaderManager::GetShader(ShaderTag tag)
-{
-	return m_shaderMap[tag];
 }

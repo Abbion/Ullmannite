@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "Mouse.h"
+#include "Logger/Logger.h"
 
 using namespace Ull;
 
@@ -36,4 +37,17 @@ void Mouse::InitButtonMap()
     m_buttonMap[Button::LEFT] = false;
     m_buttonMap[Button::RIGHT] = false;
     m_buttonMap[Button::MIDDLE] = false;
+}
+
+void Mouse::UpdatePosition(const glm::ivec2& position)
+{
+    static bool firstEnter = true;
+    if(firstEnter)
+    {
+        m_mousePosition = position;
+        firstEnter = false;
+    }
+
+    m_mousePositionDelta =  position - m_mousePosition;
+    m_mousePosition = position;
 }

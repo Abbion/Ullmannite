@@ -16,11 +16,11 @@ namespace Ull
         void PushLayer(std::shared_ptr<Layer> newLayer);
         void PopLayer();
 
-        void HandleEvent(Event* event) override;
-
         std::shared_ptr<Layer> GetTopLayer();
         std::deque<std::shared_ptr<Layer>>& GetAllLayers() { return m_layers; }
         unsigned int GetSize() const;
+
+        void HandleEvent(Event* event) override;
         
     private:
         std::deque<std::shared_ptr<Layer>> m_layers;

@@ -2,6 +2,7 @@
 #include "UiArea.h"
 #include "Window/UllWindow.h"
 #include <memory>
+#include "Utilities/PointerHelper.h"
 
 namespace Ull
 {
@@ -11,7 +12,7 @@ namespace Ull
 		UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size);
 		~UiTitleBar() {}
 
-		void SetWindow(const std::shared_ptr<UllWindow>& window) { m_window = window; }
+		void SetWindow(const NotOwner<UllWindow>& window) { m_window = window; }
 
 		bool IsOnDragArea() { return m_onDragArea; }
 
@@ -24,7 +25,7 @@ namespace Ull
 
 		void RenderUI();
 	private:
-		std::shared_ptr<UllWindow> m_window;
+		NotOwner<UllWindow> m_window{ nullptr };
 
 		bool m_onDragArea{ false };
 		bool m_closePressed{ false };

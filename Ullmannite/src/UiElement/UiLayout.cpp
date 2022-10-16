@@ -16,7 +16,7 @@ UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
 
 UiLayout::~UiLayout()
 {
-    
+
 }
 
 void UiLayout::CreateResources()
@@ -26,6 +26,9 @@ void UiLayout::CreateResources()
 
 void UiLayout::HandleEvent(Event* event)
 {
+    if (event->IsHandeled())
+        return;
+
     for (const auto& uiElement : m_children)
     {
         uiElement->HandleEvent(event);

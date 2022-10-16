@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 
 #include "Exceptions/Exceptions.h"
+#include "Utilities/PointerHelper.h"
 
 #ifdef PLATFORM_WINDOWS
 	#include <Windows.h>
@@ -20,3 +21,4 @@
 								className(const className&&) = delete; \
 								className& operator=(className&) = delete; \
 								className& operator=(className&&) = delete;
+

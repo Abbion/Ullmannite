@@ -25,15 +25,21 @@
 
 using namespace Ull;
 
-UllWindow::UllWindow(std::string title, glm::uvec2 size) : m_title(title)
+UllWindow::UllWindow()
 {
-    if(size.x < MIN_WINDOW_WIDTH)
+}
+
+void UllWindow::Create(std::string title, glm::uvec2 size)
+{
+    m_title = title;
+
+    if (size.x < MIN_WINDOW_WIDTH)
         size.x = MIN_WINDOW_WIDTH;
 
-    if(size.y < MIN_WINDOW_HEIGHT)
+    if (size.y < MIN_WINDOW_HEIGHT)
         size.y = MIN_WINDOW_HEIGHT;
 
-    if(Renderer::GetInstance().GetApi() == Renderer::API::OPEN_GL)
+    if (Renderer::GetInstance().GetApi() == Renderer::API::OPEN_GL)
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -42,16 +48,9 @@ UllWindow::UllWindow(std::string title, glm::uvec2 size) : m_title(title)
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     }
 
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-    m_eventContext = glfwCreateWindow(1, 1, "eventContext", nullptr, nullptr);
+    m_window = glfwCreateWindow(size.x, size.y, m_title.c_str(), nullptr, nullptr);
 
-    if (!m_eventContext)
-        throw InitializationException("Can't initialize event context");
-
-    glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
-    m_renderWindow = glfwCreateWindow(size.x, size.y, m_title.c_str(), nullptr, m_eventContext);
-
-    if (!m_renderWindow)
+    if (!m_window)
         throw InitializationException("Can't initialize Window");
 
     GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
@@ -61,14 +60,14 @@ UllWindow::UllWindow(std::string title, glm::uvec2 size) : m_title(title)
         glfwGetMonitorWorkarea(primaryMonitor, NULL, NULL, &minitorAreaSize.x, &minitorAreaSize.y);
 
         glm::ivec2 initAppPosition(minitorAreaSize.x / 2.f - size.x / 2.f, minitorAreaSize.y / 2.f - size.y / 2.f);
-        glfwSetWindowPos(m_renderWindow, initAppPosition.x, initAppPosition.y);
+        glfwSetWindowPos(m_window, initAppPosition.x, initAppPosition.y);
     }
     else
     {
-        glfwSetWindowPos(m_renderWindow, 50, 50);
+        glfwSetWindowPos(m_window, 50, 50);
     }
 
-    glfwSetWindowSizeLimits(m_renderWindow, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    glfwSetWindowSizeLimits(m_window, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     InitCallBacks();
 
@@ -77,8 +76,7 @@ UllWindow::UllWindow(std::string title, glm::uvec2 size) : m_title(title)
 
 UllWindow::~UllWindow()
 {    
-    glfwDestroyWindow(m_renderWindow);
-    glfwDestroyWindow(m_eventContext);
+    glfwDestroyWindow(m_window);
     glfwTerminate();
 
     ULOGD("Window terminated");
@@ -87,7 +85,7 @@ UllWindow::~UllWindow()
 void UllWindow::SetTitle(const std::string& title)
 {
     m_title = title;
-    glfwSetWindowTitle(m_renderWindow, m_title.c_str());
+    glfwSetWindowTitle(m_window, m_title.c_str());
 }
 
 void UllWindow::SetSize(glm::ivec2 size)
@@ -98,23 +96,38 @@ void UllWindow::SetSize(glm::ivec2 size)
     if(size.y < MIN_WINDOW_HEIGHT)
         size.y = MIN_WINDOW_HEIGHT;
 
-    glfwSetWindowSize(m_renderWindow, size.x, size.y);
+    glfwSetWindowSize(m_window, size.x, size.y);
 }
 
 void UllWindow::SetPosition(glm::ivec2 position)
 {
-    glfwSetWindowPos(m_renderWindow, position.x, position.y);
+    glfwSetWindowPos(m_window, position.x, position.y);
 }
 
 void UllWindow::SetEventQueueDataPointer(EventQueue* eventQueue)
 {
-    glfwSetWindowUserPointer(m_renderWindow, reinterpret_cast<void*>(eventQueue));
+    glfwSetWindowUserPointer(m_window, reinterpret_cast<void*>(eventQueue));
+}
+
+void UllWindow::HandleEvent(Event* event)
+{
+    if(event->IsHandeled())
+        return;
+    
+    if(event->GetType() == EventType::KeyDown)
+    {
+        if(static_cast<KeyDownEvent*>(event)->GetVal() == Keyboard::Key::F)
+        {
+            if(Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
+                SwitchHiddenCursor();
+        }
+    }
 }
 
 glm::ivec2 UllWindow::GetPosition() const
 {
     glm::ivec2 position;
-    glfwGetWindowPos(m_renderWindow, &position.x, &position.y);
+    glfwGetWindowPos(m_window, &position.x, &position.y);
     
     return position;
 }
@@ -122,7 +135,7 @@ glm::ivec2 UllWindow::GetPosition() const
 glm::ivec2 UllWindow::GetSize() const
 {
     glm::ivec2 size;
-    glfwGetWindowSize(m_renderWindow, &size.x, &size.y);
+    glfwGetWindowSize(m_window, &size.x, &size.y);
 
     return size;
 }
@@ -131,33 +144,26 @@ void UllWindow::Close()
 {
     m_isOpen = false;
 
-    glfwSetWindowShouldClose(m_renderWindow, GLFW_TRUE);
-    glfwSetWindowShouldClose(m_eventContext, GLFW_TRUE);
-    
-
-    //glfwPostEmptyEvent() Works only if the event polling is run on the main thread.
-    //glfwPostEmptyEvent();
-    //For now just move the window 1 pixel to the right to get the window moved event
-    SetPosition(GetPosition() + glm::ivec2(1, 0));
+    glfwSetWindowShouldClose(m_window, GLFW_TRUE);
 }
 
 void UllWindow::Maximize()
 {
-    glfwMaximizeWindow(m_renderWindow);
+    glfwMaximizeWindow(m_window);
     m_isMaximized = true;
     m_isMinimized = false;
 }
 
 void UllWindow::Minimize()
 {
-    glfwIconifyWindow(m_renderWindow);
+    glfwIconifyWindow(m_window);
     m_isMaximized = false;
     m_isMinimized = true;
 }
 
 void UllWindow::Restore()
 {
-    glfwRestoreWindow(m_renderWindow);
+    glfwRestoreWindow(m_window);
     m_isMaximized = false;
     m_isMinimized = false;
 }
@@ -169,6 +175,20 @@ void UllWindow::CheckCursorInteractions()
     ResizeByCursor();
 }
 
+void UllWindow::SwitchHiddenCursor()
+{
+    if (m_cursorLocked)
+    {
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        m_cursorLocked = false;
+    }
+    else
+    {
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        m_cursorLocked = true;
+    }
+}
+
 void UllWindow::SwapBuffers()
 {
     if (m_isResized)
@@ -176,7 +196,7 @@ void UllWindow::SwapBuffers()
         Renderer::GetInstance().FlushContext();
         glfwSwapInterval(2);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(m_renderWindow);
+        glfwSwapBuffers(m_window);
         m_intervalRestored = false;
 
         //Synchronization for resizing
@@ -191,7 +211,7 @@ void UllWindow::SwapBuffers()
     else
     {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(m_renderWindow);
+        glfwSwapBuffers(m_window);
 
         if (m_intervalRestored)
         {
@@ -203,8 +223,7 @@ void UllWindow::SwapBuffers()
 
 void UllWindow::PullEvents()
 {
-    glfwWaitEvents();
-    //glfwWaitEventsTimeout(0.);
+    glfwPollEvents();
 }
 
 void UllWindow::CheckResizeBorder()
@@ -215,7 +234,7 @@ void UllWindow::CheckResizeBorder()
     if (!m_isResized)
     {
         glm::dvec2 cursorPos;
-        glfwGetCursorPos(m_renderWindow, &cursorPos.x, &cursorPos.y);
+        glfwGetCursorPos(m_window, &cursorPos.x, &cursorPos.y);
 
         auto bottmRightCorner = GetPosition() + GetSize();
         m_windowPositionWithMinSize.x = bottmRightCorner.x - MIN_WINDOW_WIDTH;
@@ -404,7 +423,7 @@ void UllWindow::MovedByCursor()
         if (!m_isDragged)   //Started draggins
         {
             glm::dvec2 startGrapPosGetter;
-            glfwGetCursorPos(m_renderWindow, &startGrapPosGetter.x, &startGrapPosGetter.y);
+            glfwGetCursorPos(m_window, &startGrapPosGetter.x, &startGrapPosGetter.y);
             m_startGrabPosition = glm::ivec2(startGrapPosGetter);
 
             if (m_isMaximized)
@@ -414,7 +433,7 @@ void UllWindow::MovedByCursor()
                 Restore();
                 auto afterRestoreSize = GetSize();
                 auto sizeScale = (float)afterRestoreSize.x / (float)originalSize.x;
-                m_startGrabPosition.x *= sizeScale;
+                m_startGrabPosition.x = int((float)m_startGrabPosition.x * sizeScale);
             }
 
             m_isDragged = true;
@@ -439,7 +458,7 @@ void UllWindow::ChangeCursorShape(int shape)
         m_currentCursorShape = shape;
         m_cursor = glfwCreateStandardCursor(m_currentCursorShape);
 
-        glfwSetCursor(m_renderWindow, m_cursor);
+        glfwSetCursor(m_window, m_cursor);
     }
 }
 
@@ -453,7 +472,7 @@ glm::ivec2 UllWindow::GetCursorScreenPosition()
 
 #ifdef PLATFORM_LINUX
     auto display = glfwGetX11Display();
-    auto window = glfwGetX11Window(m_renderWindow);
+    auto window = glfwGetX11Window(m_window);
 
     
     Window windowReturned;
@@ -469,17 +488,17 @@ glm::ivec2 UllWindow::GetCursorScreenPosition()
 
 void UllWindow::InitCallBacks()
 {
-    glfwSetWindowPosCallback(m_renderWindow, [](GLFWwindow* window, int positionX, int positionY){
+    glfwSetWindowPosCallback(m_window, [](GLFWwindow* window, int positionX, int positionY){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         eventQueue->PushEvent(std::make_shared<WindowMoveEvent>(EventType::WindowMaximized, glm::uvec2(positionX, positionY)));
     });
    
-    glfwSetFramebufferSizeCallback(m_renderWindow, [](GLFWwindow* window, int width, int height){
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         eventQueue->PushEvent(std::make_shared<WindowResizeEvent>(EventType::WindowResize, glm::uvec2(width, height)));
     });
     
-    glfwSetWindowFocusCallback(m_renderWindow, [](GLFWwindow* window, int focused){
+    glfwSetWindowFocusCallback(m_window, [](GLFWwindow* window, int focused){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         
         if(focused)
@@ -488,7 +507,7 @@ void UllWindow::InitCallBacks()
             eventQueue->PushEvent(std::make_shared<WindowLostFocusEvent>(EventType::WindowLostFocus));
     });
 
-    glfwSetWindowIconifyCallback(m_renderWindow, [](GLFWwindow* window, int iconified){
+    glfwSetWindowIconifyCallback(m_window, [](GLFWwindow* window, int iconified){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
 
         if(iconified)
@@ -497,7 +516,7 @@ void UllWindow::InitCallBacks()
             eventQueue->PushEvent(std::make_shared<WindowRestoredEvent>(EventType::WindowRestored));
     });
 
-    glfwSetWindowMaximizeCallback(m_renderWindow, [](GLFWwindow* window, int maximized){
+    glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow* window, int maximized){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
 
         if(maximized)
@@ -506,12 +525,12 @@ void UllWindow::InitCallBacks()
             eventQueue->PushEvent(std::make_shared<WindowRestoredEvent>(EventType::WindowRestored));
     });
 
-    glfwSetWindowCloseCallback(m_renderWindow, [](GLFWwindow* window){
+    glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         eventQueue->PushEvent(std::make_shared<WindowClosedEvent>(EventType::WindowClosed));
     });
 
-    glfwSetKeyCallback(m_renderWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods){
+    glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
 
         if(action == GLFW_PRESS)
@@ -520,7 +539,7 @@ void UllWindow::InitCallBacks()
             eventQueue->PushEvent(std::make_shared<KeyUpEvent>(EventType::KeyUp, static_cast<Keyboard::Key>(key)));
     });
 
-    glfwSetMouseButtonCallback(m_renderWindow, [](GLFWwindow* window, int button, int action, int mods) {
+    glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
 
         if (action == GLFW_PRESS)
@@ -529,12 +548,12 @@ void UllWindow::InitCallBacks()
             eventQueue->PushEvent(std::make_shared<MouseUpEvent>(EventType::MouseUp, static_cast<Mouse::Button>(button)));
     });
 
-    glfwSetCursorPosCallback(m_renderWindow, [](GLFWwindow* window, double xpos, double ypos){
+    glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos){
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         eventQueue->PushEvent(std::make_shared<MouseMoveEvent>(EventType::MouseMove, glm::ivec2(xpos, ypos)));
     });
 
-    glfwSetScrollCallback(m_renderWindow, [](GLFWwindow* window, double xoffset, double yoffset) {
+    glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset) {
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
         eventQueue->PushEvent(std::make_shared<MouseScrollEvent>(EventType::MouseScroll, static_cast<int>(yoffset)));
     });

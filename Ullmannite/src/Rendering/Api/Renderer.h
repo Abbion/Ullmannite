@@ -29,6 +29,20 @@ namespace Ull
             DISABLE
         };
 
+        enum class FaceCulling
+        {
+            NONE,
+            FRONT,
+            BACK,
+            FRONT_AND_BACK
+        };
+
+        enum class FaceWinding
+        {
+            CLOCKWISE,
+            COUNTER_CLOCKWISE
+        };
+
     public:
         NON_COPYABLE(Renderer);
         
@@ -36,22 +50,25 @@ namespace Ull
 
         static Renderer& GetInstance();
 
+        inline API GetApi() { return m_api; }
         void SetApi(API api);
         void Init();
 
         void SetViewPort(const glm::uvec2& position, const glm::uvec2& size);
-        void SetClearColor(glm::vec4 color);
-        void Clear(ClearBits clearBits);
 
         void SetDepth(State state);
+        void SetFaceCulling(FaceCulling culling);
+        void SetFaceWinding(FaceWinding winding);
 
+        void SetClearColor(glm::vec4 color);
+        void Clear(ClearBits clearBits);
         void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
+        void DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count, unsigned int skip = 0);
         void FlushContext();
-
-        inline API GetApi() { return m_api; }
 
     protected:
         Renderer() = default;
+
         static Renderer m_rendererInstance;
 
     private:

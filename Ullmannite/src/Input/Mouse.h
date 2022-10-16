@@ -22,9 +22,10 @@ namespace Ull
         ~Mouse();
 
         static Mouse& GetInstance();
-
+        
         bool IsButtonPressed(Button button) const;
         glm::ivec2 GetMousePosition() const { return m_mousePosition; }
+        glm::ivec2 GetMousePositionDelta() const { return m_mousePositionDelta; }
         int GetScrollDelta() const { return m_scroll; }
 
     protected:
@@ -34,10 +35,12 @@ namespace Ull
 
     private:
         std::map<Button, bool> m_buttonMap;
-        glm::ivec2 m_mousePosition;
+        glm::ivec2 m_mousePosition{ 0, 0 };
+        glm::ivec2 m_mousePositionDelta{ 0, 0 };
         int m_scroll;
 
-        void UpdatePosition(const glm::ivec2& position) { m_mousePosition = position; }
+    private:
+        void UpdatePosition(const glm::ivec2& position); 
         void UpdateScroll(int scroll) { m_scroll = scroll; }
         void UpdateButtonMap(const std::map<Button, bool>& updatedButtonMap);
         void InitButtonMap();
