@@ -133,7 +133,7 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
 
     //Attach color target
     m_colorTarget = new Texture2DOpenGL();
-    m_colorTarget->SetData(size, ColorFormat::RGB, ColorFormat::RGB, nullptr);
+    m_colorTarget->SetData(size, ColorFormat::RGB, ColorFormat::RGB, GraphicsDataType::UBYTE, nullptr);
     m_colorTarget->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 
     auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
