@@ -18,10 +18,15 @@
 
 #include "Rendering/IconsCode/IconCodes.h"
 
+#include "DataLoaders/VolumeLoader.h"
+#include "DataStructures/VolumeData.h"
+
 using namespace Ull;
 
 Application::Application()
 {
+    auto a = LoadVolumeData("Assets/VolumetricData/test.dat");
+
     try
     {
         InitLog();

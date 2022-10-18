@@ -30,6 +30,8 @@
 bin/
 bin-obj/
 
+#Asssets
+*.dat
 
 #Visual studio
 .vs/

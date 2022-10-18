@@ -24,51 +24,6 @@ void Cube::CreateResources()
 	if (m_layout != nullptr)
 		delete m_layout;
 
-float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.5f,  0.5f, 0.5f,
-         0.5f, -0.5f, -0.5f,  0.5f,  0.5f, 0.5f,
-         0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,
-         0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,
-        -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,
-        -0.5f, -0.5f, -0.5f,  0.5f,  0.5f, 0.5f,
-
-        -0.5f, -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
-
-        -0.5f,  0.5f,  0.5f, 0.0f,  0.5f,  0.0f,
-        -0.5f,  0.5f, -0.5f, 0.0f,  0.5f,  0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f,  0.5f,  0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f,  0.5f,  0.0f,
-        -0.5f, -0.5f,  0.5f, 0.0f,  0.5f,  0.0f,
-        -0.5f,  0.5f,  0.5f, 0.0f,  0.5f,  0.0f,
-
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  0.5f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f,  0.5f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f,  0.5f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f,  0.5f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  0.5f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.5f,  0.5f,
-         0.5f, -0.5f, -0.5f,  0.0f, 0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.5f,  0.5f,
-
-        -0.5f,  0.5f, -0.5f,  0.5f,  0.0f,  0.5f,
-         0.5f,  0.5f, -0.5f,  0.5f,  0.0f,  0.5f,
-         0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.5f,
-         0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.5f,
-        -0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.5f,
-        -0.5f,  0.5f, -0.5f,  0.5f,  0.0f,  0.5f
-    };
-
-	/*
     float vertices[] = {
 		-0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 1.0f,
 		0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 1.0f,
@@ -100,14 +55,13 @@ float vertices[] = {
 		2, 6, 3,
 		3, 6, 7 
 	};
-	*/
 
 	m_layout = VertexLayout::Create({LayoutElement("Position", GraphicsDataType::FLOAT, 3), LayoutElement("Normal", GraphicsDataType::FLOAT, 3)});
 
 	m_layout->Bind();
 
 	m_vertexBuffer = VertexBuffer::Create(sizeof(vertices), vertices, GraphicsBufferType::STATIC_DRAW);
-	//m_indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
+	m_indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
 
 	m_layout->Build();
 	m_vertexBuffer->Unbind();
@@ -139,6 +93,5 @@ void Cube::Render()
 
 	m_layout->Bind();
 
-	//Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, 36);
-	Renderer::GetInstance().DrawArrays(GraphicsRenderPrimitives::TRIANGLE, 36);
+	Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }
