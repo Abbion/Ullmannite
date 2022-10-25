@@ -115,4 +115,39 @@ namespace Ull
         Texture2D* m_colorTarget{ nullptr };
         RenderBuffer* m_depthTarget{ nullptr };
     };
+
+
+    template<typename T>
+    class StorageBufferOpenGL;
+
+    template<typename T>
+    class StorageBuffer
+    {
+    public:
+        NON_COPYABLE(StorageBuffer);
+
+        virtual ~StorageBuffer() {}
+
+        size_t GetSize() { return size; }
+
+        static StorageBuffer* Create(T* data, size_t size)
+        {
+            m_size = size;
+
+            switch (Renderer::GetInstance().GetApi())
+            {
+            case Renderer::API::OPEN_GL:
+                return new StorageBufferOpenGL<T>(data, size);
+                break;
+            }
+
+            UASSERT(false, "Current API didn't implement storage buffer");
+            return nullptr;
+        }
+        
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+    protected:
+        size_t size;
+    };
 }

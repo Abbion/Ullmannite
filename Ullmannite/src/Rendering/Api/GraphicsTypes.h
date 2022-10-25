@@ -16,6 +16,8 @@ namespace Ull
         DOUBLE,
         INT,
         UINT,
+        SHORT,
+        USHORT,
         BYTE,
         UBYTE,
     };

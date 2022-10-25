@@ -3,5 +3,5 @@
 
 namespace Ull
 {
-	VolumeData* LoadVolumeData(const std::string filePath);
+	std::shared_ptr<VolumeData> LoadVolumeData(const std::string filePath);
 }

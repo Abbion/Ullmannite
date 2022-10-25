@@ -36,7 +36,18 @@ void ShaderManager::LoadShader(ShaderTag tag, std::string vertexShaderName, std:
 		return;
 	}
 
-	m_shaderMap[tag] = Shader::Create(vertexShaderName.c_str(), pixelShaderName.c_str(), geometryShaderName.empty() ? nullptr : geometryShaderName.c_str());
+	m_shaderMap[tag] = Shader::CreateRenderShader(vertexShaderName.c_str(), pixelShaderName.c_str(), geometryShaderName.empty() ? nullptr : geometryShaderName.c_str());
+}
+
+void ShaderManager::LoadShader(ShaderTag tag, std::string computeShaderName)
+{
+	if (m_shaderMap[tag] != nullptr)
+	{
+		ULOGE("Compute shader " << computeShaderName << " already loaded");
+		return;
+	}
+
+	m_shaderMap[tag] = Shader::CreateComputeShader(computeShaderName.c_str());
 }
 
 void ShaderManager::UnloadShader(ShaderTag tag)

@@ -112,6 +112,16 @@ void Renderer::SetFaceWinding(FaceWinding winding)
     }
 }
 
+void Renderer::SetPixelPackWidth(unsigned int width)
+{
+    glPixelStorei(GL_PACK_ALIGNMENT, width);
+}
+
+void Renderer::SetPixelUnpackWidth(unsigned int width)
+{
+    glPixelStorei(GL_UNPACK_ALIGNMENT, width);
+}
+
 void Renderer::SetClearColor(glm::vec4 color)
 {
     if (m_api == API::OPEN_GL)
@@ -145,6 +155,11 @@ void Renderer::DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count
     {
         glDrawArrays(ConvertPrimitive(primitive), skip, count);
     }
+}
+
+void Renderer::DispatchComputeShader(unsigned int groupSizeX, unsigned int groupSizeY, unsigned int groupSizeZ)
+{
+    glDispatchCompute(groupSizeX, groupSizeY, groupSizeZ);
 }
 
 void Renderer::FlushContext()

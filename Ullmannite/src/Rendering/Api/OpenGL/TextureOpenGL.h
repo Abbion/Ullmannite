@@ -12,8 +12,8 @@ namespace Ull
 
         unsigned int GetOpenGLTextureID() const { return m_textureID; }
 
-        void SetData(glm::uvec2 size, ColorFormat InChannel, ColorFormat OutChannel, GraphicsDataType dataType, const void* data) override;
-        void EnableMinMap(bool minMap) const override;
+        void SetData(glm::uvec2 size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) override;
+        void EnableMinMap() const override;
         void SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap) const override;
         void SetBorderColor(glm::vec4 color) const override;
         void SetSampling(Sampling magSampling, Sampling minSampling) const override;
@@ -21,6 +21,7 @@ namespace Ull
         void Bind() const override;
         void Unbind() const override;
 
+        void BindImage(InternalDataFormat internalDataFormat, ReadWriteRights readWriteRights, std::uint8_t bindIndex) const override;
     private:
         unsigned int m_textureID{ 0 };
     };
@@ -33,15 +34,16 @@ namespace Ull
 
         unsigned int GetOpenGLTextureID() const { return m_textureID; }
 
-        void SetData(glm::uvec3 size, ColorFormat InChannel, ColorFormat OutChannel, GraphicsDataType dataType, const void* data) override;
-        void EnableMinMao(bool minMap) const override;
+        void SetData(glm::uvec3 size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) override;
+        void EnableMinMap() const override;
         void SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap, WrapMode depthWrap) const override;
         void SetBorderColor(glm::vec4 color) const override;
         void SetSampling(Sampling magSampling, Sampling minSampling) const override;
 
-        virtual void Bind() const override;
-        virtual void Unbind() const override;
+        void Bind() const override;
+        void Unbind() const override;
 
+        void BindImage(InternalDataFormat internalDataFormat, ReadWriteRights readWriteRights, std::uint8_t bindIndex) const override;
     private:
         unsigned int m_textureID{ 0 };
     };

@@ -15,7 +15,7 @@ Texture2D* Texture2D::Create()
         return new Texture2DOpenGL();
         break;
     }
-
+    GL_RGB16;
     ULOGE("Current API didn't implement Texture2D");
     return nullptr;
 }

@@ -9,6 +9,7 @@
 #include "Event/Event.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
+#include "Rendering/TriangulationTable/TriangulationTable.h"
 
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
@@ -18,15 +19,10 @@
 
 #include "Rendering/IconsCode/IconCodes.h"
 
-#include "DataLoaders/VolumeLoader.h"
-#include "DataStructures/VolumeData.h"
-
 using namespace Ull;
 
 Application::Application()
 {
-    auto a = LoadVolumeData("Assets/VolumetricData/test.dat");
-
     try
     {
         InitLog();
@@ -109,6 +105,7 @@ void Application::InitApplciation()
     ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
     ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::MARKER, "MarkerVS", "MarkerPS");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH, "CubeMarchCS");
 
     //Layers
     auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());

@@ -15,10 +15,10 @@ namespace
 	
 }
 
-VolumeData* Ull::LoadVolumeData(const std::string filePath)
+std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 {
 	std::ifstream volumeFile;
-	VolumeData* volumeData = new VolumeData;
+	std::shared_ptr<VolumeData> volumeData = nullptr;
 
 	volumeFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -26,19 +26,22 @@ VolumeData* Ull::LoadVolumeData(const std::string filePath)
 	{
 		volumeFile.open(filePath.c_str(), std::ios::binary);
 
-		volumeFile.read((char*)&volumeData->width, sizeof(uint16_t));
-		volumeFile.read((char*)&volumeData->height, sizeof(uint16_t));
-		volumeFile.read((char*)&volumeData->depth, sizeof(uint16_t));
+		uint16_t width, height, depth;
 
-		size_t bufferSize = (size_t)volumeData->width * (size_t)volumeData->height * (size_t)volumeData->depth;
-		volumeData->dataBuffer.resize(bufferSize);
+		volumeFile.read((char*)&width, sizeof(uint16_t));
+		volumeFile.read((char*)&height, sizeof(uint16_t));
+		volumeFile.read((char*)&depth, sizeof(uint16_t));
+
+		size_t bufferSize = (size_t)width * (size_t)height * (size_t)depth;
+		volumeData = std::make_shared<VolumeData>(VolumeData(width, height, depth, bufferSize));
 
 		size_t chunkSize = bufferSize / (readThreads - 1);
 		size_t lastChunkSize = bufferSize % (readThreads - 1);
-
 		size_t dataStartPosition = (size_t)volumeFile.tellg();
 
 		volumeFile.close();
+
+		//=============================
 
 		std::thread* readingThreads[readThreads];
 

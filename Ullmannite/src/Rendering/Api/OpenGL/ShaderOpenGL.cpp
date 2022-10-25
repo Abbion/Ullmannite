@@ -39,6 +39,8 @@ namespace
 
 ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName)
 {
+    m_shaderType = ShaderType::RENDER;
+
     std::string vertexCode;
     std::string fragmentCode;
     std::string geometryCode;
@@ -127,6 +129,49 @@ ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::strin
 
     if(geometryShaderSet)
         glDeleteShader(geometry);
+}
+
+ShaderOpenGL::ShaderOpenGL(const std::string& computeShaderName)
+{
+    m_shaderType = ShaderType::COMPUTE;
+
+    std::string computeCode;
+    std::ifstream cShaderFile;
+
+    cShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+    std::string computeShaderPath = OPENGL_SHADDER_PATH + computeShaderName + OPENGL_SHADER_EXTENSION;
+
+    try
+    {
+        cShaderFile.open(computeShaderPath.c_str());
+        
+        std::stringstream cShaderStream;
+        cShaderStream << cShaderFile.rdbuf();
+
+        cShaderFile.close();
+
+        computeCode = cShaderStream.str();
+    }
+    catch (const std::exception& e)
+    {
+        UASSERT(false, "Compute shader file cannot be loaded: " << e.what());
+    }
+
+    unsigned int compute;
+    const char* cShaderCode = computeCode.c_str();
+
+    compute = glCreateShader(GL_COMPUTE_SHADER);
+    glShaderSource(compute, 1, &cShaderCode, NULL);
+    glCompileShader(compute);
+    CheckCompileErrors(compute, GraphicsShaderType::COMPUTE);
+
+    m_shaderID = glCreateProgram();
+    glAttachShader(m_shaderID, compute);
+    glLinkProgram(m_shaderID);
+    CheckCompileErrors(m_shaderID, GraphicsShaderType::PROGRAM);
+
+    glDeleteShader(compute);
 }
 
 ShaderOpenGL::~ShaderOpenGL()

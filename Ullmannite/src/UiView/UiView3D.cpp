@@ -1,11 +1,17 @@
 #include "Ullpch.h"
 #include "UiView3D.h"
 #include "Rendering/Objects/Cube.h"
+#include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
 #include <string>
+
+#include "DataLoaders/VolumeLoader.h"
+#include "DataStructures/VolumeData.h"
+
+#include <algorithm>
 
 using namespace Ull;
 
@@ -30,8 +36,15 @@ void UiView3D::Init()
     auto root = m_scene.GetRootNode();
     root->AddNode(camera);
 
-    auto cube = new Cube("Test Cube", &m_scene);
-    root->AddNode(cube);
+    //TEMP data loading
+    auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
+
+    auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
+    cubeMarch->SetVolumeData(mainDataSet);
+    cubeMarch->GenerateMesh();
+    root->AddNode(cubeMarch);
+    //auto cube = new Cube("Test Cube", &m_scene);
+    //root->AddNode(cube);
 }
 
 void UiView3D:: HandleEvent(Event* event)

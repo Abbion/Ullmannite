@@ -8,6 +8,7 @@ namespace Ull
     {
     public:
         ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName);
+        ShaderOpenGL(const std::string& computeShaderName);
         ~ShaderOpenGL();
 
         void Bind() const override;
