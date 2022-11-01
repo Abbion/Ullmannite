@@ -7,6 +7,19 @@
 
 using namespace Ull;
 
+Texture1D* Texture1D::Create()
+{
+    switch(Renderer::GetInstance().GetApi())
+    {
+        case Renderer::API::OPEN_GL:
+            return new Texture1DOpenGL();
+        break;
+    }
+
+    ULOGE("Current API didn't implement Texture1D");
+    return nullptr;
+}
+
 Texture2D* Texture2D::Create()
 {
     switch (Renderer::GetInstance().GetApi())
@@ -15,7 +28,7 @@ Texture2D* Texture2D::Create()
         return new Texture2DOpenGL();
         break;
     }
-    GL_RGB16;
+
     ULOGE("Current API didn't implement Texture2D");
     return nullptr;
 }

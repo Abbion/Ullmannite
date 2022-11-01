@@ -15,6 +15,8 @@ namespace Ull
         void Unbind() const override;
 
         void SetInt(std::string uniformName, int value) const override;
+        void SetUint(std::string uniformName, unsigned int value) const override;
+        void SetUint3(std::string uniformName, glm::uvec3 value) const override;
         void SetFloat(std::string uniformName, float value) const override;
         void SetFloat4(std::string uniformName, glm::vec4 value) const override;
         void SetFloat3(std::string uniformName, glm::vec3 value) const override;

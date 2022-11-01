@@ -6,6 +6,72 @@
 
 using namespace Ull;
 
+Texture1DOpenGL::Texture1DOpenGL()
+{
+    glGenTextures(1, &m_textureID);
+}
+
+Texture1DOpenGL::~Texture1DOpenGL()
+{
+	glDeleteTextures(1, &m_textureID);
+}
+
+void Texture1DOpenGL::SetData(std::uint16_t size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data)
+{
+    Bind();
+    glTexImage1D(GL_TEXTURE_1D, 0, ConverterInternalFormat(internalDataFormat), size, 0, ConverterPixelFormat(pixelDataFormat), ConvetDataType(dataType), data);
+    Unbind();
+
+    m_size = size;
+}
+
+ void Texture1DOpenGL::EnableMinMap() const
+ {
+    Bind();
+    glGenerateMipmap(GL_TEXTURE_1D);
+    Unbind();
+ }
+ 
+void Texture1DOpenGL::SetWrap(WrapMode horizontalWrap) const
+{
+    Bind();
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, ConverterWrap(horizontalWrap));
+    Unbind();
+}
+
+void Texture1DOpenGL::SetBorderColor(glm::vec4 color) const
+{
+    Bind();
+    float borderColor[4] = { color.r, color.g, color.b, color.a };
+    glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    Unbind();
+}
+
+void Texture1DOpenGL::SetSampling(Sampling magSampling, Sampling minSampling) const
+{
+    Bind();
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, SamplerConverter(magSampling));
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, SamplerConverter(minSampling));
+    Unbind();
+}
+
+void Texture1DOpenGL::Bind() const
+{
+    glBindTexture(GL_TEXTURE_1D, m_textureID);
+}
+
+void Texture1DOpenGL::Unbind() const
+{
+    glBindTexture(GL_TEXTURE_1D, 0);
+}
+
+void Texture1DOpenGL::BindImage(InternalDataFormat internalDataFormat, ReadWriteRights readWriteRights, std::uint8_t bindIndex) const
+{
+    glBindImageTexture(bindIndex, m_textureID, 0, GL_FALSE, 0, ConverterReadWriteRights(readWriteRights), ConverterInternalFormat(internalDataFormat));
+}
+
+
+
 Texture2DOpenGL::Texture2DOpenGL()
 {
 	glGenTextures(1, &m_textureID);

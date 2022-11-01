@@ -116,11 +116,6 @@ namespace Ull
         RenderBuffer* m_depthTarget{ nullptr };
     };
 
-
-    template<typename T>
-    class StorageBufferOpenGL;
-
-    template<typename T>
     class StorageBuffer
     {
     public:
@@ -128,26 +123,17 @@ namespace Ull
 
         virtual ~StorageBuffer() {}
 
-        size_t GetSize() { return size; }
+        size_t GetSize() { return m_size; }
 
-        static StorageBuffer* Create(T* data, size_t size)
-        {
-            m_size = size;
-
-            switch (Renderer::GetInstance().GetApi())
-            {
-            case Renderer::API::OPEN_GL:
-                return new StorageBufferOpenGL<T>(data, size);
-                break;
-            }
-
-            UASSERT(false, "Current API didn't implement storage buffer");
-            return nullptr;
-        }
+        static StorageBuffer* Create(void* data, size_t size);
         
-        virtual void Bind() const = 0;
+        virtual void GetData(void* data, size_t size) = 0;
+
+        virtual void Bind(std::uint8_t bindIndex) const = 0;
         virtual void Unbind() const = 0;
     protected:
-        size_t size;
+        StorageBuffer() = default;
+
+        size_t m_size{ 0 };
     };
 }

@@ -70,3 +70,16 @@ FrameBuffer* FrameBuffer::Create(glm::uvec2 size, bool enableDepth)
     UASSERT(false, "Current API didn't implement frame buffer");
     return nullptr;
 }
+
+StorageBuffer* StorageBuffer::Create(void* data, size_t size)
+{    
+    switch (Renderer::GetInstance().GetApi())
+    {
+    case Renderer::API::OPEN_GL:
+        return new StorageBufferOpenGL(data, size);
+        break;
+    }
+    
+    UASSERT(false, "Current API didn't implement storage buffer");
+    return nullptr;
+}

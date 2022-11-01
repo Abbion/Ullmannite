@@ -12,8 +12,10 @@ namespace Ull
 		static TriangulationTable& GetInstance();
 		
 		Texture2D* GetTriangulationTexture() { return m_triangulationTexture; }
+		Texture1D* GetVertexCountTexture() { return m_vertexCountTexture; }
 
 		void CreateTriangulationTable();
+		void CreateVectexCountTable();
 
 	protected:
 		TriangulationTable() = default;
@@ -21,5 +23,6 @@ namespace Ull
 		static TriangulationTable m_instance;
 
 		inline static Texture2D* m_triangulationTexture{ nullptr };
+		inline static Texture1D* m_vertexCountTexture{ nullptr };
 	};
 }

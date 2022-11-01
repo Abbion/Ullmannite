@@ -20,6 +20,7 @@ namespace Ull
         RGB_32F,
 
         R_8I,
+        R_8UI,
 
         R_16UI,
         RG_16UI,
@@ -45,6 +46,31 @@ namespace Ull
         READ,
         WRITE,
         READ_AND_WRITE
+    };
+
+    class Texture1D
+    {
+    public:
+        virtual ~Texture1D() {}
+
+        static Texture1D* Create();
+
+        std::uint16_t GetSize() { return m_size; }
+
+        virtual void SetData(std::uint16_t size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) = 0;
+        virtual void EnableMinMap() const = 0;
+        virtual void SetWrap(WrapMode horizontalWrap) const = 0;
+        virtual void SetBorderColor(glm::vec4 color) const = 0;
+        virtual void SetSampling(Sampling magSampling, Sampling minSampling) const = 0;
+
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+
+        virtual void BindImage(InternalDataFormat internalDataFormat, ReadWriteRights readWriteRights, std::uint8_t bindIndex) const = 0;
+    protected:
+        Texture1D() = default;
+
+        std::uint16_t m_size{ 0 };
     };
 
     class Texture2D

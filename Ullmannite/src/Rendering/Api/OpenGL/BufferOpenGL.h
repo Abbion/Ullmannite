@@ -70,6 +70,8 @@ namespace Ull
         FrameBufferOpenGL(glm::uvec2 size, bool enableDepth);
         ~FrameBufferOpenGL();
 
+        unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+
         void Bind() const override;
         void Unbind() const override;
     
@@ -77,30 +79,17 @@ namespace Ull
         unsigned int m_bufferID{ 0 };
     };
 
-    template<typename T>
-    class StorageBufferOpenGL : public StorageBuffer<T>
+    class StorageBufferOpenGL : public StorageBuffer
     {
     public:
-        StorageBufferOpenGL(T* data, size_t size)
-        {
-            glGenBuffers(1, &m_bufferID);
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_bufferID);
-            glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_STATIC_COPY);
-        }
+        StorageBufferOpenGL(void* data, size_t size);
+        virtual ~StorageBufferOpenGL();
 
-        virtual ~StorageBufferOpenGL() 
-        {
-            glDeleteBuffers(1, &m_bufferID);
-        }
+        unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+        void GetData(void* data, size_t size) override;
 
-        void Bind() const override 
-        {
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_bufferID);
-        }
-        void Unbind() const override
-        {
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-        }
+        void Bind(std::uint8_t bindIndex) const override;
+        void Unbind() const override;
     
     private:
         unsigned int m_bufferID{ 0 };

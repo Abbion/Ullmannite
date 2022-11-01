@@ -166,6 +166,9 @@ namespace Ull
         case InternalDataFormat::R_8I:
             return GL_R8I;
 
+        case InternalDataFormat::R_8UI:
+            return GL_R8UI;
+
         case InternalDataFormat::R_16UI:
             return GL_R16UI;
             break;

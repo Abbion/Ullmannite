@@ -33,7 +33,11 @@ namespace Ull
 
         std::vector<glm::vec3> m_mesh;
 
+        Shader* m_cubeMarchVertexCounter{ nullptr };
         Shader* m_cubeMarchShader{ nullptr };
         Texture3D* m_volumeTexture{ nullptr };
+
+        uint64_t GetVertexCountGPU();
+        uint64_t GetVertexCountCPU();
     };
 }

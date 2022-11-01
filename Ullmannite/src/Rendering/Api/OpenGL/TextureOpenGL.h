@@ -4,6 +4,28 @@
 
 namespace Ull
 {
+    class Texture1DOpenGL : public Texture1D
+    {
+    public:
+        Texture1DOpenGL();
+        ~Texture1DOpenGL();
+
+        unsigned int GetOpenGLTextureID() const { return m_textureID; }
+
+        void SetData(std::uint16_t size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) override;
+        void EnableMinMap() const override;
+        void SetWrap(WrapMode horizontalWrap) const override;
+        void SetBorderColor(glm::vec4 color) const override;
+        void SetSampling(Sampling magSampling, Sampling minSampling) const override;
+
+        void Bind() const override;
+        void Unbind() const override;
+
+        void BindImage(InternalDataFormat internalDataFormat, ReadWriteRights readWriteRights, std::uint8_t bindIndex) const override;
+    private:
+        unsigned int m_textureID{ 0 };
+    };
+
     class Texture2DOpenGL : public Texture2D
     {
     public:

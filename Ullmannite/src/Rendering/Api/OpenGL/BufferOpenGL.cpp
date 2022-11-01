@@ -172,3 +172,32 @@ void FrameBufferOpenGL::Unbind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+StorageBufferOpenGL::StorageBufferOpenGL(void* data, size_t size)
+{
+    m_size = size;
+    
+    glGenBuffers(1, &m_bufferID);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_bufferID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_STREAM_READ);
+}
+
+StorageBufferOpenGL::~StorageBufferOpenGL()
+{
+    glDeleteBuffers(1, &m_bufferID);
+}
+
+void StorageBufferOpenGL::GetData(void* data, size_t size)
+{
+    glGetNamedBufferSubData(m_bufferID, 0, size, data);
+}
+
+void StorageBufferOpenGL::Bind(std::uint8_t bindIndex) const
+{
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindIndex, m_bufferID);
+}
+
+void StorageBufferOpenGL::Unbind() const
+{
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
