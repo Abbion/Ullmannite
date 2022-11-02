@@ -11,6 +11,24 @@
 namespace {
 	constexpr unsigned int vertexCounterLocalSize = 8u;
 
+	constexpr uint8_t vertexCountTable[256] = 
+	{ 0, 3, 3, 6, 3, 6, 6, 9, 3, 6, 6, 9, 6, 9, 9, 6, 3,
+	  6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9, 3,
+	  6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9, 6,
+	  9, 9, 6, 9, 12, 12, 9, 9, 12, 12, 9, 12, 15, 15, 6,
+	  3, 6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9,
+	  6, 9, 9, 12, 9, 12, 12, 15, 9, 12, 12, 15, 12, 15,
+	  15, 12, 6, 9, 9, 12, 9, 12, 6, 9, 9, 12, 12, 15, 12,
+	  15, 9, 6, 9, 12, 12, 9, 12, 15, 9, 6, 12, 15, 15, 12,
+	  15, 6, 12, 3, 3, 6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9,
+	  12, 12, 9, 6, 9, 9, 12, 9, 12, 12, 15, 9, 6, 12, 9, 12,
+	  9, 15, 6, 6, 9, 9, 12, 9, 12, 12, 15, 9, 12, 12, 15, 12,
+	  15, 15, 12, 9, 12, 12, 9, 12, 15, 15, 12, 12, 9, 15, 6, 15,
+	  12, 6, 3, 6, 9, 9, 12, 9, 12, 12, 15, 9, 12, 12, 15, 6, 9, 9,
+	  6, 9, 12, 12, 15, 12, 15, 15, 6, 12, 9, 15, 12, 9, 6, 12, 3,
+	  9, 12, 12, 15, 12, 15, 9, 12, 12, 15, 15, 6, 9, 12, 6, 3, 6,
+	  9, 9, 6, 9, 12, 6, 3, 9, 6, 12, 3, 6, 3, 3, 0 };
+
 	uint8_t GetAmountOfThreadsForSum(uint64_t toSum)
 	{
 		if (toSum < 20'000)
@@ -55,9 +73,12 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 void MarchCubeRenderer::GenerateMesh()
 {	
 	auto vertexCount = GetVertexCountGPU();
+	auto vertexCount2 = GetVertexCountCPU();
 
+	int64_t diff = vertexCount - vertexCount2;
 
 	auto volumeSize = m_volumeTexture->GetSize();
+	
 	//std::vector<glm::vec3> meshData(volumeSize.x * volumeSize.y * volumeSize.z * 5);
 
 	TriangulationTable::GetInstance().GetTriangulationTexture()->BindImage(InternalDataFormat::R_8I, ReadWriteRights::READ, 1);
@@ -110,7 +131,7 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
 	m_cubeMarchVertexCounter->SetUint("CMsettings.sampleJump", sampleJump);
 	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 10);
-	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 160'000);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 16'000);
 
 	//Run shader
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
@@ -168,6 +189,62 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	ULOGD("Triangle count GPU TIME: " << duration.count() << " microseconds");
+
+	return totalVertexCount;
+}
+
+uint64_t MarchCubeRenderer::GetVertexCountCPU()
+{
+	auto start = std::chrono::high_resolution_clock::now();
+
+	const auto minSampleVal = 10;
+	const auto maxSampleVal = 16'000;
+
+	size_t totalVertexCount = 0u;
+
+	const auto yOffset = m_volumeData->width;
+	const auto zOffset = m_volumeData->width * m_volumeData->height;
+
+	for(size_t z = 0; z < m_volumeData->depth - 1; ++z)
+	{
+		for(size_t y = 0; y < m_volumeData->height - 1; ++y)
+		{
+			for(size_t x = 0; x < m_volumeData->width - 1; ++x)
+			{
+				auto posInArray = x + (y * m_volumeData->width) + (z * m_volumeData->width * m_volumeData->height);
+
+				std::vector<size_t> samplePositions(8);
+				samplePositions[0] = posInArray;
+				samplePositions[1] = posInArray + 1;
+				samplePositions[2] = posInArray + yOffset;
+				samplePositions[3] = posInArray + yOffset + 1;
+
+				samplePositions[4] = posInArray + zOffset;
+				samplePositions[5] = posInArray + zOffset + 1;
+				samplePositions[6] = posInArray + zOffset + yOffset;
+				samplePositions[7] = posInArray + zOffset + yOffset + 1;
+					
+				uint16_t activeEdgeCounter = 0u;
+
+				for(unsigned int i = 0; i < 8; ++i)
+				{
+					auto samplePos = samplePositions[i];
+					auto cornerValue = m_volumeData->dataBuffer[samplePos];
+					
+					if(cornerValue >= minSampleVal && cornerValue <= maxSampleVal)
+					{
+						activeEdgeCounter |= 1 << i;
+					}
+				}
+				
+				totalVertexCount += vertexCountTable[activeEdgeCounter];
+			}
+		}
+	}
+
+	auto stop = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	ULOGD("Triangle count CPU TIME: " << duration.count() << " microseconds");
 
 	return totalVertexCount;
 }
