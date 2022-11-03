@@ -37,7 +37,8 @@ void UiView3D::Init()
     root->AddNode(camera);
 
     //TEMP data loading
-    auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
+    //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
+    auto mainDataSet = LoadVolumeData("Assets/VolumetricData/4test.dat");
 
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
     cubeMarch->SetVolumeData(mainDataSet);

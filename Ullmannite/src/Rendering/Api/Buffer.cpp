@@ -83,3 +83,16 @@ StorageBuffer* StorageBuffer::Create(void* data, size_t size)
     UASSERT(false, "Current API didn't implement storage buffer");
     return nullptr;
 }
+
+AtomicCounterBuffer* AtomicCounterBuffer::Create(uint32_t* data, uint16_t size)
+{
+    switch (Renderer::GetInstance().GetApi())
+    {
+    case Renderer::API::OPEN_GL:
+        return new AtomicCounterBufferOpenGL(data, size);
+        break;
+    }
+
+    UASSERT(false, "Current API didn't implement atomic counter buffer");
+    return nullptr;
+}

@@ -159,6 +159,10 @@ namespace Ull
     {
         switch (channel)
         {
+        case InternalDataFormat::RGBA_32F:
+            return GL_RGBA32F;
+            break;
+
         case InternalDataFormat::RGB_32F:
             return GL_RGB32F;
             break;

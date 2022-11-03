@@ -280,6 +280,7 @@ void TriangulationTable::CreateTriangulationTable()
 
 	m_triangulationTexture = Texture2D::Create();
 	m_triangulationTexture->SetData(glm::uvec2(16, 256), InternalDataFormat::R_8I, PixelDataFormat::R_I, GraphicsDataType::BYTE, triTable);
+	m_triangulationTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
 }
 
 void TriangulationTable::CreateVectexCountTable()

@@ -17,6 +17,7 @@ namespace Ull
 
     enum class InternalDataFormat
     {
+        RGBA_32F,
         RGB_32F,
 
         R_8I,

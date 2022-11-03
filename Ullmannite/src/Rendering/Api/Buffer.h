@@ -126,7 +126,7 @@ namespace Ull
         size_t GetSize() { return m_size; }
 
         static StorageBuffer* Create(void* data, size_t size);
-        
+
         virtual void GetData(void* data, size_t size) = 0;
 
         virtual void Bind(std::uint8_t bindIndex) const = 0;
@@ -135,5 +135,24 @@ namespace Ull
         StorageBuffer() = default;
 
         size_t m_size{ 0 };
+        mutable std::uint8_t m_currentBindIndex{ 0 };
+    };
+
+    class AtomicCounterBuffer
+    {
+    public:
+        NON_COPYABLE(AtomicCounterBuffer);
+
+        virtual ~AtomicCounterBuffer() {}
+
+        static AtomicCounterBuffer* Create(uint32_t* data, uint16_t size);
+
+        virtual void Bind(std::uint8_t bindIndex) const = 0;
+        virtual void Unbind() const = 0;
+
+    protected:
+        AtomicCounterBuffer() = default;
+        uint16_t m_size{ 0 };
+        mutable std::uint8_t m_currentBindIndex{ 0 };
     };
 }

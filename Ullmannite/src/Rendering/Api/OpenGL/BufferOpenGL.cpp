@@ -176,7 +176,7 @@ void FrameBufferOpenGL::Unbind() const
 StorageBufferOpenGL::StorageBufferOpenGL(void* data, size_t size)
 {
     m_size = size;
-    
+
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_bufferID);
     glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_STREAM_READ);
@@ -194,10 +194,36 @@ void StorageBufferOpenGL::GetData(void* data, size_t size)
 
 void StorageBufferOpenGL::Bind(std::uint8_t bindIndex) const
 {
+    m_currentBindIndex = bindIndex;
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindIndex, m_bufferID);
 }
 
 void StorageBufferOpenGL::Unbind() const
 {
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_currentBindIndex, 0);
+}
+
+AtomicCounterBufferOpenGL::AtomicCounterBufferOpenGL(uint32_t* data, uint16_t size)
+{
+    m_size = size;
+
+    glGenBuffers(1, &m_bufferID);
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_bufferID);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, size, data, GL_DYNAMIC_DRAW);
+}
+
+AtomicCounterBufferOpenGL::~AtomicCounterBufferOpenGL()
+{
+    glDeleteBuffers(1, &m_bufferID);
+}
+
+void AtomicCounterBufferOpenGL::Bind(std::uint8_t bindIndex) const
+{
+    m_currentBindIndex = bindIndex;
+    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, m_currentBindIndex, m_bufferID);
+}
+
+void AtomicCounterBufferOpenGL::Unbind() const
+{
+    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, m_currentBindIndex, 0);
 }

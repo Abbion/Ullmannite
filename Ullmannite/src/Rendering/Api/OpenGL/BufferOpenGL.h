@@ -90,7 +90,22 @@ namespace Ull
 
         void Bind(std::uint8_t bindIndex) const override;
         void Unbind() const override;
-    
+
+    private:
+        unsigned int m_bufferID{ 0 };
+    };
+
+    class AtomicCounterBufferOpenGL : public AtomicCounterBuffer
+    {
+    public: 
+        AtomicCounterBufferOpenGL(uint32_t* data, uint16_t size);
+        virtual ~AtomicCounterBufferOpenGL();
+
+        unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+
+        void Bind(std::uint8_t bindIndex) const override;
+        void Unbind() const override;
+
     private:
         unsigned int m_bufferID{ 0 };
     };

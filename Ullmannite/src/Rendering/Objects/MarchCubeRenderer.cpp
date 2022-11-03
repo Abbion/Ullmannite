@@ -11,6 +11,8 @@
 namespace {
 	constexpr unsigned int vertexCounterLocalSize = 8u;
 
+	constexpr uint16_t vertexPositionTextureSize = 2048;
+
 	constexpr uint8_t vertexCountTable[256] = 
 	{ 0, 3, 3, 6, 3, 6, 6, 9, 3, 6, 6, 9, 6, 9, 9, 6, 3,
 	  6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9, 3,
@@ -72,23 +74,44 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 
 void MarchCubeRenderer::GenerateMesh()
 {	
-	auto vertexCount = GetVertexCountGPU();
-	auto vertexCount2 = GetVertexCountCPU();
-
-	int64_t diff = vertexCount - vertexCount2;
-
-	auto volumeSize = m_volumeTexture->GetSize();
 	
-	//std::vector<glm::vec3> meshData(volumeSize.x * volumeSize.y * volumeSize.z * 5);
+	auto vertexCount = GetVertexCountGPU();
 
-	TriangulationTable::GetInstance().GetTriangulationTexture()->BindImage(InternalDataFormat::R_8I, ReadWriteRights::READ, 1);
+	TriangulationTable::GetInstance().GetTriangulationTexture()->BindImage(InternalDataFormat::R_8UI, ReadWriteRights::READ, 1);
+	
+	Texture3D* vertexPosTexture = Texture3D::Create();
+	
+	const uint16_t amountOfTextures = (uint16_t)std::ceil((double)vertexCount / (vertexPositionTextureSize * vertexPositionTextureSize));
+
+	vertexPosTexture->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
+	vertexPosTexture->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP, WrapMode::CLAMP);
+	vertexPosTexture->SetData(glm::uvec3(vertexPositionTextureSize, vertexPositionTextureSize, amountOfTextures), InternalDataFormat::RGBA_32F, PixelDataFormat::RGBA, GraphicsDataType::FLOAT, nullptr);
+	vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 2);
+	
+	uint32_t counter = 0;
+
+	AtomicCounterBuffer* atomicCounter = AtomicCounterBuffer::Create(&counter, sizeof(uint32_t));
+	atomicCounter->Bind(3);
 
 	m_cubeMarchShader->Bind();
-	
-	Renderer::GetInstance().DispatchComputeShader(8, 8, 8);
+	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
+	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", 4);
+	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", 10);
 
+	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)m_volumeData->width / (vertexCounterLocalSize * 2));
+	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)m_volumeData->height / vertexCounterLocalSize);
+	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)m_volumeData->depth / vertexCounterLocalSize);
 
-	//m_mesh = std::move(meshData);
+	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
+	glMemoryBarrier(GL_ATOMIC_COUNTER_BARRIER_BIT);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+	atomicCounter->Unbind();
+
+	TriangulationTable::GetInstance().GetTriangulationTexture()->Unbind();
+	vertexPosTexture->Unbind();
+	delete vertexPosTexture;
+	delete atomicCounter;
 }
 
 void MarchCubeRenderer::HandleEvent(Event* event)
@@ -110,35 +133,33 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 {
 	auto start = std::chrono::high_resolution_clock::now();
 
-	uint8_t sampleJump = 1;
-
 	m_volumeTexture->BindImage(InternalDataFormat::R_16UI, ReadWriteRights::READ, 0);
 	TriangulationTable::GetInstance().GetVertexCountTexture()->BindImage(InternalDataFormat::R_8UI, ReadWriteRights::READ, 1);
 
-	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)m_volumeData->width / (vertexCounterLocalSize * 2 * sampleJump));
-	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)m_volumeData->height / (vertexCounterLocalSize * sampleJump));
-	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)m_volumeData->depth / (vertexCounterLocalSize * sampleJump));
+	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)m_volumeData->width / (vertexCounterLocalSize * 2));
+	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)m_volumeData->height / vertexCounterLocalSize);
+	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)m_volumeData->depth / vertexCounterLocalSize);
 	const unsigned int totalSize = vertexLocalSizeX * vertexLocalSizeY * vertexLocalSizeZ;
 
 	uint32_t* vertexCountArr = new uint32_t[totalSize];
-	memset(vertexCountArr, 0, sizeof(uint32_t) * totalSize);
 	StorageBuffer* storageBuff = StorageBuffer::Create(vertexCountArr, sizeof(uint32_t) * totalSize);
 	storageBuff->Bind(2);
-	
+
 	//Setup shader
 	m_cubeMarchVertexCounter->Bind();
 
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchVertexCounter->SetUint("CMsettings.sampleJump", sampleJump);
-	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 10);
-	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 16'000);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 4);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 10);
 
 	//Run shader
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
+	TriangulationTable::GetInstance().GetVertexCountTexture()->Unbind();
+
 	//Get data from shader
-	storageBuff->GetData(vertexCountArr, sizeof(uint32_t) * totalSize);
+	storageBuff->GetData(vertexCountArr, sizeof(uint32_t) * totalSize);	//This takes a lot of time wtf
 	storageBuff->Unbind();
 	delete storageBuff;
 
@@ -147,7 +168,6 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 	uint64_t totalVertexCount = 0;
 
 	std::vector<std::thread> threads;
-
 	
 	if (threadNum > 1)
 	{
@@ -216,13 +236,13 @@ uint64_t MarchCubeRenderer::GetVertexCountCPU()
 				std::vector<size_t> samplePositions(8);
 				samplePositions[0] = posInArray;
 				samplePositions[1] = posInArray + 1;
-				samplePositions[2] = posInArray + yOffset;
-				samplePositions[3] = posInArray + yOffset + 1;
+				samplePositions[2] = posInArray + yOffset + 1;
+				samplePositions[3] = posInArray + yOffset;
 
 				samplePositions[4] = posInArray + zOffset;
 				samplePositions[5] = posInArray + zOffset + 1;
-				samplePositions[6] = posInArray + zOffset + yOffset;
-				samplePositions[7] = posInArray + zOffset + yOffset + 1;
+				samplePositions[6] = posInArray + zOffset + yOffset + 1;
+				samplePositions[7] = posInArray + zOffset + yOffset;
 					
 				uint16_t activeEdgeCounter = 0u;
 

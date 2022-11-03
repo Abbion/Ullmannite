@@ -202,5 +202,5 @@ void Texture3DOpenGL::Unbind() const
 
 void Texture3DOpenGL::BindImage(InternalDataFormat internalDataFormat, ReadWriteRights readWriteRights, std::uint8_t bindIndex) const
 {
-    glBindImageTexture(bindIndex, m_textureID, 0, GL_FALSE, 0, ConverterReadWriteRights(readWriteRights), ConverterInternalFormat(internalDataFormat));
+    glBindImageTexture(bindIndex, m_textureID, 0, GL_TRUE, 0, ConverterReadWriteRights(readWriteRights), ConverterInternalFormat(internalDataFormat));
 }
