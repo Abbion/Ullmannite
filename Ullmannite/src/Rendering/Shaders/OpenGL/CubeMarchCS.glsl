@@ -45,6 +45,7 @@ void main()
                                             vec3(-0.5, 0.5, 0), vec3(0.5, 0.5, 0),  vec3(0.5, -0.5, 0),  vec3(-0.5, -0.5, 0) };
 
     vec3 edgePointPositions[16];
+    vec3 globalPositionF = vec3(gl_GlobalInvocationID);
 
     uint Xitr;
 
@@ -55,7 +56,7 @@ void main()
         if(edgeNum == -1)
             break;
 
-        edgePointPositions[Xitr] = vec3(gl_GlobalInvocationID.x + 0.5, gl_GlobalInvocationID.y - 0.5, gl_GlobalInvocationID.z - 0.5) + edgePosFromNumber[edgeNum];
+        edgePointPositions[Xitr] = vec3(globalPositionF.x, -globalPositionF.y, globalPositionF.z) + edgePosFromNumber[edgeNum];
     }
 
     if(Xitr == 0)
@@ -66,6 +67,7 @@ void main()
     for(uint posItr = 0; posItr < Xitr; ++posItr)
     {
         ivec3 savePositionInTextureCorrds =  ivec3((itrStartPosition + posItr) % vertexPosTextureSize, ((itrStartPosition + posItr) / vertexPosTextureSize) % vertexPosTextureSize, (itrStartPosition + posItr) / doubleVertexPosTextureSize);
-        imageStore(vertexPosTexture, savePositionInTextureCorrds, vec4(edgePointPositions[posItr].xyz, 1.0));
+        
+        imageStore(vertexPosTexture, savePositionInTextureCorrds, vec4(edgePointPositions[posItr].xyz , 1.0));
     }
 }
