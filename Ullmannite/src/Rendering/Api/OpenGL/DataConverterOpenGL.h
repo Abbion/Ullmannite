@@ -282,4 +282,26 @@ namespace Ull
             break;
         }
     }
+
+    constexpr GLenum ConvertFillType(GraphicsRenderPrimitives primitive)
+    {
+        switch (primitive)
+        {
+        case GraphicsRenderPrimitives::TRIANGLE:
+            return GL_FILL;
+            break;
+
+        case GraphicsRenderPrimitives::LINE:
+            return GL_LINE;
+            break;
+        case GraphicsRenderPrimitives::POINT:
+            return GL_POINT;
+            break;
+
+        default:
+            ULOGE("Cannot convert this primitive");
+            return 0;
+            break;
+        }
+    }
 }

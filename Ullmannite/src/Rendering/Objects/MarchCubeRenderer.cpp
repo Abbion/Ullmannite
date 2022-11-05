@@ -96,8 +96,8 @@ void MarchCubeRenderer::GenerateMesh()
 
 	m_cubeMarchShader->Bind();
 	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", 4);
-	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", 10);
+	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", 120);
+	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", 16000);
 
 	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)m_volumeData->width / (vertexCounterLocalSize * 2));
 	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)m_volumeData->height / vertexCounterLocalSize);
@@ -166,8 +166,8 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	m_cubeMarchVertexCounter->Bind();
 
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 4);
-	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 10);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 120);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 16000);
 
 	//Run shader
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);

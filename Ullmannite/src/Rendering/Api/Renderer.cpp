@@ -145,6 +145,7 @@ void Renderer::DrawElements(GraphicsRenderPrimitives primitive, unsigned int cou
 {
     if (m_api == API::OPEN_GL)
     {
+        glPolygonMode(GL_FRONT_AND_BACK, ConvertFillType(primitive));
         glDrawElements(ConvertPrimitive(primitive), count, ConvetDataType(type), (void*)skip);
     }
 }
@@ -153,6 +154,7 @@ void Renderer::DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count
 {
     if (m_api == API::OPEN_GL)
     {
+        glPolygonMode(GL_FRONT_AND_BACK, ConvertFillType(primitive));
         glDrawArrays(ConvertPrimitive(primitive), skip, count);
     }
 }

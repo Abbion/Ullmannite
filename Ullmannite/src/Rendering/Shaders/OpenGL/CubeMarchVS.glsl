@@ -8,7 +8,13 @@ uniform mat4 modelMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 
+out vec3 colorT;
+
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * imageLoad(vertexPosTexture, ivec3(gl_VertexID, 0, 0));
+    ivec3 vertexPosition = ivec3(gl_VertexID % 2048, (gl_VertexID / 2048) % 2048, (gl_VertexID / (2048 * 2048)));
+    vec4 vertex = imageLoad(vertexPosTexture, vertexPosition);
+
+    colorT = vec3(vertex.xyz);
+	gl_Position = projectionMatrix * viewMatrix * vertex;
 }

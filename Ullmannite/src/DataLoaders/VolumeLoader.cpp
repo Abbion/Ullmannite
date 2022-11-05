@@ -11,8 +11,6 @@ using namespace Ull;
 namespace 
 {
 	constexpr size_t readThreads = 8;
-
-	
 }
 
 std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
@@ -58,7 +56,12 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 				volumeFile.seekg(dataStartPosition + (i * chunkSize * sizeof(uint16_t)), std::ios::beg);
 
 				if (i == readThreads - 1)
+				{
+					if (lastChunkSize < 1)
+						return;
+
 					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * lastChunkSize);
+				}
 				else
 					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * chunkSize);
 

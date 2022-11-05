@@ -48,6 +48,13 @@ void main()
     vec3 globalPositionF = vec3(gl_GlobalInvocationID);
 
     uint Xitr;
+    vec3 recenter = vec3(CMsettings.size.x - 1, CMsettings.size.y -1,  CMsettings.size.y -1);
+    if(recenter.x < 2)
+        recenter.x = 2;
+    if(recenter.y < 2)
+        recenter.y = 2;
+    if(recenter.z< 2)
+        recenter.z = 2;
 
     for(Xitr = 0; Xitr < 16; ++Xitr)
     {
@@ -56,7 +63,7 @@ void main()
         if(edgeNum == -1)
             break;
 
-        edgePointPositions[Xitr] = vec3(globalPositionF.x, -globalPositionF.y, globalPositionF.z) + edgePosFromNumber[edgeNum];
+        edgePointPositions[Xitr] = ((vec3(globalPositionF.x + 0.5, -globalPositionF.y - 0.5, globalPositionF.z + 0.5) + edgePosFromNumber[edgeNum]) / recenter) - vec3(0.5, -0.5, 0.5);
     }
 
     if(Xitr == 0)
