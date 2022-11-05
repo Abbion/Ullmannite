@@ -105,8 +105,9 @@ void Application::InitApplciation()
     ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
     ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::MARKER, "MarkerVS", "MarkerPS");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH, "CubeMarchCS");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR, "CubeMarchCS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER, "CubeMarchVertexCounterCS");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER, "CubeMarchVS", "CubeMarchPS");
 
     //Layers
     auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());

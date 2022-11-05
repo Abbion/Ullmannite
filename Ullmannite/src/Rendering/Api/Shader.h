@@ -7,8 +7,9 @@ namespace Ull
         UI_SHADER,
         FRAME_DISPLAY_SHADER,
         MARKER,
-        CUBE_MARCH,
-        CUBE_MARCH_VERTEX_COUNTER
+        CUBE_MARCH_MESH_GENERATOR,
+        CUBE_MARCH_VERTEX_COUNTER,
+        CUBE_MARCH_VERTEX_RENDERER
     };
 
     enum class ShaderType {

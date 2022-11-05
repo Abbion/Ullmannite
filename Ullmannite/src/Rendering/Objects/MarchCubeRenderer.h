@@ -3,6 +3,7 @@
 #include "Scene/Nodes/Node3D.h"
 #include "Rendering/Api/Shader.h"
 #include "Rendering/Api/Texture.h"
+#include "Rendering/Api/Buffer.h"
 #include <memory>
 
 namespace Ull
@@ -35,9 +36,16 @@ namespace Ull
 
         Shader* m_cubeMarchVertexCounter{ nullptr };
         Shader* m_cubeMarchShader{ nullptr };
-        Texture3D* m_volumeTexture{ nullptr };
+        Shader* m_vertexRendererShader{ nullptr };
 
-        uint64_t GetVertexCountGPU();
-        uint64_t GetVertexCountCPU();
+        Texture3D* m_volumeTexture{ nullptr };
+        Texture3D* m_vertexPosTexture{ nullptr };
+        VertexBuffer* m_vertexBuffer{ nullptr };
+        uint64_t m_vertexCount{ 0 };
+
+
+
+        uint64_t CalculateVertexCountGPU();
+        uint64_t CalculateVertexCountCPU();
     };
 }

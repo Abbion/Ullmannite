@@ -5,6 +5,7 @@
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/TriangulationTable/TriangulationTable.h"
 #include "Rendering/Api/OpenGL/BufferOpenGL.h"
+#include "Scene/Scene.h"
 #include <thread>
 #include <chrono>
 
@@ -49,7 +50,8 @@ MarchCubeRenderer::MarchCubeRenderer(const std::string& name, NotOwner<Scene> sc
 	Node3D(name, scene)
 {
 	m_cubeMarchVertexCounter = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER);
-	m_cubeMarchShader = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH);
+	m_cubeMarchShader = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR);
+	m_vertexRendererShader = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER);
 
 
 	TriangulationTable::GetInstance().CreateTriangulationTable();
@@ -74,22 +76,21 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 
 void MarchCubeRenderer::GenerateMesh()
 {	
-	
-	auto vertexCount = GetVertexCountGPU();
+	m_vertexCount = CalculateVertexCountGPU();
+	const uint16_t amountOfTextures = (uint16_t)std::ceil((double)m_vertexCount / (vertexPositionTextureSize * vertexPositionTextureSize));
 
 	TriangulationTable::GetInstance().GetTriangulationTexture()->BindImage(InternalDataFormat::R_8UI, ReadWriteRights::READ, 1);
 	
-	Texture3D* vertexPosTexture = Texture3D::Create();
-	
-	const uint16_t amountOfTextures = (uint16_t)std::ceil((double)vertexCount / (vertexPositionTextureSize * vertexPositionTextureSize));
+	if(m_vertexPosTexture != nullptr)
+		delete m_vertexPosTexture;
 
-	vertexPosTexture->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
-	vertexPosTexture->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP, WrapMode::CLAMP);
-	vertexPosTexture->SetData(glm::uvec3(vertexPositionTextureSize, vertexPositionTextureSize, amountOfTextures), InternalDataFormat::RGBA_32F, PixelDataFormat::RGBA, GraphicsDataType::FLOAT, nullptr);
-	vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 2);
+	m_vertexPosTexture = Texture3D::Create();
+	m_vertexPosTexture->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
+	m_vertexPosTexture->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP, WrapMode::CLAMP);
+	m_vertexPosTexture->SetData(glm::uvec3(vertexPositionTextureSize, vertexPositionTextureSize, amountOfTextures), InternalDataFormat::RGBA_32F, PixelDataFormat::RGBA, GraphicsDataType::FLOAT, nullptr);
+	m_vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 2);
 	
 	uint32_t counter = 0;
-
 	AtomicCounterBuffer* atomicCounter = AtomicCounterBuffer::Create(&counter, sizeof(uint32_t));
 	atomicCounter->Bind(3);
 
@@ -108,10 +109,13 @@ void MarchCubeRenderer::GenerateMesh()
 
 	atomicCounter->Unbind();
 
+	m_volumeTexture->Unbind();
+	m_vertexPosTexture->Unbind();
 	TriangulationTable::GetInstance().GetTriangulationTexture()->Unbind();
-	vertexPosTexture->Unbind();
-	delete vertexPosTexture;
 	delete atomicCounter;
+
+	if(m_vertexBuffer != nullptr)
+		delete m_vertexBuffer;
 }
 
 void MarchCubeRenderer::HandleEvent(Event* event)
@@ -126,10 +130,22 @@ void MarchCubeRenderer::Update()
 
 void MarchCubeRenderer::Render()
 {
+	auto mainCamera = GetScene()->GetMainCamera();
 
+	m_vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 0);
+
+	m_vertexRendererShader->Bind();
+	m_vertexRendererShader->SetFloat3("materialColor", glm::vec3(0.0, 0.2, 0.5));
+
+	m_vertexRendererShader->SetFloat4x4("projectionMatrix", mainCamera->GetProjectionMatrix());
+	m_vertexRendererShader->SetFloat4x4("viewMatrix", mainCamera->GetViewMatrix());
+
+	Renderer::GetInstance().DrawArrays(GraphicsRenderPrimitives::TRIANGLE, m_vertexCount, 0);
+
+	m_vertexPosTexture->Unbind();
 }
 
-uint64_t MarchCubeRenderer::GetVertexCountGPU()
+uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 {
 	auto start = std::chrono::high_resolution_clock::now();
 
@@ -139,11 +155,12 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)m_volumeData->width / (vertexCounterLocalSize * 2));
 	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)m_volumeData->height / vertexCounterLocalSize);
 	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)m_volumeData->depth / vertexCounterLocalSize);
+
 	const unsigned int totalSize = vertexLocalSizeX * vertexLocalSizeY * vertexLocalSizeZ;
 
 	uint32_t* vertexCountArr = new uint32_t[totalSize];
 	StorageBuffer* storageBuff = StorageBuffer::Create(vertexCountArr, sizeof(uint32_t) * totalSize);
-	storageBuff->Bind(2);
+	storageBuff->Bind(2); //TODO Bind to name not id
 
 	//Setup shader
 	m_cubeMarchVertexCounter->Bind();
@@ -154,7 +171,7 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 
 	//Run shader
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);	//TODO Pull to renderer
 
 	TriangulationTable::GetInstance().GetVertexCountTexture()->Unbind();
 
@@ -188,11 +205,10 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 					for (unsigned int j = sumRange * threadNum; j < totalSize; ++j)
 						partialSum[i] += vertexCountArr[j];
 				}
-
-				}));
+			}));
 		}
 
-		for (int i = 0; i < threadNum; i++)
+		for (int i = 0; i < threadNum; ++i)
 		{
 			threads[i].join();
 			totalVertexCount += partialSum[i];
@@ -213,7 +229,7 @@ uint64_t MarchCubeRenderer::GetVertexCountGPU()
 	return totalVertexCount;
 }
 
-uint64_t MarchCubeRenderer::GetVertexCountCPU()
+uint64_t MarchCubeRenderer::CalculateVertexCountCPU()
 {
 	auto start = std::chrono::high_resolution_clock::now();
 
