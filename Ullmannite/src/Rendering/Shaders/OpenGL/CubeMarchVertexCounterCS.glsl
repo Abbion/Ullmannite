@@ -22,8 +22,11 @@ shared uint localVertexCounter;
 
 void main()
 {
-    if(gl_GlobalInvocationID.z > (CMsettings.size.z - 2) || gl_GlobalInvocationID.y > (CMsettings.size.y - 2) || gl_GlobalInvocationID.x > (CMsettings.size.x - 2))
+    if(gl_GlobalInvocationID.z > CMsettings.size.z || gl_GlobalInvocationID.y > CMsettings.size.y || gl_GlobalInvocationID.x > CMsettings.size.x)
+    {
+        vertexCountStorageData[gl_WorkGroupID.x + (gl_WorkGroupID.y * gl_NumWorkGroups.x) + (gl_WorkGroupID.z * gl_NumWorkGroups.x * gl_NumWorkGroups.y)] = 0;
         return;
+    }
 
     if(gl_LocalInvocationID.x == 0 && gl_LocalInvocationID.y == 0 && gl_LocalInvocationID.z == 0)
         localVertexCounter = 0;
@@ -40,7 +43,7 @@ void main()
 
     for(uint itr = 0; itr < 8; ++itr)
     {
-        uint cornderValue = imageLoad(inputImage, ivec3(gl_GlobalInvocationID  + cubeCornderSampler[itr])).x;
+        uint cornderValue = imageLoad(inputImage, ivec3(gl_GlobalInvocationID + ivec3(-1, -1, -1)  + cubeCornderSampler[itr])).x;
 
         if(cornderValue >= CMsettings.minSampleVal && cornderValue <= CMsettings.maxSampleVal)
             activeEdgeCounter |= 1 << itr;

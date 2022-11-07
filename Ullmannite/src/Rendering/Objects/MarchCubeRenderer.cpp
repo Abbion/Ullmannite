@@ -95,13 +95,15 @@ void MarchCubeRenderer::GenerateMesh()
 	atomicCounter->Bind(3);
 
 	m_cubeMarchShader->Bind();
-	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", 120);
-	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", 16000);
 
-	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)m_volumeData->width / (vertexCounterLocalSize * 2));
-	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)m_volumeData->height / vertexCounterLocalSize);
-	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)m_volumeData->depth / vertexCounterLocalSize);
+	//Add one because we need an offset of zeros from every side. In the compute shader we start from -1, -1, -1 so thats the other side
+	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
+	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", 160);
+	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", 16'000);
+
+	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)(m_volumeData->width + 2) / (vertexCounterLocalSize * 2));
+	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(m_volumeData->height + 2) / vertexCounterLocalSize);
+	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(m_volumeData->depth + 2) / vertexCounterLocalSize);
 
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
 	glMemoryBarrier(GL_ATOMIC_COUNTER_BARRIER_BIT);
@@ -152,9 +154,10 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	m_volumeTexture->BindImage(InternalDataFormat::R_16UI, ReadWriteRights::READ, 0);
 	TriangulationTable::GetInstance().GetVertexCountTexture()->BindImage(InternalDataFormat::R_8UI, ReadWriteRights::READ, 1);
 
-	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)m_volumeData->width / (vertexCounterLocalSize * 2));
-	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)m_volumeData->height / vertexCounterLocalSize);
-	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)m_volumeData->depth / vertexCounterLocalSize);
+	//Add two because we need an offset of zeros from every side. In the compute shader we start from -1, -1, -1
+	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)(m_volumeData->width + 2) / (vertexCounterLocalSize * 2));
+	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(m_volumeData->height + 2) / vertexCounterLocalSize);
+	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(m_volumeData->depth + 2) / vertexCounterLocalSize);
 
 	const unsigned int totalSize = vertexLocalSizeX * vertexLocalSizeY * vertexLocalSizeZ;
 
@@ -166,8 +169,8 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	m_cubeMarchVertexCounter->Bind();
 
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 120);
-	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 16000);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 160);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 16'000);
 
 	//Run shader
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
@@ -217,7 +220,9 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	else
 	{
 		for (unsigned int i = 0; i < totalSize; ++i)
+		{
 			totalVertexCount += vertexCountArr[i];
+		}
 	}
 
 	delete[] vertexCountArr;

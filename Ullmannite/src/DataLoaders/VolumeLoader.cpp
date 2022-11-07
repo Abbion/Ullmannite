@@ -32,7 +32,7 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 
 		size_t bufferSize = (size_t)width * (size_t)height * (size_t)depth;
 		volumeData = std::make_shared<VolumeData>(VolumeData(width, height, depth, bufferSize));
-
+		
 		size_t chunkSize = bufferSize / (readThreads - 1);
 		size_t lastChunkSize = bufferSize % (readThreads - 1);
 		size_t dataStartPosition = (size_t)volumeFile.tellg();
@@ -57,10 +57,8 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 
 				if (i == readThreads - 1)
 				{
-					if (lastChunkSize < 1)
-						return;
-
-					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * lastChunkSize);
+					if (lastChunkSize > 0)
+						volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * lastChunkSize);
 				}
 				else
 					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * chunkSize);

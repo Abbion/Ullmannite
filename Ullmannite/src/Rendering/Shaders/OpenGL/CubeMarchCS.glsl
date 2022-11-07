@@ -22,7 +22,7 @@ const uint doubleVertexPosTextureSize = vertexPosTextureSize * vertexPosTextureS
 
 void main() 
 {
-    if(gl_GlobalInvocationID.z > (CMsettings.size.z - 2) || gl_GlobalInvocationID.y > (CMsettings.size.y - 2) || gl_GlobalInvocationID.x > (CMsettings.size.x - 2))
+    if(gl_GlobalInvocationID.z > CMsettings.size.z || gl_GlobalInvocationID.y > CMsettings.size.y || gl_GlobalInvocationID.x > CMsettings.size.x)
         return;
 
     const uvec3 cubeCornderSampler[8] = {   uvec3(0, 0, 0), uvec3(1, 0, 0),
@@ -34,7 +34,7 @@ void main()
 
     for(uint itr = 0; itr < 8; ++itr)
     {
-        uint cornderValue = imageLoad(inputImage, ivec3(gl_GlobalInvocationID  + cubeCornderSampler[itr])).x;
+        uint cornderValue = imageLoad(inputImage, ivec3(gl_GlobalInvocationID  + ivec3(-1, -1, -1) + cubeCornderSampler[itr])).x;
 
         if(cornderValue >= CMsettings.minSampleVal && cornderValue <= CMsettings.maxSampleVal)
             activeEdgeCounter |= 1 << itr;
@@ -45,7 +45,7 @@ void main()
                                             vec3(-0.5, 0.5, 0), vec3(0.5, 0.5, 0),  vec3(0.5, -0.5, 0),  vec3(-0.5, -0.5, 0) };
 
     vec3 edgePointPositions[16];
-    vec3 globalPositionF = vec3(gl_GlobalInvocationID);
+    vec3 globalPositionF = vec3(gl_GlobalInvocationID) + vec3(-1, -1, -1);
 
     uint Xitr;
     vec3 recenter = vec3(CMsettings.size.x - 1, CMsettings.size.y -1,  CMsettings.size.y -1);
