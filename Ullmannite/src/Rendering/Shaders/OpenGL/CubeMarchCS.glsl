@@ -10,9 +10,9 @@ layout(binding = 3) uniform atomic_uint vertexPosTextureItr;
 struct CubeMarchSettings
 {
     uvec3 size;
-    uint sampleJump;
     uint minSampleVal;
     uint maxSampleVal;
+    float maxDataValue;
 };
 
 uniform CubeMarchSettings CMsettings;
@@ -20,41 +20,47 @@ uniform CubeMarchSettings CMsettings;
 const uint vertexPosTextureSize = 2048;
 const uint doubleVertexPosTextureSize = vertexPosTextureSize * vertexPosTextureSize;
 
+
+const uvec3 cubeCornderSampler[8] = {   uvec3(0, 0, 0), uvec3(1, 0, 0),
+                                        uvec3(1, 1, 0), uvec3(0, 1, 0),
+                                        uvec3(0, 0, 1), uvec3(1, 0, 1),
+                                        uvec3(1, 1, 1), uvec3(0, 1, 1) };
+
+const vec3 edgePosFromNumber[12] = {    vec3(0, 0.5, -0.5), vec3(0.5, 0, -0.5), vec3(0, -0.5, -0.5), vec3(-0.5, 0, -0.5),
+                                        vec3(0, 0.5, 0.5),  vec3(0.5, 0, 0.5),  vec3(0, -0.5, 0.5),  vec3(-0.5, 0, 0.5),
+                                        vec3(-0.5, 0.5, 0), vec3(0.5, 0.5, 0),  vec3(0.5, -0.5, 0),  vec3(-0.5, -0.5, 0) };
+
+                                          
+const uint vertexNumFromEdge[24] = { 0, 1, /*0*/ 2, 1, /*1*/ 2, 3, /*2*/ 3, 0, /*3*/ 4, 5, /*4*/  5, 6, /*5*/
+                                     6, 7, /*6*/ 7, 4, /*7*/ 0, 4, /*8*/ 1, 5, /*9*/ 2, 6, /*10*/ 3, 7  /*11*/ };
+
 void main() 
 {
     if(gl_GlobalInvocationID.z > CMsettings.size.z || gl_GlobalInvocationID.y > CMsettings.size.y || gl_GlobalInvocationID.x > CMsettings.size.x)
         return;
-
-    const uvec3 cubeCornderSampler[8] = {   uvec3(0, 0, 0), uvec3(1, 0, 0),
-                                            uvec3(1, 1, 0), uvec3(0, 1, 0),
-                                            uvec3(0, 0, 1), uvec3(1, 0, 1),
-                                            uvec3(1, 1, 1), uvec3(0, 1, 1) };
     
     uint activeEdgeCounter = 0;
 
+    ivec3 globalPositionI = ivec3(gl_GlobalInvocationID  + ivec3(-1, -1, -1));
+
     for(uint itr = 0; itr < 8; ++itr)
     {
-        uint cornderValue = imageLoad(inputImage, ivec3(gl_GlobalInvocationID  + ivec3(-1, -1, -1) + cubeCornderSampler[itr])).x;
+        uint cornderValue = imageLoad(inputImage, ivec3(globalPositionI + cubeCornderSampler[itr])).x;
 
         if(cornderValue >= CMsettings.minSampleVal && cornderValue <= CMsettings.maxSampleVal)
             activeEdgeCounter |= 1 << itr;
     }
 
-    const vec3 edgePosFromNumber[12] = {    vec3(0, 0.5, -0.5), vec3(0.5, 0, -0.5), vec3(0, -0.5, -0.5), vec3(-0.5, 0, -0.5),
-                                            vec3(0, 0.5, 0.5),  vec3(0.5, 0, 0.5),  vec3(0, -0.5, 0.5),  vec3(-0.5, 0, 0.5),
-                                            vec3(-0.5, 0.5, 0), vec3(0.5, 0.5, 0),  vec3(0.5, -0.5, 0),  vec3(-0.5, -0.5, 0) };
-
-    vec3 edgePointPositions[16];
+    vec4 edgePointPositions[16];
     vec3 globalPositionF = vec3(gl_GlobalInvocationID) + vec3(-1, -1, -1);
 
-    uint Xitr;
     vec3 recenter = vec3(CMsettings.size.x - 1, CMsettings.size.y -1,  CMsettings.size.y -1);
-    if(recenter.x < 2)
-        recenter.x = 2;
-    if(recenter.y < 2)
-        recenter.y = 2;
-    if(recenter.z< 2)
-        recenter.z = 2;
+    if(recenter.x < 2) recenter.x = 2;
+    if(recenter.y < 2) recenter.y = 2;
+    if(recenter.z < 2) recenter.z = 2;
+
+    uint Xitr;
+    float divider = 2.0 * CMsettings.maxDataValue;
 
     for(Xitr = 0; Xitr < 16; ++Xitr)
     {
@@ -63,7 +69,12 @@ void main()
         if(edgeNum == -1)
             break;
 
-        edgePointPositions[Xitr] = ((vec3(globalPositionF.x + 0.5, -globalPositionF.y - 0.5, globalPositionF.z + 0.5) + edgePosFromNumber[edgeNum]) / recenter) - vec3(0.5, -0.5, 0.5);
+        ivec3 corner1 = ivec3(cubeCornderSampler[vertexNumFromEdge[2 * edgeNum]]) + globalPositionI;
+        ivec3 conrer2 = ivec3(cubeCornderSampler[vertexNumFromEdge[(2 * edgeNum) + 1]]) + globalPositionI;
+
+        float edgeValue = (imageLoad(inputImage, corner1).x + imageLoad(inputImage, conrer2).x) / divider;
+
+         edgePointPositions[Xitr] = vec4(((vec3(globalPositionF.x + 0.5, -globalPositionF.y - 0.5, globalPositionF.z + 0.5) + edgePosFromNumber[edgeNum]) / recenter) - vec3(0.5, -0.5, 0.5), edgeValue);
     }
 
     if(Xitr == 0)
@@ -75,6 +86,6 @@ void main()
     {
         ivec3 savePositionInTextureCorrds =  ivec3((itrStartPosition + posItr) % vertexPosTextureSize, ((itrStartPosition + posItr) / vertexPosTextureSize) % vertexPosTextureSize, (itrStartPosition + posItr) / doubleVertexPosTextureSize);
         
-        imageStore(vertexPosTexture, savePositionInTextureCorrds, vec4(edgePointPositions[posItr].xyz , 1.0));
+        imageStore(vertexPosTexture, savePositionInTextureCorrds, edgePointPositions[posItr]);
     }
 }

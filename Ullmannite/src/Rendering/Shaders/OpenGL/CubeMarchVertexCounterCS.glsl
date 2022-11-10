@@ -14,6 +14,7 @@ struct CubeMarchSettings
     uvec3 size;
     uint minSampleVal;
     uint maxSampleVal;
+    float maxDataValue;
 };
 
 uniform CubeMarchSettings CMsettings;

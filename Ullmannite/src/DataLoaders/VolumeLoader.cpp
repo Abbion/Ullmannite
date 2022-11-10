@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include <algorithm>
 
 using namespace Ull;
 
@@ -77,6 +78,8 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 	{
 		ULOGF("File loading error: " << e.what());
 	}
+
+	volumeData->maxValue = *(std::max_element(volumeData->dataBuffer.begin(), volumeData->dataBuffer.end()));
 
 	return volumeData;
 }

@@ -3,6 +3,7 @@
 #include "Rendering/Objects/Cube.h"
 #include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
+#include "Rendering/Objects/TransferFunctionRenderer.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
@@ -38,11 +39,17 @@ void UiView3D::Init()
 
     //TEMP data loading
     auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
+    //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/interpolationTest.dat");
 
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
     cubeMarch->SetVolumeData(mainDataSet);
     cubeMarch->GenerateMesh();
     root->AddNode(cubeMarch);
+
+
+    std::vector<TransferPoint> tp = { TransferPoint{glm::vec3(1.0f, 0.0f, 0.0f), 50}, TransferPoint{glm::vec3(0.0f, 1.0f, 0.0f), 100}, TransferPoint{glm::vec3(0.0f, 0.0f, 1.0f), 200}, TransferPoint{glm::vec3(0.0f, 1.0f, 1.0f), 300} };
+    TransferFunctionRenderer transferFunciton(tp);
+    transferFunciton.GenerateTransferFunction();
     //auto cube = new Cube("Test Cube", &m_scene);
     //root->AddNode(cube);
 }
