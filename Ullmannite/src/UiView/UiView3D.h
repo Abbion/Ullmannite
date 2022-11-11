@@ -3,6 +3,8 @@
 #include "Scene/Scene.h"
 #include "Window/UllWindow.h"
 #include "Utilities/PointerHelper.h"
+#include "Rendering/Objects/TransferFunctionRenderer.h"
+#include <memory>
 
 namespace Ull
 {
@@ -23,5 +25,7 @@ namespace Ull
 	private:
 		Scene m_scene;
 		NotOwner<UllWindow> m_window{ nullptr };
+
+		std::shared_ptr<TransferFunctionRenderer> m_transferFunciton;
 	};
 }

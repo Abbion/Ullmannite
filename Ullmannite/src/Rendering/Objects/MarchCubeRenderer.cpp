@@ -74,6 +74,11 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 	Renderer::GetInstance().SetPixelUnpackWidth(4);
 }
 
+void MarchCubeRenderer::SetTransferTexture(NotOwner<Texture1D> transferTexture)
+{
+	m_transferTexture = transferTexture;
+}
+
 void MarchCubeRenderer::GenerateMesh()
 {	
 	m_vertexCount = CalculateVertexCountGPU();
@@ -85,7 +90,7 @@ void MarchCubeRenderer::GenerateMesh()
 		delete m_vertexPosTexture;
 
 	m_vertexPosTexture = Texture3D::Create();
-	m_vertexPosTexture->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
+	m_vertexPosTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
 	m_vertexPosTexture->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP, WrapMode::CLAMP);
 	m_vertexPosTexture->SetData(glm::uvec3(vertexPositionTextureSize, vertexPositionTextureSize, amountOfTextures), InternalDataFormat::RGBA_32F, PixelDataFormat::RGBA, GraphicsDataType::FLOAT, nullptr);
 	m_vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 2);
@@ -98,7 +103,7 @@ void MarchCubeRenderer::GenerateMesh()
 
 	//Add one because we need an offset of zeros from every side. In the compute shader we start from -1, -1, -1 so thats the other side
 	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", 120);
+	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", 1000);
 	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", 16'000);
 	m_cubeMarchShader->SetFloat("CMsettings.maxDataValue", static_cast<float>(m_volumeData->maxValue));
 
@@ -136,6 +141,7 @@ void MarchCubeRenderer::Render()
 	auto mainCamera = GetScene()->GetMainCamera();
 
 	m_vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 0);
+	m_transferTexture->Bind();
 
 	m_vertexRendererShader->Bind();
 	m_vertexRendererShader->SetFloat3("materialColor", glm::vec3(0.0, 0.2, 0.5));
@@ -170,7 +176,7 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	m_cubeMarchVertexCounter->Bind();
 
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 120);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", 1000);
 	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", 16'000);
 	m_cubeMarchVertexCounter->SetFloat("CMsettings.maxDataValue", static_cast<float>(m_volumeData->maxValue));
 

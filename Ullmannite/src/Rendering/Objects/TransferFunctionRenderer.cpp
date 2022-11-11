@@ -72,6 +72,7 @@ void TransferFunctionRenderer::GenerateTransferFunction()
     m_transferFunctionGeneratorShader->SetUint("colorPointsCount", size);
 
     Renderer::GetInstance().DispatchComputeShader(1, 1, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     
     m_transferFunctionTexture->Unbind();
 

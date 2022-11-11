@@ -4,6 +4,7 @@
 #include "Rendering/Api/Shader.h"
 #include "Rendering/Api/Texture.h"
 #include "Rendering/Api/Buffer.h"
+#include "Utilities/PointerHelper.h"
 #include <memory>
 
 namespace Ull
@@ -15,9 +16,9 @@ namespace Ull
         ~MarchCubeRenderer();
 
         void SetVolumeData(const std::shared_ptr<VolumeData> volumeData);
-        void SetTransferexture();
         void SetMinSampling(uint16_t sampling) { m_minSampling = sampling; }
         void SetMaxSampling(uint16_t sampling) { m_maxSampling = sampling; }
+        void SetTransferTexture(NotOwner<Texture1D> transferTexture);
 
         void GenerateMesh();
 
@@ -38,6 +39,7 @@ namespace Ull
         Shader* m_cubeMarchShader{ nullptr };
         Shader* m_vertexRendererShader{ nullptr };
 
+        NotOwner<Texture1D> m_transferTexture{ nullptr };
         Texture3D* m_volumeTexture{ nullptr };
         Texture3D* m_vertexPosTexture{ nullptr };
         VertexBuffer* m_vertexBuffer{ nullptr };
