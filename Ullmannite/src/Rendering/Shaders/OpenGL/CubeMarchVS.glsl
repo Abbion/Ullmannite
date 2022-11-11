@@ -9,18 +9,17 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 
 out VS_OUT{
-    vec3 colorT;
+    vec3 rawPosition;
+    float intensity;
 } vs_out;
-
-//out float intensity;
 
 void main()
 {
     ivec3 vertexPosition = ivec3(gl_VertexID % 2048, (gl_VertexID / 2048) % 2048, (gl_VertexID / (2048 * 2048)));
     vec4 vertexData = imageLoad(vertexPosTexture, vertexPosition);
 
-    vs_out.colorT = vec3(vertexData.xyz);
-    //intensity = vertexData.w;
+    vs_out.rawPosition = vertexData.xyz;
+    vs_out.intensity = vertexData.w;
 
 	gl_Position = projectionMatrix * viewMatrix * vec4(vertexData.xyz, 1.0);
 }
