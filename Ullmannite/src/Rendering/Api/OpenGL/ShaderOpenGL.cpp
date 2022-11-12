@@ -9,7 +9,13 @@
 #include <string>
 
 using namespace Ull;
-#define OPENGL_SHADDER_PATH "src/Rendering/Shaders/OpenGL/"
+
+#ifdef DEBUG
+    #define OPENGL_SHADDER_PATH "src/Rendering/Shaders/OpenGL/"
+#elif RELEASE
+    #define OPENGL_SHADDER_PATH "Shaders/"
+#endif
+
 #define OPENGL_SHADER_EXTENSION ".glsl"
 
 namespace

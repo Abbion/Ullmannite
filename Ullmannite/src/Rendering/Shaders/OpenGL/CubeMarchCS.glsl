@@ -54,7 +54,7 @@ void main()
     vec4 edgePointPositions[16];
     vec3 globalPositionF = vec3(gl_GlobalInvocationID) + vec3(-1, -1, -1);
 
-    vec3 recenter = vec3(CMsettings.size.x - 1, CMsettings.size.y -1,  CMsettings.size.y -1);
+    vec3 recenter = vec3(CMsettings.size.x - 1, CMsettings.size.y -1, CMsettings.size.z -1);
     if(recenter.x < 2) recenter.x = 2;
     if(recenter.y < 2) recenter.y = 2;
     if(recenter.z < 2) recenter.z = 2;

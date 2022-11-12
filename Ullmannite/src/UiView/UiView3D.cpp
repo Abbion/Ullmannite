@@ -27,16 +27,26 @@ UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
 
 void UiView3D::Init()
 {
+    auto root = m_scene.GetRootNode();
+
+    //Camera
     auto camera = new Camera("Main camera", &m_scene, UiArea::GetSize());
     camera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     camera->CalculateProjectionMatrix();
     camera->CalculateViewMatrix();
 
     m_scene.SetMainCamera(camera);
-
-    auto root = m_scene.GetRootNode();
     root->AddNode(camera);
 
+    //Light
+    auto dirLight = new DirectionalLight("dirLight", &m_scene);
+    dirLight->SetDirection(glm::vec3(1.0f, -1.0f, 0.0f));
+    dirLight->SetAmbientStrength(0.15f);
+    dirLight->SetLightColor(glm::vec3(0.9f, 0.9f, 0.9f));
+
+    root->AddNode(dirLight);
+
+    //Cube marcher
     //TEMP data loading
     auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
     //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/interpolationTest.dat");

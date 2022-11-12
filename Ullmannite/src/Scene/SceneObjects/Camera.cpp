@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "Camera.h"
+#include "Rendering/Objects/DirectionalLight.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
@@ -49,6 +50,17 @@ void Camera::HandleEvent(Event* event)
 			else if(key == Keyboard::Key::R)
 			{
 				ResetCamera();
+				m_scene->SetUpdated(true);
+			}
+			else if(key == Keyboard::Key::Q)
+			{
+				auto dirLightNode = m_scene->GetNodeByName("dirLight");
+				
+				if(dirLightNode == nullptr)
+					return; 
+
+				auto dirLight = static_cast<DirectionalLight*>(dirLightNode);
+				dirLight->SetDirection(m_front);
 				m_scene->SetUpdated(true);
 			}
 		}
@@ -205,4 +217,6 @@ void Camera::ResetCamera()
 	m_fov = 45.f;
 
 	UpdateVectors();
+	CalculateViewMatrix();
+	CalculateProjectionMatrix();
 }

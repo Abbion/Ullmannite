@@ -3,6 +3,7 @@
 #include "Rendering/Api/ShaderManager.h"
 #include "Rendering/Api/Texture.h"
 #include "Rendering/Api/Renderer.h"
+#include "Rendering/Objects/DirectionalLight.h"
 #include "Rendering/TriangulationTable/TriangulationTable.h"
 #include "Rendering/Api/OpenGL/BufferOpenGL.h"
 #include "Scene/Scene.h"
@@ -148,6 +149,8 @@ void MarchCubeRenderer::Render()
 
 	m_vertexRendererShader->SetFloat4x4("projectionMatrix", mainCamera->GetProjectionMatrix());
 	m_vertexRendererShader->SetFloat4x4("viewMatrix", mainCamera->GetViewMatrix());
+
+	SetUpLight();
 
 	Renderer::GetInstance().DrawArrays(GraphicsRenderPrimitives::TRIANGLE, m_vertexCount, 0);
 
@@ -296,4 +299,24 @@ uint64_t MarchCubeRenderer::CalculateVertexCountCPU()
 	ULOGD("Triangle count CPU TIME: " << duration.count() << " microseconds");
 
 	return totalVertexCount;
+}
+
+void MarchCubeRenderer::SetUpLight()
+{
+	const auto dirLightNode = m_scene->GetNodeByName("dirLight");
+	
+	if(dirLightNode == nullptr)
+	{
+		m_vertexRendererShader->SetFloat3("lightSettings.lightDir", glm::vec3(1.0f, -1.0f, 0.0f));
+		m_vertexRendererShader->SetFloat3("lightSettings.lightColor", glm::vec3(0.2f, 0.2f, 0.2f));
+		m_vertexRendererShader->SetFloat("lightSettings.ambientStrength", 0.5f);
+	}
+	else
+	{
+		const auto dirLight = static_cast<DirectionalLight*>(dirLightNode);
+
+		m_vertexRendererShader->SetFloat3("lightSettings.lightDir", dirLight->GetDirection());
+		m_vertexRendererShader->SetFloat3("lightSettings.lightColor", dirLight->GetLightColor());
+		m_vertexRendererShader->SetFloat("lightSettings.ambientStrength", dirLight->GetAmbientStrength());
+	}
 }

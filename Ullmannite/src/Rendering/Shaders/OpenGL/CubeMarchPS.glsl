@@ -2,8 +2,9 @@
 
 struct LightSettings{
 	vec3 lightDir;
+	vec3 lightColor;
 	float ambientStrength;
-} lightSettings;
+};
 
 out vec4 FragColor;
 
@@ -13,13 +14,17 @@ in GS_OUT{
 } gs_out;
 
 uniform sampler1D transferTexture;
-
+uniform LightSettings lightSettings;
 
 void main()
 {
-	vec3 lightDir = vec3(1.0, -1.0, 0.0);
-	lightDir = normalize(lightDir);
+	vec3 lightDir = normalize(lightSettings.lightDir);
+
+	vec3 ambient = lightSettings.ambientStrength * lightSettings.lightColor;
+	vec3 diffuse = max(dot(gs_out.normal, lightDir), 0) * lightSettings.lightColor;
 
 	//FragColor = texture(transferTexture, intensity);
-	FragColor = vec4(vec3(0.5, 0.5, 0.5) * max(dot(gs_out.normal, lightDir), 0.15), 1.0);
+	vec3 fianlColor = (ambient + diffuse) * vec3(0.5, 0.5, 0.5);
+
+	FragColor = vec4(fianlColor, 1.0);
 }
