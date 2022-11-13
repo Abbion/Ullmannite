@@ -31,8 +31,41 @@ const vec3 edgePosFromNumber[12] = {    vec3(0, 0.5, -0.5), vec3(0.5, 0, -0.5), 
                                         vec3(-0.5, 0.5, 0), vec3(0.5, 0.5, 0),  vec3(0.5, -0.5, 0),  vec3(-0.5, -0.5, 0) };
 
                                           
-const uint vertexNumFromEdge[24] = { 0, 1, /*0*/ 2, 1, /*1*/ 2, 3, /*2*/ 3, 0, /*3*/ 4, 5, /*4*/  5, 6, /*5*/
-                                     6, 7, /*6*/ 7, 4, /*7*/ 0, 4, /*8*/ 1, 5, /*9*/ 2, 6, /*10*/ 3, 7  /*11*/ };
+const uint vertexNumFromEdge[24] = { 0, 1, /*0*/ 2, 1, /*1*/ 3, 2, /*2*/ 3, 0, /*3*/ 4, 5, /*4*/  6, 5, /*5*/
+                                     7, 6, /*6*/ 7, 4, /*7*/ 0, 4, /*8*/ 1, 5, /*9*/ 2, 6, /*10*/ 3, 7  /*11*/ };
+
+float interpolate(float c1, float c2)
+{
+    float diff = c1 - c2;
+    
+    if((CMsettings.minSampleVal <  c1 && CMsettings.maxSampleVal > c1) || (CMsettings.minSampleVal < c2 && CMsettings.maxSampleVal > c2))
+    {
+        float minCorner = min(c1, c2);
+        float n = minCorner - CMsettings.minSampleVal;
+        float ret = n / diff;
+
+        if(ret < 0)
+            ret = 1 + ret;
+        
+        ret -= 0.5;
+        return ret;
+    }
+    return 0.0;
+    /*
+    else
+    {
+        float maxCorner = max(c1, c2);
+        float n = maxCorner - CMsettings.maxSampleVal;
+        float ret = n / diff;
+
+        if(ret < 0)
+            ret = 1 + ret;
+        
+        ret -= 0.5;
+        return ret;
+    }
+    */
+}
 
 void main() 
 {
@@ -60,7 +93,7 @@ void main()
     if(recenter.z < 2) recenter.z = 2;
 
     uint Xitr;
-    float divider = 2.0 * CMsettings.maxDataValue;
+    float divider = 2.0 * CMsettings.maxDataValue; // Normalized average
 
     for(Xitr = 0; Xitr < 16; ++Xitr)
     {
@@ -72,9 +105,27 @@ void main()
         ivec3 corner1 = ivec3(cubeCornderSampler[vertexNumFromEdge[2 * edgeNum]]) + globalPositionI;
         ivec3 conrer2 = ivec3(cubeCornderSampler[vertexNumFromEdge[(2 * edgeNum) + 1]]) + globalPositionI;
 
-        float edgeValue = (imageLoad(inputImage, corner1).x + imageLoad(inputImage, conrer2).x) / divider;
+        //float edgeValue = (imageLoad(inputImage, corner1).x + imageLoad(inputImage, conrer2).x) / divider;
 
-         edgePointPositions[Xitr] = vec4(((vec3(globalPositionF.x + 0.5, -globalPositionF.y - 0.5, globalPositionF.z + 0.5) + edgePosFromNumber[edgeNum]) / recenter) - vec3(0.5, -0.5, 0.5), edgeValue);
+        float interpolatedEdge = interpolate(imageLoad(inputImage, corner1).x, imageLoad(inputImage, conrer2).x);
+        vec3 interpolatedVec;
+
+        if(edgeNum == 0 || edgeNum == 2 || edgeNum == 4 || edgeNum == 6)
+        {
+            interpolatedVec = vec3(1, 0, 0) * interpolatedEdge;
+        }
+        else if(edgeNum == 1 || edgeNum == 3 || edgeNum == 5 || edgeNum == 7)
+        {
+            interpolatedVec = vec3(0, 1, 0) * interpolatedEdge;
+            //interpolatedVec = vec3(0.0, 0.0, 0.0);
+        }
+        else
+        {
+            interpolatedVec = vec3(0, 0, 1) * interpolatedEdge;
+            //interpolatedVec = vec3(0.0, 0.0, 0.0);
+        }
+
+        edgePointPositions[Xitr] = vec4(((vec3(globalPositionF.x + 0.5, -globalPositionF.y - 0.5, globalPositionF.z + 0.5) + edgePosFromNumber[edgeNum] + interpolatedVec) / recenter) - vec3(0.5, -0.5, 0.5), 1.0);
     }
 
     if(Xitr == 0)
