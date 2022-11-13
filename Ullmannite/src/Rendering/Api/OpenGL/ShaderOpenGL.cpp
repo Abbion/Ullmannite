@@ -195,6 +195,11 @@ void ShaderOpenGL::Unbind() const
     glUseProgram(0);
 }
 
+unsigned int ShaderOpenGL::GetResourceIndex(std::string resourceName) const
+{
+    return glGetProgramResourceIndex(m_shaderID, GL_SHADER_STORAGE_BLOCK, resourceName.c_str());
+}
+
 void ShaderOpenGL::SetInt(std::string uniformName, int value) const
 {
     glUniform1i(glGetUniformLocation(m_shaderID, uniformName.c_str()), value);

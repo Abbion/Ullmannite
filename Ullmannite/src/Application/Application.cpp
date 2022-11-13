@@ -109,7 +109,7 @@ void Application::InitApplciation()
     ShaderManager::GetInstance().LoadShader(ShaderTag::TRANSFER_FUNCTION_GENERATOR, "TransferFunctionGeneratorCS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER, "CubeMarchVertexCounterCS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER, "CubeMarchVS", "CubeMarchPS", "CubeMarchGS");
-
+    
     //Layers
     auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());
     mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));

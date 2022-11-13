@@ -176,10 +176,11 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 
 	uint32_t* vertexCountArr = new uint32_t[totalSize];
 	StorageBuffer* storageBuff = StorageBuffer::Create(vertexCountArr, sizeof(uint32_t) * totalSize);
-	storageBuff->Bind(2); //TODO Bind to name not id
 
 	//Setup shader
 	m_cubeMarchVertexCounter->Bind();
+	int a = m_cubeMarchVertexCounter->GetResourceIndex("vertexPosTextureItr");
+	storageBuff->Bind(2);
 
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
 	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", MINNN);
