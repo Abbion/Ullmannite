@@ -44,7 +44,7 @@ namespace {
 		return 8u;
 	}
 
-	unsigned int MINNN = 180;
+	unsigned int MINNN = 160;
 	unsigned int MAXXX = 5'000;
 }
 
