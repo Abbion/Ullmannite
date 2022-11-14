@@ -70,9 +70,42 @@ namespace Ull
         FrameBufferOpenGL(glm::uvec2 size, bool enableDepth);
         ~FrameBufferOpenGL();
 
+        unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+
         void Bind() const override;
         void Unbind() const override;
     
+    private:
+        unsigned int m_bufferID{ 0 };
+    };
+
+    class StorageBufferOpenGL : public StorageBuffer
+    {
+    public:
+        StorageBufferOpenGL(void* data, size_t size);
+        virtual ~StorageBufferOpenGL();
+
+        unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+        void GetData(void* data, size_t size) override;
+
+        void Bind(std::uint8_t bindIndex) const override;
+        void Unbind() const override;
+
+    private:
+        unsigned int m_bufferID{ 0 };
+    };
+
+    class AtomicCounterBufferOpenGL : public AtomicCounterBuffer
+    {
+    public: 
+        AtomicCounterBufferOpenGL(uint32_t* data, uint16_t size);
+        virtual ~AtomicCounterBufferOpenGL();
+
+        unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+
+        void Bind(std::uint8_t bindIndex) const override;
+        void Unbind() const override;
+
     private:
         unsigned int m_bufferID{ 0 };
     };

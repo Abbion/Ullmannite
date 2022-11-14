@@ -14,6 +14,7 @@ namespace Ull
 		Shader* GetShader(ShaderTag tag);
 
 		void LoadShader(ShaderTag tag, std::string vertexShaderName, std::string pixelShaderName, std::string geometryShaderName = "");
+		void LoadShader(ShaderTag tag, std::string computeShaderName);
 		void UnloadShader(ShaderTag tag);
 
 	protected:

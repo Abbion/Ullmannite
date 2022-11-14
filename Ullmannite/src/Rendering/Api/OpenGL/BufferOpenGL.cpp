@@ -133,7 +133,7 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
 
     //Attach color target
     m_colorTarget = new Texture2DOpenGL();
-    m_colorTarget->SetData(size, ColorFormat::RGB, ColorFormat::RGB, nullptr);
+    m_colorTarget->SetData(size, InternalDataFormat::RGB_32F, PixelDataFormat::RGB, GraphicsDataType::UBYTE, nullptr);
     m_colorTarget->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 
     auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
@@ -171,4 +171,59 @@ void FrameBufferOpenGL::Bind() const
 void FrameBufferOpenGL::Unbind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+StorageBufferOpenGL::StorageBufferOpenGL(void* data, size_t size)
+{
+    m_size = size;
+
+    glGenBuffers(1, &m_bufferID);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_bufferID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_READ);
+}
+
+StorageBufferOpenGL::~StorageBufferOpenGL()
+{
+    glDeleteBuffers(1, &m_bufferID);
+}
+
+void StorageBufferOpenGL::GetData(void* data, size_t size)
+{
+    glGetNamedBufferSubData(m_bufferID, 0, size, data);
+}
+
+void StorageBufferOpenGL::Bind(std::uint8_t bindIndex) const
+{
+    m_currentBindIndex = bindIndex;
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindIndex, m_bufferID);
+}
+
+void StorageBufferOpenGL::Unbind() const
+{
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_currentBindIndex, 0);
+}
+
+AtomicCounterBufferOpenGL::AtomicCounterBufferOpenGL(uint32_t* data, uint16_t size)
+{
+    m_size = size;
+
+    glGenBuffers(1, &m_bufferID);
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_bufferID);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, size, data, GL_DYNAMIC_READ);
+}
+
+AtomicCounterBufferOpenGL::~AtomicCounterBufferOpenGL()
+{
+    glDeleteBuffers(1, &m_bufferID);
+}
+
+void AtomicCounterBufferOpenGL::Bind(std::uint8_t bindIndex) const
+{
+    m_currentBindIndex = bindIndex;
+    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, m_currentBindIndex, m_bufferID);
+}
+
+void AtomicCounterBufferOpenGL::Unbind() const
+{
+    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, m_currentBindIndex, 0);
 }

@@ -9,7 +9,13 @@
 #include <string>
 
 using namespace Ull;
-#define OPENGL_SHADDER_PATH "src/Rendering/Shaders/OpenGL/"
+
+#ifdef DEBUG
+    #define OPENGL_SHADDER_PATH "src/Rendering/Shaders/OpenGL/"
+#elif RELEASE
+    #define OPENGL_SHADDER_PATH "Shaders/"
+#endif
+
 #define OPENGL_SHADER_EXTENSION ".glsl"
 
 namespace
@@ -39,6 +45,8 @@ namespace
 
 ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName)
 {
+    m_shaderType = ShaderType::RENDER;
+
     std::string vertexCode;
     std::string fragmentCode;
     std::string geometryCode;
@@ -129,6 +137,49 @@ ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::strin
         glDeleteShader(geometry);
 }
 
+ShaderOpenGL::ShaderOpenGL(const std::string& computeShaderName)
+{
+    m_shaderType = ShaderType::COMPUTE;
+
+    std::string computeCode;
+    std::ifstream cShaderFile;
+
+    cShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+    std::string computeShaderPath = OPENGL_SHADDER_PATH + computeShaderName + OPENGL_SHADER_EXTENSION;
+
+    try
+    {
+        cShaderFile.open(computeShaderPath.c_str());
+        
+        std::stringstream cShaderStream;
+        cShaderStream << cShaderFile.rdbuf();
+
+        cShaderFile.close();
+
+        computeCode = cShaderStream.str();
+    }
+    catch (const std::exception& e)
+    {
+        UASSERT(false, "Compute shader file cannot be loaded: " << e.what());
+    }
+
+    unsigned int compute;
+    const char* cShaderCode = computeCode.c_str();
+
+    compute = glCreateShader(GL_COMPUTE_SHADER);
+    glShaderSource(compute, 1, &cShaderCode, NULL);
+    glCompileShader(compute);
+    CheckCompileErrors(compute, GraphicsShaderType::COMPUTE);
+
+    m_shaderID = glCreateProgram();
+    glAttachShader(m_shaderID, compute);
+    glLinkProgram(m_shaderID);
+    CheckCompileErrors(m_shaderID, GraphicsShaderType::PROGRAM);
+
+    glDeleteShader(compute);
+}
+
 ShaderOpenGL::~ShaderOpenGL()
 {
     glDeleteProgram(m_shaderID);
@@ -147,6 +198,16 @@ void ShaderOpenGL::Unbind() const
 void ShaderOpenGL::SetInt(std::string uniformName, int value) const
 {
     glUniform1i(glGetUniformLocation(m_shaderID, uniformName.c_str()), value);
+}
+
+void ShaderOpenGL::SetUint(std::string uniformName, unsigned int value) const
+{
+    glUniform1ui(glGetUniformLocation(m_shaderID, uniformName.c_str()), value);
+}
+
+void ShaderOpenGL::SetUint3(std::string uniformName, glm::uvec3 value) const
+{
+    glUniform3ui(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.x, value.y, value.z);
 }
 
 void ShaderOpenGL::SetFloat(std::string uniformName, float value) const

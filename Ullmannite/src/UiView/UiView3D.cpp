@@ -1,11 +1,18 @@
 #include "Ullpch.h"
 #include "UiView3D.h"
 #include "Rendering/Objects/Cube.h"
+#include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
 #include <string>
+
+#include "DataLoaders/VolumeLoader.h"
+#include "DataStructures/VolumeData.h"
+
+#include <algorithm>
+
 
 using namespace Ull;
 
@@ -20,18 +27,42 @@ UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
 
 void UiView3D::Init()
 {
+    auto root = m_scene.GetRootNode();
+
+    //Camera
     auto camera = new Camera("Main camera", &m_scene, UiArea::GetSize());
     camera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     camera->CalculateProjectionMatrix();
     camera->CalculateViewMatrix();
 
     m_scene.SetMainCamera(camera);
-
-    auto root = m_scene.GetRootNode();
     root->AddNode(camera);
 
-    auto cube = new Cube("Test Cube", &m_scene);
-    root->AddNode(cube);
+    //Light
+    auto dirLight = new DirectionalLight("dirLight", &m_scene);
+    dirLight->SetDirection(glm::vec3(1.0f, -1.0f, 0.0f));
+    dirLight->SetAmbientStrength(0.15f);
+    dirLight->SetLightColor(glm::vec3(0.9f, 0.9f, 0.9f));
+
+    root->AddNode(dirLight);
+
+    //Cube marcher
+    //TEMP data loading
+    auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
+    //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/interpolationTest.dat");
+
+    auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
+    cubeMarch->SetVolumeData(mainDataSet);
+    cubeMarch->GenerateMesh();
+    std::vector<TransferPoint> tp = { TransferPoint{glm::vec3(1.0f, 0.0f, 0.0f), 0}, TransferPoint{glm::vec3(0.0f, 1.0f, 0.0f), 100}, TransferPoint{glm::vec3(0.0f, 0.0f, 1.0f), 200}, TransferPoint{glm::vec3(0.0f, 1.0f, 1.0f), 300} };
+    
+    m_transferFunciton = std::make_shared<TransferFunctionRenderer>(tp);
+    m_transferFunciton->GenerateTransferFunction();
+    auto texture = m_transferFunciton->GetTransferFunctionTexture();
+    cubeMarch->SetTransferTexture(texture);
+    root->AddNode(cubeMarch);
+    //auto cube = new Cube("Test Cube", &m_scene);
+    //root->AddNode(cube);
 }
 
 void UiView3D:: HandleEvent(Event* event)

@@ -7,6 +7,15 @@ namespace Ull
         UI_SHADER,
         FRAME_DISPLAY_SHADER,
         MARKER,
+        CUBE_MARCH_MESH_GENERATOR,
+        TRANSFER_FUNCTION_GENERATOR,
+        CUBE_MARCH_VERTEX_COUNTER,
+        CUBE_MARCH_VERTEX_RENDERER
+    };
+
+    enum class ShaderType {
+        RENDER,
+        COMPUTE
     };
 
     class Shader
@@ -14,12 +23,15 @@ namespace Ull
     public:
         virtual ~Shader() {}
 
-        static Shader* Create(const char* vertexShaderName, const char* fragmentShaderName, const char* geometryShaderName = nullptr);
+        static Shader* CreateRenderShader(const char* vertexShaderName, const char* fragmentShaderName, const char* geometryShaderName = nullptr);
+        static Shader* CreateComputeShader(const char* computeShaderName);
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
 
         virtual void SetInt(std::string uniformName, int value) const = 0;
+        virtual void SetUint(std::string uniformName, unsigned int value) const = 0;
+        virtual void SetUint3(std::string uniformName, glm::uvec3 value) const = 0;
         virtual void SetFloat(std::string uniformName, float value) const = 0;
         virtual void SetFloat4(std::string uniformName, glm::vec4 value) const = 0;
         virtual void SetFloat3(std::string uniformName, glm::vec3 value) const = 0;
@@ -29,5 +41,6 @@ namespace Ull
 
     protected:
         Shader() = default;
+        ShaderType m_shaderType{ ShaderType::RENDER };
     };
 }

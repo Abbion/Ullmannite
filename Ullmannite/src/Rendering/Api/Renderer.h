@@ -43,6 +43,13 @@ namespace Ull
             COUNTER_CLOCKWISE
         };
 
+        enum class BarrierType
+        {
+            STORAGE_BUFFER_BARRIER,
+            ATOMIC_COUNTER_BARRIER,
+            IMAGE_BARRIER
+        };
+
     public:
         NON_COPYABLE(Renderer);
         
@@ -60,11 +67,16 @@ namespace Ull
         void SetFaceCulling(FaceCulling culling);
         void SetFaceWinding(FaceWinding winding);
 
+        void SetPixelPackWidth(unsigned int width);
+        void SetPixelUnpackWidth(unsigned int width);
+
         void SetClearColor(glm::vec4 color);
         void Clear(ClearBits clearBits);
         void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
         void DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count, unsigned int skip = 0);
+        void DispatchComputeShader(unsigned int groupSizeX, unsigned int groupSizeY, unsigned int groupSizeZ);
         void FlushContext();
+        void Barrier(BarrierType barrier);
 
     protected:
         Renderer() = default;

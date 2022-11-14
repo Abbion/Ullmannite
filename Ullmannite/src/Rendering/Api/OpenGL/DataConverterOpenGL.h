@@ -52,6 +52,14 @@ namespace Ull
             return GL_HALF_FLOAT;
             break;
 
+        case GraphicsDataType::SHORT:
+            return GL_SHORT;
+            break;
+
+        case GraphicsDataType::USHORT:
+            return GL_UNSIGNED_SHORT;
+            break;
+
         case GraphicsDataType::BYTE:
             return GL_BYTE;
             break;
@@ -116,28 +124,92 @@ namespace Ull
         }
     }
 
-    constexpr GLenum ConverterChannel(ColorFormat channel)
+    constexpr GLenum ConverterPixelFormat(PixelDataFormat channel)
     {
         switch (channel)
         {
-        case ColorFormat::R:
+        case PixelDataFormat::R:
             return GL_RED;
             break;
 
-        case ColorFormat::RG:
+        case PixelDataFormat::RG:
             return GL_RG;
             break;
 
-        case ColorFormat::RGB:
+        case PixelDataFormat::RGB:
             return GL_RGB;
             break;
 
-        case ColorFormat::RGBA:
+        case PixelDataFormat::RGBA:
             return GL_RGBA;
             break;
 
+        case PixelDataFormat::R_I:
+            return GL_RED_INTEGER;
+            break;
+
         default:
-            ULOGE("Can't conver this channel");
+            ULOGE("Can't conver this pixel format");
+            return 0;
+            break;
+        }
+    }
+
+    constexpr GLenum ConverterInternalFormat(InternalDataFormat channel)
+    {
+        switch (channel)
+        {
+        case InternalDataFormat::RGBA_32F:
+            return GL_RGBA32F;
+            break;
+
+        case InternalDataFormat::RGB_32F:
+            return GL_RGB32F;
+            break;
+
+        case InternalDataFormat::R_8I:
+            return GL_R8I;
+
+        case InternalDataFormat::R_8UI:
+            return GL_R8UI;
+
+        case InternalDataFormat::R_16UI:
+            return GL_R16UI;
+            break;
+
+        case InternalDataFormat::RG_16UI:
+            return GL_RG16UI;
+            break;
+
+        case InternalDataFormat::RGB_16UI:
+            return GL_RGB16UI;
+            break;
+
+        default:
+            ULOGE("Can't conver this internal format");
+            return 0;
+            break;
+        }
+    }
+
+    constexpr GLenum ConverterReadWriteRights(ReadWriteRights readWriteRights)
+    {
+        switch (readWriteRights)
+        {
+        case ReadWriteRights::READ:
+            return GL_READ_ONLY;
+            break;
+
+        case ReadWriteRights::WRITE:
+            return GL_WRITE_ONLY;
+            break;
+
+        case ReadWriteRights::READ_AND_WRITE:
+            return GL_READ_WRITE;
+            break;
+
+        default:
+            ULOGE("Can't conver this read/write rights");
             return 0;
             break;
         }
@@ -202,6 +274,28 @@ namespace Ull
             break;
         case GraphicsRenderPrimitives::POINT:
             return GL_POINTS;
+            break;
+
+        default:
+            ULOGE("Cannot convert this primitive");
+            return 0;
+            break;
+        }
+    }
+
+    constexpr GLenum ConvertFillType(GraphicsRenderPrimitives primitive)
+    {
+        switch (primitive)
+        {
+        case GraphicsRenderPrimitives::TRIANGLE:
+            return GL_FILL;
+            break;
+
+        case GraphicsRenderPrimitives::LINE:
+            return GL_LINE;
+            break;
+        case GraphicsRenderPrimitives::POINT:
+            return GL_POINT;
             break;
 
         default:

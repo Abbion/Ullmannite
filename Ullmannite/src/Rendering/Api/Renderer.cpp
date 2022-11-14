@@ -21,6 +21,29 @@ namespace {
             ULOGE("OpenGL error: " << type << ", " << severity << ", " << message);
         }
     }
+
+    unsigned int ConvertBarrierTypeOpenGL(Renderer::BarrierType barrier)
+    {
+        switch (barrier)
+        {
+        case Renderer::BarrierType::STORAGE_BUFFER_BARRIER:
+            return GL_SHADER_STORAGE_BARRIER_BIT;
+            break;
+
+        case Renderer::BarrierType::ATOMIC_COUNTER_BARRIER:
+            return GL_ATOMIC_COUNTER_BARRIER_BIT;
+            break;
+
+        case Renderer::BarrierType::IMAGE_BARRIER:
+            return GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+            break;
+        
+        default:
+            ULOGE("Can't conver this barrier format");
+            return 0;
+            break;
+        }
+    }
 }
 
 Renderer Renderer::m_rendererInstance;
@@ -112,6 +135,16 @@ void Renderer::SetFaceWinding(FaceWinding winding)
     }
 }
 
+void Renderer::SetPixelPackWidth(unsigned int width)
+{
+    glPixelStorei(GL_PACK_ALIGNMENT, width);
+}
+
+void Renderer::SetPixelUnpackWidth(unsigned int width)
+{
+    glPixelStorei(GL_UNPACK_ALIGNMENT, width);
+}
+
 void Renderer::SetClearColor(glm::vec4 color)
 {
     if (m_api == API::OPEN_GL)
@@ -135,6 +168,7 @@ void Renderer::DrawElements(GraphicsRenderPrimitives primitive, unsigned int cou
 {
     if (m_api == API::OPEN_GL)
     {
+        glPolygonMode(GL_FRONT_AND_BACK, ConvertFillType(primitive));
         glDrawElements(ConvertPrimitive(primitive), count, ConvetDataType(type), (void*)skip);
     }
 }
@@ -143,8 +177,14 @@ void Renderer::DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count
 {
     if (m_api == API::OPEN_GL)
     {
+        glPolygonMode(GL_FRONT_AND_BACK, ConvertFillType(primitive));
         glDrawArrays(ConvertPrimitive(primitive), skip, count);
     }
+}
+
+void Renderer::DispatchComputeShader(unsigned int groupSizeX, unsigned int groupSizeY, unsigned int groupSizeZ)
+{
+    glDispatchCompute(groupSizeX, groupSizeY, groupSizeZ);
 }
 
 void Renderer::FlushContext()
@@ -152,5 +192,13 @@ void Renderer::FlushContext()
     if (m_api == API::OPEN_GL)
     {
         glFlush();
+    }
+}
+
+void Renderer::Barrier(BarrierType barrier)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        glMemoryBarrier(ConvertBarrierTypeOpenGL(barrier));
     }
 }
