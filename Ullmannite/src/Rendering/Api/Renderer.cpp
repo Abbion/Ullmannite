@@ -21,6 +21,29 @@ namespace {
             ULOGE("OpenGL error: " << type << ", " << severity << ", " << message);
         }
     }
+
+    unsigned int ConvertBarrierTypeOpenGL(Renderer::BarrierType barrier)
+    {
+        switch (barrier)
+        {
+        case Renderer::BarrierType::STORAGE_BUFFER_BARRIER:
+            return GL_SHADER_STORAGE_BARRIER_BIT;
+            break;
+
+        case Renderer::BarrierType::ATOMIC_COUNTER_BARRIER:
+            return GL_ATOMIC_COUNTER_BARRIER_BIT;
+            break;
+
+        case Renderer::BarrierType::IMAGE_BARRIER:
+            return GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+            break;
+        
+        default:
+            ULOGE("Can't conver this barrier format");
+            return 0;
+            break;
+        }
+    }
 }
 
 Renderer Renderer::m_rendererInstance;
@@ -169,5 +192,13 @@ void Renderer::FlushContext()
     if (m_api == API::OPEN_GL)
     {
         glFlush();
+    }
+}
+
+void Renderer::Barrier(BarrierType barrier)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        glMemoryBarrier(ConvertBarrierTypeOpenGL(barrier));
     }
 }

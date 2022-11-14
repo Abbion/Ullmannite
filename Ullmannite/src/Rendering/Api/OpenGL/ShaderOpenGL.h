@@ -14,8 +14,6 @@ namespace Ull
         void Bind() const override;
         void Unbind() const override;
 
-        unsigned int GetResourceIndex(std::string resourceName) const override;
-
         void SetInt(std::string uniformName, int value) const override;
         void SetUint(std::string uniformName, unsigned int value) const override;
         void SetUint3(std::string uniformName, glm::uvec3 value) const override;

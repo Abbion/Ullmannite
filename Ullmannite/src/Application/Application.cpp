@@ -9,7 +9,6 @@
 #include "Event/Event.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
-#include "Rendering/TriangulationTable/TriangulationTable.h"
 
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"

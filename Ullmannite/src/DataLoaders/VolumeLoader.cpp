@@ -47,7 +47,7 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 		for (size_t i = 0; i < readThreads; ++i)
 		{
 			readingThreads[i] = new std::thread([&volumeData, filePath, i, dataStartPosition, chunkSize, lastChunkSize](){
-				if (chunkSize == 0)
+				if (chunkSize == 0 || lastChunkSize == 0)
 					return;
 
 				std::ifstream volumeFile(filePath, std::ios::binary);
@@ -57,10 +57,7 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 				volumeFile.seekg(dataStartPosition + (i * chunkSize * sizeof(uint16_t)), std::ios::beg);
 
 				if (i == readThreads - 1)
-				{
-					if (lastChunkSize > 0)
-						volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * lastChunkSize);
-				}
+					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * lastChunkSize);
 				else
 					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * chunkSize);
 

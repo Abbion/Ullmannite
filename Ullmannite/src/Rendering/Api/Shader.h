@@ -28,8 +28,6 @@ namespace Ull
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
-        
-        virtual unsigned int GetResourceIndex(std::string resourceName) const = 0;
 
         virtual void SetInt(std::string uniformName, int value) const = 0;
         virtual void SetUint(std::string uniformName, unsigned int value) const = 0;

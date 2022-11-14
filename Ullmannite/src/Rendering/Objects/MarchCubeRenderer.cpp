@@ -15,24 +15,6 @@ namespace {
 
 	constexpr uint16_t vertexPositionTextureSize = 2048;
 
-	constexpr uint8_t vertexCountTable[256] = 
-	{ 0, 3, 3, 6, 3, 6, 6, 9, 3, 6, 6, 9, 6, 9, 9, 6, 3,
-	  6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9, 3,
-	  6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9, 6,
-	  9, 9, 6, 9, 12, 12, 9, 9, 12, 12, 9, 12, 15, 15, 6,
-	  3, 6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9,
-	  6, 9, 9, 12, 9, 12, 12, 15, 9, 12, 12, 15, 12, 15,
-	  15, 12, 6, 9, 9, 12, 9, 12, 6, 9, 9, 12, 12, 15, 12,
-	  15, 9, 6, 9, 12, 12, 9, 12, 15, 9, 6, 12, 15, 15, 12,
-	  15, 6, 12, 3, 3, 6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9,
-	  12, 12, 9, 6, 9, 9, 12, 9, 12, 12, 15, 9, 6, 12, 9, 12,
-	  9, 15, 6, 6, 9, 9, 12, 9, 12, 12, 15, 9, 12, 12, 15, 12,
-	  15, 15, 12, 9, 12, 12, 9, 12, 15, 15, 12, 12, 9, 15, 6, 15,
-	  12, 6, 3, 6, 9, 9, 12, 9, 12, 12, 15, 9, 12, 12, 15, 6, 9, 9,
-	  6, 9, 12, 12, 15, 12, 15, 15, 6, 12, 9, 15, 12, 9, 6, 12, 3,
-	  9, 12, 12, 15, 12, 15, 9, 12, 12, 15, 15, 6, 9, 12, 6, 3, 6,
-	  9, 9, 6, 9, 12, 6, 3, 9, 6, 12, 3, 6, 3, 3, 0 };
-
 	uint8_t GetAmountOfThreadsForSum(uint64_t toSum)
 	{
 		if (toSum < 20'000)
@@ -97,7 +79,7 @@ void MarchCubeRenderer::GenerateMesh()
 	m_vertexPosTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
 	m_vertexPosTexture->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP, WrapMode::CLAMP);
 	m_vertexPosTexture->SetData(glm::uvec3(vertexPositionTextureSize, vertexPositionTextureSize, amountOfTextures), InternalDataFormat::RGBA_32F, PixelDataFormat::RGBA, GraphicsDataType::FLOAT, nullptr);
-	m_vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 2);
+	m_vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::WRITE, 2);
 	
 	uint32_t counter = 0;
 	AtomicCounterBuffer* atomicCounter = AtomicCounterBuffer::Create(&counter, sizeof(uint32_t));
@@ -116,8 +98,8 @@ void MarchCubeRenderer::GenerateMesh()
 	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(m_volumeData->depth + 2) / vertexCounterLocalSize);
 
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
-	glMemoryBarrier(GL_ATOMIC_COUNTER_BARRIER_BIT);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::ATOMIC_COUNTER_BARRIER);
+	Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 
 	atomicCounter->Unbind();
 
@@ -155,7 +137,7 @@ void MarchCubeRenderer::Render()
 
 	SetUpLight();
 
-	Renderer::GetInstance().DrawArrays(GraphicsRenderPrimitives::TRIANGLE, m_vertexCount, 0);
+	Renderer::GetInstance().DrawArrays(GraphicsRenderPrimitives::TRIANGLE, (unsigned int)m_vertexCount, 0);
 
 	m_vertexPosTexture->Unbind();
 }
@@ -179,7 +161,6 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 
 	//Setup shader
 	m_cubeMarchVertexCounter->Bind();
-	int a = m_cubeMarchVertexCounter->GetResourceIndex("vertexPosTextureItr");
 	storageBuff->Bind(2);
 
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
@@ -189,7 +170,7 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 
 	//Run shader
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);	//TODO Pull to renderer
+	Renderer::GetInstance().Barrier(Renderer::BarrierType::STORAGE_BUFFER_BARRIER);
 
 	TriangulationTable::GetInstance().GetVertexCountTexture()->Unbind();
 
@@ -260,6 +241,8 @@ uint64_t MarchCubeRenderer::CalculateVertexCountCPU()
 
 	const auto yOffset = m_volumeData->width;
 	const auto zOffset = m_volumeData->width * m_volumeData->height;
+
+	auto vertexCountTable = TriangulationTable::GetInstance().GetVertexCountTable();
 
 	for(size_t z = 0; z < m_volumeData->depth - 1; ++z)
 	{

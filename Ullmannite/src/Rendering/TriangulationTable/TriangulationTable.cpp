@@ -4,14 +4,22 @@
 using namespace Ull;
 
 TriangulationTable TriangulationTable::m_instance;
+std::array<uint8_t, 256> TriangulationTable::m_vertexCountTable;
 
 TriangulationTable::~TriangulationTable()
 {
 	delete m_triangulationTexture;
+	delete m_vertexCountTexture;
 }
 
 TriangulationTable& TriangulationTable::GetInstance()
 {
+	if (tableInit == false)
+	{
+		InitVertexCountTable();
+		tableInit = true;
+	}
+
 	return m_instance;
 }
 
@@ -288,8 +296,14 @@ void TriangulationTable::CreateVectexCountTable()
 	if (m_vertexCountTexture != nullptr)
 		return;
 
-	uint8_t vertexCount[256] = 
-	{ 0, 3, 3, 6, 3, 6, 6, 9, 3, 6, 6, 9, 6, 9, 9, 6, 3,
+	m_vertexCountTexture = Texture1D::Create();
+	m_vertexCountTexture->SetData(256, InternalDataFormat::R_8UI, PixelDataFormat::R_I, GraphicsDataType::UBYTE, m_vertexCountTable.data());
+	m_vertexCountTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
+}
+
+void TriangulationTable::InitVertexCountTable()
+{
+	m_vertexCountTable = { 0, 3, 3, 6, 3, 6, 6, 9, 3, 6, 6, 9, 6, 9, 9, 6, 3,
 	  6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9, 3,
 	  6, 6, 9, 6, 9, 9, 12, 6, 9, 9, 12, 9, 12, 12, 9, 6,
 	  9, 9, 6, 9, 12, 12, 9, 9, 12, 12, 9, 12, 15, 15, 6,
@@ -305,8 +319,4 @@ void TriangulationTable::CreateVectexCountTable()
 	  6, 9, 12, 12, 15, 12, 15, 15, 6, 12, 9, 15, 12, 9, 6, 12, 3,
 	  9, 12, 12, 15, 12, 15, 9, 12, 12, 15, 15, 6, 9, 12, 6, 3, 6,
 	  9, 9, 6, 9, 12, 6, 3, 9, 6, 12, 3, 6, 3, 3, 0 };
-
-	m_vertexCountTexture = Texture1D::Create();
-	m_vertexCountTexture->SetData(256, InternalDataFormat::R_8UI, PixelDataFormat::R_I, GraphicsDataType::UBYTE, vertexCount);
-	m_vertexCountTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
 }

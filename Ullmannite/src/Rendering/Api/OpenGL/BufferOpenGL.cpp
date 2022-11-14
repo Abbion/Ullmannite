@@ -179,7 +179,7 @@ StorageBufferOpenGL::StorageBufferOpenGL(void* data, size_t size)
 
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_bufferID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_STREAM_READ);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_DYNAMIC_READ);
 }
 
 StorageBufferOpenGL::~StorageBufferOpenGL()
@@ -209,7 +209,7 @@ AtomicCounterBufferOpenGL::AtomicCounterBufferOpenGL(uint32_t* data, uint16_t si
 
     glGenBuffers(1, &m_bufferID);
     glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_bufferID);
-    glBufferData(GL_ATOMIC_COUNTER_BUFFER, size, data, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, size, data, GL_DYNAMIC_READ);
 }
 
 AtomicCounterBufferOpenGL::~AtomicCounterBufferOpenGL()

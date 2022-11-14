@@ -33,8 +33,6 @@ namespace Ull
         uint16_t m_minSampling{ 10 };
         uint16_t m_maxSampling{ 5000 };
 
-        std::vector<glm::vec3> m_mesh;
-
         Shader* m_cubeMarchVertexCounter{ nullptr };
         Shader* m_cubeMarchShader{ nullptr };
         Shader* m_vertexRendererShader{ nullptr };

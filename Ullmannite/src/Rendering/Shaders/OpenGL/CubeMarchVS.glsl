@@ -2,8 +2,6 @@
 
 layout(rgba32f, binding = 0) readonly uniform image3D vertexPosTexture;
 
-uniform uvec3 vertexPosTextureSize;
-
 uniform mat4 modelMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -13,9 +11,12 @@ out VS_OUT{
     float intensity;
 } vs_out;
 
+const uint vertexPosTextureSize = 2048;
+const uint doubleVertexPosTextureSize = vertexPosTextureSize * vertexPosTextureSize;
+
 void main()
 {
-    ivec3 vertexPosition = ivec3(gl_VertexID % 2048, (gl_VertexID / 2048) % 2048, (gl_VertexID / (2048 * 2048)));
+    ivec3 vertexPosition = ivec3(gl_VertexID % vertexPosTextureSize, (gl_VertexID / vertexPosTextureSize) % vertexPosTextureSize, (gl_VertexID / doubleVertexPosTextureSize));
     vec4 vertexData = imageLoad(vertexPosTexture, vertexPosition);
 
     vs_out.rawPosition = vertexData.xyz;

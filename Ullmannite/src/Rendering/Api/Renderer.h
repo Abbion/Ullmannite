@@ -43,6 +43,13 @@ namespace Ull
             COUNTER_CLOCKWISE
         };
 
+        enum class BarrierType
+        {
+            STORAGE_BUFFER_BARRIER,
+            ATOMIC_COUNTER_BARRIER,
+            IMAGE_BARRIER
+        };
+
     public:
         NON_COPYABLE(Renderer);
         
@@ -69,6 +76,7 @@ namespace Ull
         void DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count, unsigned int skip = 0);
         void DispatchComputeShader(unsigned int groupSizeX, unsigned int groupSizeY, unsigned int groupSizeZ);
         void FlushContext();
+        void Barrier(BarrierType barrier);
 
     protected:
         Renderer() = default;
