@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "VolumeLoader.h"
+#include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
 #include <fstream>
 #include <sstream>
@@ -30,6 +31,9 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 		volumeFile.read((char*)&width, sizeof(uint16_t));
 		volumeFile.read((char*)&height, sizeof(uint16_t));
 		volumeFile.read((char*)&depth, sizeof(uint16_t));
+
+		if (width < 0 || height < 0 || depth < 0)
+			throw NegativeDimensionsException("File width, height or depth is negative");
 
 		size_t bufferSize = (size_t)width * (size_t)height * (size_t)depth;
 		volumeData = std::make_shared<VolumeData>(VolumeData(width, height, depth, bufferSize));

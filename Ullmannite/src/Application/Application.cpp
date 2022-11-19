@@ -98,7 +98,7 @@ void Application::InitApplciation()
     config.MergeMode = true;
     config.GlyphMinAdvanceX = 14.0f;
     static const ImWchar icon_ranges[] = { ICON_START, ICON_END, 0 };
-    io.Fonts->AddFontFromFileTTF("Assets/Fonts/UllIcon.ttf", 14.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("Assets/Fonts/UllIcon.ttf", 22.0f, &config, icon_ranges);
 
     //Load Shaders
     ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");

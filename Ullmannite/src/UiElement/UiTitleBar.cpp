@@ -24,7 +24,7 @@ UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 
 void UiTitleBar::CreateResources()
 {
-	UiArea::CreateResources();
+	UiArea::CreateResources();	//TODO: What does it do
 }
 
 void UiTitleBar::HandleEvent(Event* event)
@@ -84,21 +84,13 @@ void UiTitleBar::Render()
 	if (m_areaUpdated)
 	{
 		m_frameBuffer->Bind();
-		
 		RenderBackground();
-		
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		RenderUI();
-
-		ImGui::Render();
-		
 		m_frameBuffer->Unbind();
 
 		m_areaUpdated = false;
 	}
+
+	RenderUI();
 }
 
 void UiTitleBar::RenderUI()
@@ -106,7 +98,7 @@ void UiTitleBar::RenderUI()
 	ImGui::SetNextWindowSize(ImVec2((float)m_size.x, (float)m_size.y));
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
 
-	//Move this out of here???
+	//TODO: Move this out of here???
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.WindowPadding.y = 0.0f;
 	style.WindowPadding.x = 0.0f;
@@ -140,6 +132,8 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 
+	ImGui::SetWindowFontScale(0.6);
+
 	ImGui::SameLine(nextPos);
 	if (ImGui::Button(ICON_MINIMIZE, ImVec2(buttonWidth, (float)buttonHeight)))
 		m_minimizePressed = true;
@@ -167,6 +161,8 @@ void UiTitleBar::RenderUI()
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
+
+	ImGui::SetWindowFontScale(1.0);
 
 	ImGui::EndGroup();
 	//-----------------------

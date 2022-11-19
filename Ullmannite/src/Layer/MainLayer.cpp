@@ -6,7 +6,12 @@
 #include "Rendering/Api/Renderer.h"
 #include "UiElement/UiArea.h"
 #include "UiElement/UiTitleBar.h"
+#include "UiView/UiMenuView.h"
 #include "UiView/UiView3D.h"
+
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 
 using namespace Ull;
 
@@ -58,10 +63,18 @@ void MainLayer::Update()
 
 void MainLayer::Render()
 {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+
+    ImGui::NewFrame();
+
     for (auto& element : m_layout->GetChildren())
     {
         element->Render();
     }
+
+    ImGui::EndFrame();
+    ImGui::Render();
 
     m_layout->Render();
 }
@@ -78,8 +91,7 @@ void MainLayer::CreateLayout()
     UiTitleBar* titleBarView = new UiTitleBar("titleBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
     m_layout->AddUiElement(titleBarView);
 
-    UiArea* menuView = new UiArea("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31), false);
-    menuView->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+    UiMenuView* menuView = new UiMenuView("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31));
     m_layout->AddUiElement(menuView);
 
     UiView3D* renderView = new UiView3D("view3DElement", glm::vec2(261, 30), glm::vec2(initSize.x - 261, initSize.y - 30));

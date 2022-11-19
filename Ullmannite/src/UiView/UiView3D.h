@@ -15,14 +15,13 @@ namespace Ull
 		
 		void SetWindow(const NotOwner<UllWindow>& window);
 
-		void Init();
-
 		void HandleEvent(Event* event) override;
-
 		void Update() override;
 		void Render() override;
 
 	private:
+		void Init();
+
 		Scene m_scene;
 		NotOwner<UllWindow> m_window{ nullptr };
 
