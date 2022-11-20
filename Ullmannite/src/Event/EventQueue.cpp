@@ -1,5 +1,6 @@
 #include <Ullpch.h>
 #include "EventQueue.h"
+#include "EventAggregator.h"
 
 #include "Logger/Logger.h"
 
@@ -7,6 +8,13 @@ using namespace Ull;
 
 EventQueue::EventQueue()
 {
+    EventAggregator::Sbuscribe(EventType::FileLoaded, [this](const std::shared_ptr<Event>& event) {
+        PushEvent(event);
+    });
+    
+    EventAggregator::Sbuscribe(EventType::ExaminationThresholdChanged, [this](const std::shared_ptr<Event>& event) {
+        PushEvent(event);
+    });
 }
 
 EventQueue::~EventQueue()
@@ -25,6 +33,10 @@ std::shared_ptr<Event> EventQueue::PopEvent()
     auto lastEvent = m_events.front();
     m_events.pop_front();
     return lastEvent;
+}
+
+void EventQueue::CheckPublishedEvents()
+{
 }
 
 bool EventQueue::HasPenddingEvents() const

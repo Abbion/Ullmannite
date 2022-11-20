@@ -26,7 +26,12 @@ namespace Ull
         MouseDown,
         MouseUp,
         MouseScroll,
-        MouseMove
+        MouseMove,
+
+        FileLoaded,
+        MirrorStateChanged,
+        TransferFunctionChanged,
+        ExaminationThresholdChanged
     };
 
     //==================================================================
@@ -79,4 +84,6 @@ namespace Ull
     typedef ValueEvent<int> MouseScrollEvent;
     typedef ValueEvent<glm::ivec2> MouseMoveEvent;
 
+    typedef ValueEvent<std::string> DataLoadEvent;
+    typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;
 };

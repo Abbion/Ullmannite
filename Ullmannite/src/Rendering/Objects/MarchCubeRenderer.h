@@ -16,8 +16,6 @@ namespace Ull
         ~MarchCubeRenderer();
 
         void SetVolumeData(const std::shared_ptr<VolumeData> volumeData);
-        void SetMinSampling(uint16_t sampling) { m_minSampling = sampling; }
-        void SetMaxSampling(uint16_t sampling) { m_maxSampling = sampling; }
         void SetTransferTexture(NotOwner<Texture1D> transferTexture);
 
         void GenerateMesh();
@@ -30,8 +28,8 @@ namespace Ull
         std::shared_ptr<VolumeData> m_volumeData{ nullptr };
         bool updateMesh{ false };
 
-        uint16_t m_minSampling{ 10 };
-        uint16_t m_maxSampling{ 5000 };
+        glm::vec2 m_thresholds{ 0.0f, 0.0f };
+        bool m_thresholdInitEventShip{ false };
 
         Shader* m_cubeMarchVertexCounter{ nullptr };
         Shader* m_cubeMarchShader{ nullptr };
@@ -46,5 +44,6 @@ namespace Ull
         uint64_t CalculateVertexCountGPU();
         uint64_t CalculateVertexCountCPU();
         void SetUpLight();
+
     };
 }

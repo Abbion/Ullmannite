@@ -48,18 +48,20 @@ void UiView3D::Init()
 
     //Cube marcher
     //TEMP data loading
-    auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
+    //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
     //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/interpolationTest.dat");
 
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
-    cubeMarch->SetVolumeData(mainDataSet);
-    cubeMarch->GenerateMesh();
+    //cubeMarch->SetVolumeData(mainDataSet);
+    //cubeMarch->GenerateMesh();
     std::vector<TransferPoint> tp = { TransferPoint{glm::vec3(1.0f, 0.0f, 0.0f), 0}, TransferPoint{glm::vec3(0.0f, 1.0f, 0.0f), 100}, TransferPoint{glm::vec3(0.0f, 0.0f, 1.0f), 200}, TransferPoint{glm::vec3(0.0f, 1.0f, 1.0f), 300} };
     
     m_transferFunciton = std::make_shared<TransferFunctionRenderer>(tp);
     m_transferFunciton->GenerateTransferFunction();
+
     auto texture = m_transferFunciton->GetTransferFunctionTexture();
     cubeMarch->SetTransferTexture(texture);
+
     root->AddNode(cubeMarch);
     //auto cube = new Cube("Test Cube", &m_scene);
     //root->AddNode(cube);
@@ -91,9 +93,26 @@ void UiView3D:: HandleEvent(Event* event)
     }
     break;
 
+    case EventType::FileLoaded:
+    {
+        auto path = static_cast<DataLoadEvent*>(event)->GetVal();
+        auto dataSet = LoadVolumeData(path);
+
+        auto cubeMarchRenderer = m_scene.GetNodeByName("Cube march");
+        if (cubeMarchRenderer != nullptr)
+        {
+            auto renderer = static_cast<MarchCubeRenderer*>(cubeMarchRenderer);
+            renderer->SetVolumeData(dataSet);
+            renderer->GenerateMesh();
+            m_scene.SetUpdated(true);
+        }
+    }
+    break;
+
     default:
         break;
     }
+
 
     m_scene.HandleEvent(event);
 }

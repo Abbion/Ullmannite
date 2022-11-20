@@ -17,8 +17,14 @@ namespace Ull
 		void Init();
         void RenderUI();
         void RenderLoadTab();
+        void RenderMirrorSettings();
+        void RenderTransferFunctionSettings();
+        void RenderDataSettings();
 
         std::optional<std::wstring> m_filePath;
         bool m_firstDataLoaded{ false };
+        bool m_newDataLoaded{ false };
+
+        glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
     };
 }

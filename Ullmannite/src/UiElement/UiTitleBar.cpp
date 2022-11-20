@@ -132,7 +132,7 @@ void UiTitleBar::RenderUI()
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
 
-	ImGui::SetWindowFontScale(0.6);
+	ImGui::SetWindowFontScale(0.6f);
 
 	ImGui::SameLine(nextPos);
 	if (ImGui::Button(ICON_MINIMIZE, ImVec2(buttonWidth, (float)buttonHeight)))
