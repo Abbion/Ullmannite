@@ -39,9 +39,11 @@ MarchCubeRenderer::MarchCubeRenderer(const std::string& name, NotOwner<Scene> sc
 	m_cubeMarchShader = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR);
 	m_vertexRendererShader = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER);
 
-
 	TriangulationTable::GetInstance().CreateTriangulationTable();
 	TriangulationTable::GetInstance().CreateVectexCountTable();
+
+	m_cuttingSettings.cuttingPositions = glm::vec3(0.0f, 0.0f, 0.0f);
+	m_cuttingSettings.invertedAxis = { false, false, false };
 }
 
 MarchCubeRenderer::~MarchCubeRenderer()
@@ -143,8 +145,13 @@ void MarchCubeRenderer::HandleEvent(Event* event)
 		m_scene->SetUpdated(true);
 		break;
 	
-	default:
-		break;
+	case EventType::CuttingSettingsChanged:
+		m_cuttingSettings = static_cast<CuttingSettingsChangedEvent*>(event)->GetVal();
+		ULOGD("Setting changed");
+
+		event->MarkHandeled(true);
+		m_scene->SetUpdated(true);
+	break;
 	}
 }
 

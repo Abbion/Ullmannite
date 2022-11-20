@@ -1,5 +1,7 @@
 #pragma once
 #include "UiElement/UiArea.h"
+#include "DataStructures/CuttingSettings.h"
+#include <array>
 #include <optional>
 
 namespace Ull
@@ -17,7 +19,7 @@ namespace Ull
 		void Init();
         void RenderUI();
         void RenderLoadTab();
-        void RenderMirrorSettings();
+        void RenderCutSettings();
         void RenderTransferFunctionSettings();
         void RenderDataSettings();
 
@@ -26,5 +28,6 @@ namespace Ull
         bool m_newDataLoaded{ false };
 
         glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
+        CuttingSettings m_cuttingSettings;
     };
 }

@@ -2,6 +2,7 @@
 #include "Logger/Logger.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
+#include "DataStructures/CuttingSettings.h"
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -29,7 +30,7 @@ namespace Ull
         MouseMove,
 
         FileLoaded,
-        MirrorStateChanged,
+        CuttingSettingsChanged,
         TransferFunctionChanged,
         ExaminationThresholdChanged
     };
@@ -86,4 +87,5 @@ namespace Ull
 
     typedef ValueEvent<std::string> DataLoadEvent;
     typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;
+    typedef ValueEvent<CuttingSettings> CuttingSettingsChangedEvent;
 };

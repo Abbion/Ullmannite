@@ -68,6 +68,9 @@ void UiMenuView::Init()
 {
     m_cubeMarchTresholds.x = 0;
     m_cubeMarchTresholds.y = maxUint16;
+
+    m_cuttingSettings.cuttingPositions = glm::vec3(0.0f, 0.0f, 0.0f);
+    m_cuttingSettings.invertedAxis = { false, false, false };
 }
 
 void UiMenuView::RenderUI()
@@ -106,7 +109,7 @@ void UiMenuView::RenderUI()
         }
         if (ImGui::BeginTabItem(ICON_CUT_PLANE))
         {
-            ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
+            RenderCutSettings();
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem(ICON_TRANSFER))
@@ -236,7 +239,7 @@ void UiMenuView::RenderDataSettings()
     ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
 
     auto originalThresholds = m_cubeMarchTresholds;
-    ImGui::DragIntRange2("", &m_cubeMarchTresholds.x, &m_cubeMarchTresholds.y, 1, 1, maxUint16, "Min: %d", "Max: %d");
+    ImGui::DragIntRange2("##Thresholds", &m_cubeMarchTresholds.x, &m_cubeMarchTresholds.y, 1, 1, maxUint16, "Min: %d", "Max: %d");
 
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
@@ -249,4 +252,107 @@ void UiMenuView::RenderDataSettings()
     {
         EventAggregator::Publish(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, glm::uvec2(m_cubeMarchTresholds.x, m_cubeMarchTresholds.y)));
     }
+}
+
+void UiMenuView::RenderCutSettings()
+{
+    auto& style = ImGui::GetStyle();
+    auto orginalFramePadding = style.FramePadding;
+
+    style.FramePadding = ImVec2(0.0f, 4.0f);
+    auto orginalCuttingSettings = m_cuttingSettings;
+
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 12);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(10.0f, 0.0f));
+
+    //Start
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::Text("Cutting settings:");
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
+
+    //Cut X
+    ImGui::Text("Cut X:");
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::Checkbox("Invert##X", &m_cuttingSettings.invertedAxis[0]);
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.86f, 0.2f, 0.3f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.95f, 0.31f, 0.43f, 1.0f));
+
+    ImGui::SliderFloat("##CutX", &m_cuttingSettings.cuttingPositions.x, 0, 100, "%.2f %", ImGuiSliderFlags_None);
+
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
+
+    //Cut Y
+    ImGui::Text("Cut Y:");
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::Checkbox("Invert##Y", &m_cuttingSettings.invertedAxis[1]);
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.32f, 0.75f, 0.02f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.49f, 1.0f, 0.12f, 1.0f));
+
+    ImGui::SliderFloat("##CutY", &m_cuttingSettings.cuttingPositions.y, 0, 100, "%.2f %", ImGuiSliderFlags_None);
+
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
+
+    //Cut Z
+    ImGui::Text("Cut Z:");
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::Checkbox("Invert##Z", &m_cuttingSettings.invertedAxis[2]);
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.02f, 0.51f, 0.95f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.02f, 0.69f, 0.95f, 1.0f));
+
+    ImGui::SliderFloat("##CutZ", &m_cuttingSettings.cuttingPositions.z, 0, 100, "%.2f", ImGuiSliderFlags_None);
+
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+
+    //End
+    style.FramePadding = orginalFramePadding;
+
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar();
+
+    if(orginalCuttingSettings != m_cuttingSettings)
+        EventAggregator::Publish(std::make_shared<CuttingSettingsChangedEvent>(EventType::CuttingSettingsChanged, m_cuttingSettings));
 }

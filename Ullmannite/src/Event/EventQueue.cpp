@@ -11,8 +11,12 @@ EventQueue::EventQueue()
     EventAggregator::Sbuscribe(EventType::FileLoaded, [this](const std::shared_ptr<Event>& event) {
         PushEvent(event);
     });
-    
+
     EventAggregator::Sbuscribe(EventType::ExaminationThresholdChanged, [this](const std::shared_ptr<Event>& event) {
+        PushEvent(event);
+    });
+
+    EventAggregator::Sbuscribe(EventType::CuttingSettingsChanged, [this](const std::shared_ptr<Event>& event) {
         PushEvent(event);
     });
 }

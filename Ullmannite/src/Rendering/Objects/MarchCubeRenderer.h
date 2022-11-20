@@ -5,6 +5,7 @@
 #include "Rendering/Api/Texture.h"
 #include "Rendering/Api/Buffer.h"
 #include "Utilities/PointerHelper.h"
+#include "DataStructures/CuttingSettings.h"
 #include <memory>
 
 namespace Ull
@@ -28,8 +29,10 @@ namespace Ull
         std::shared_ptr<VolumeData> m_volumeData{ nullptr };
         bool updateMesh{ false };
 
-        glm::vec2 m_thresholds{ 0.0f, 0.0f };
+        glm::vec2 m_thresholds{ 0.0f, 0.0f };   //TODO: change to ivec2
         bool m_thresholdInitEventShip{ false };
+
+        CuttingSettings m_cuttingSettings;
 
         Shader* m_cubeMarchVertexCounter{ nullptr };
         Shader* m_cubeMarchShader{ nullptr };
