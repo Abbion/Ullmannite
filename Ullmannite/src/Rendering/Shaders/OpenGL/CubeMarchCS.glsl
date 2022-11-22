@@ -16,6 +16,8 @@ struct CubeMarchSettings
 };
 
 uniform CubeMarchSettings CMsettings;
+//If cutting value is negative that means the plane is inverted
+uniform ivec3 cuttingPlanes;
 
 const uint vertexPosTextureSize = 2048;
 const uint doubleVertexPosTextureSize = vertexPosTextureSize * vertexPosTextureSize;
@@ -76,14 +78,20 @@ void main()
 {
     if(gl_GlobalInvocationID.z > CMsettings.size.z || gl_GlobalInvocationID.y > CMsettings.size.y || gl_GlobalInvocationID.x > CMsettings.size.x)
         return;
-    
+
+    if(((cuttingPlanes.x >= 0 && gl_GlobalInvocationID.x > cuttingPlanes.x) || (cuttingPlanes.x < 0 && gl_GlobalInvocationID.x < -cuttingPlanes.x)) ||
+        ((cuttingPlanes.y >= 0 && gl_GlobalInvocationID.y > cuttingPlanes.y) || (cuttingPlanes.y < 0 && gl_GlobalInvocationID.y < -cuttingPlanes.y)) ||
+        ((cuttingPlanes.z >= 0 && gl_GlobalInvocationID.z > cuttingPlanes.z) || (cuttingPlanes.z < 0 && gl_GlobalInvocationID.z < -cuttingPlanes.z)))
+        return;
+
     uint activeEdgeCounter = 0;
 
     ivec3 globalPositionI = ivec3(gl_GlobalInvocationID  + ivec3(-1, -1, -1));
 
     for(uint itr = 0; itr < 8; ++itr)
     {
-        uint cornderValue = imageLoad(inputImage, ivec3(globalPositionI + cubeCornderSampler[itr])).x;
+        ivec3 samplePoint = ivec3(globalPositionI + cubeCornderSampler[itr]);
+        uint cornderValue = imageLoad(inputImage, samplePoint).x;
 
         if(cornderValue >= CMsettings.minSampleVal && cornderValue <= CMsettings.maxSampleVal)
             activeEdgeCounter |= 1 << itr;

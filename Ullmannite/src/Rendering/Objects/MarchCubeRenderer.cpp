@@ -41,9 +41,6 @@ MarchCubeRenderer::MarchCubeRenderer(const std::string& name, NotOwner<Scene> sc
 
 	TriangulationTable::GetInstance().CreateTriangulationTable();
 	TriangulationTable::GetInstance().CreateVectexCountTable();
-
-	m_cuttingSettings.cuttingPositions = glm::vec3(0.0f, 0.0f, 0.0f);
-	m_cuttingSettings.invertedAxis = { false, false, false };
 }
 
 MarchCubeRenderer::~MarchCubeRenderer()
@@ -67,6 +64,7 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 		initThresholds.x = 1;
 
 	m_thresholds = initThresholds;
+	m_cuttingSettingsInt = glm::ivec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth);
 
 	EventAggregator::Publish(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, initThresholds));
 	m_thresholdInitEventShip = true;
@@ -107,6 +105,7 @@ void MarchCubeRenderer::GenerateMesh()
 	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", m_thresholds.x);
 	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", m_thresholds.y);
 	m_cubeMarchShader->SetFloat("CMsettings.maxDataValue", static_cast<float>(m_volumeData->maxValue));
+	m_cubeMarchShader->SetInt3("cuttingPlanes", m_cuttingSettingsInt);
 
 	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)(m_volumeData->width + 2) / (vertexCounterLocalSize * 2));
 	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(m_volumeData->height + 2) / vertexCounterLocalSize);
@@ -146,9 +145,18 @@ void MarchCubeRenderer::HandleEvent(Event* event)
 		break;
 	
 	case EventType::CuttingSettingsChanged:
-		m_cuttingSettings = static_cast<CuttingSettingsChangedEvent*>(event)->GetVal();
-		ULOGD("Setting changed");
+		auto cuttingSettings = static_cast<CuttingSettingsChangedEvent*>(event)->GetVal();
 
+		if (m_volumeData != nullptr)
+		{
+			m_cuttingSettingsInt = { (cuttingSettings.cuttingPositions.x / 100.0f) * m_volumeData->width, (cuttingSettings.cuttingPositions.y / 100.0f) * m_volumeData->height, (cuttingSettings.cuttingPositions.z / 100.0f) * m_volumeData->depth };
+			m_cuttingSettingsInt.x = cuttingSettings.invertedAxis[0] ? -m_cuttingSettingsInt.x : m_cuttingSettingsInt.x;
+			m_cuttingSettingsInt.y = cuttingSettings.invertedAxis[1] ? -m_cuttingSettingsInt.y : m_cuttingSettingsInt.y;
+			m_cuttingSettingsInt.z = cuttingSettings.invertedAxis[2] ? -m_cuttingSettingsInt.z : m_cuttingSettingsInt.z;
+			ULOGD(m_cuttingSettingsInt.x << " | " << m_cuttingSettingsInt.y << " | " << m_cuttingSettingsInt.z);
+		}
+
+		GenerateMesh();
 		event->MarkHandeled(true);
 		m_scene->SetUpdated(true);
 	break;

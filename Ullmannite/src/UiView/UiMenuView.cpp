@@ -69,7 +69,7 @@ void UiMenuView::Init()
     m_cubeMarchTresholds.x = 0;
     m_cubeMarchTresholds.y = maxUint16;
 
-    m_cuttingSettings.cuttingPositions = glm::vec3(0.0f, 0.0f, 0.0f);
+    m_cuttingSettings.cuttingPositions = glm::vec3(100.0f, 100.0f, 100.0f);
     m_cuttingSettings.invertedAxis = { false, false, false };
 }
 
@@ -114,7 +114,7 @@ void UiMenuView::RenderUI()
         }
         if (ImGui::BeginTabItem(ICON_TRANSFER))
         {
-            ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
+            RenderTransferFunctionSettings();
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem(ICON_SETTINGS_1))
@@ -355,4 +355,9 @@ void UiMenuView::RenderCutSettings()
 
     if(orginalCuttingSettings != m_cuttingSettings)
         EventAggregator::Publish(std::make_shared<CuttingSettingsChangedEvent>(EventType::CuttingSettingsChanged, m_cuttingSettings));
+}
+
+void UiMenuView::RenderTransferFunctionSettings()
+{
+    
 }

@@ -205,6 +205,11 @@ void ShaderOpenGL::SetUint(std::string uniformName, unsigned int value) const
     glUniform1ui(glGetUniformLocation(m_shaderID, uniformName.c_str()), value);
 }
 
+void ShaderOpenGL::SetInt3(std::string uniformName, glm::ivec3 value) const
+{
+    glUniform3i(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.x,  value.y,  value.z);
+}
+
 void ShaderOpenGL::SetUint3(std::string uniformName, glm::uvec3 value) const
 {
     glUniform3ui(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.x, value.y, value.z);
