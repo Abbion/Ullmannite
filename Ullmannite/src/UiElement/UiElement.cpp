@@ -4,6 +4,12 @@
 
 using namespace Ull;
 
+UiElement::UiElement(std::string name, glm::uvec2 position, glm::uvec2 size) : 
+    m_name(name), m_position(position), m_size(size)
+{
+    m_modelMatrix = glm::mat4x4(1.0f);
+}
+
 UiElement::~UiElement()
 {
     for(auto& child : m_children)

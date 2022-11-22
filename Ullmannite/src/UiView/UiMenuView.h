@@ -1,6 +1,7 @@
 #pragma once
 #include "UiElement/UiArea.h"
 #include "DataStructures/CuttingSettings.h"
+#include "UiElement/UiGradientEditor.h"
 #include <array>
 #include <optional>
 
@@ -29,5 +30,7 @@ namespace Ull
 
         glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
         CuttingSettings m_cuttingSettings;
+        
+        GradientMarker m_gradientMarker;
     };
 }

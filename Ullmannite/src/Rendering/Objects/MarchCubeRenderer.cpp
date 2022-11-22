@@ -102,8 +102,8 @@ void MarchCubeRenderer::GenerateMesh()
 
 	//Add one because we need an offset of zeros from every side. In the compute shader we start from -1, -1, -1 so thats the other side
 	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", m_thresholds.x);
-	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", m_thresholds.y);
+	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", (unsigned)m_thresholds.x);
+	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", (unsigned)m_thresholds.y);
 	m_cubeMarchShader->SetFloat("CMsettings.maxDataValue", static_cast<float>(m_volumeData->maxValue));
 	m_cubeMarchShader->SetInt3("cuttingPlanes", m_cuttingSettingsInt);
 
@@ -153,7 +153,6 @@ void MarchCubeRenderer::HandleEvent(Event* event)
 			m_cuttingSettingsInt.x = cuttingSettings.invertedAxis[0] ? -m_cuttingSettingsInt.x : m_cuttingSettingsInt.x;
 			m_cuttingSettingsInt.y = cuttingSettings.invertedAxis[1] ? -m_cuttingSettingsInt.y : m_cuttingSettingsInt.y;
 			m_cuttingSettingsInt.z = cuttingSettings.invertedAxis[2] ? -m_cuttingSettingsInt.z : m_cuttingSettingsInt.z;
-			ULOGD(m_cuttingSettingsInt.x << " | " << m_cuttingSettingsInt.y << " | " << m_cuttingSettingsInt.z);
 		}
 
 		GenerateMesh();
@@ -213,9 +212,10 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	storageBuff->Bind(2);
 
 	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
-	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", m_thresholds.x);
-	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", m_thresholds.y);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", (unsigned)m_thresholds.x);
+	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", (unsigned)m_thresholds.y);
 	m_cubeMarchVertexCounter->SetFloat("CMsettings.maxDataValue", static_cast<float>(m_volumeData->maxValue));
+	m_cubeMarchVertexCounter->SetInt3("cuttingPlanes", m_cuttingSettingsInt);
 
 	//Run shader
 	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
@@ -275,64 +275,6 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	//ULOGD("Triangle count GPU TIME: " << duration.count() << " microseconds");
-
-	return totalVertexCount;
-}
-
-uint64_t MarchCubeRenderer::CalculateVertexCountCPU()
-{
-	auto start = std::chrono::high_resolution_clock::now();
-
-	const auto minSampleVal = 10;
-	const auto maxSampleVal = 16'000;
-
-	size_t totalVertexCount = 0u;
-
-	const auto yOffset = m_volumeData->width;
-	const auto zOffset = m_volumeData->width * m_volumeData->height;
-
-	auto vertexCountTable = TriangulationTable::GetInstance().GetVertexCountTable();
-
-	for(size_t z = 0; z < m_volumeData->depth - 1; ++z)
-	{
-		for(size_t y = 0; y < m_volumeData->height - 1; ++y)
-		{
-			for(size_t x = 0; x < m_volumeData->width - 1; ++x)
-			{
-				auto posInArray = x + (y * m_volumeData->width) + (z * m_volumeData->width * m_volumeData->height);
-
-				std::vector<size_t> samplePositions(8);
-				samplePositions[0] = posInArray;
-				samplePositions[1] = posInArray + 1;
-				samplePositions[2] = posInArray + yOffset + 1;
-				samplePositions[3] = posInArray + yOffset;
-
-				samplePositions[4] = posInArray + zOffset;
-				samplePositions[5] = posInArray + zOffset + 1;
-				samplePositions[6] = posInArray + zOffset + yOffset + 1;
-				samplePositions[7] = posInArray + zOffset + yOffset;
-					
-				uint16_t activeEdgeCounter = 0u;
-
-				for(unsigned int i = 0; i < 8; ++i)
-				{
-					auto samplePos = samplePositions[i];
-					auto cornerValue = m_volumeData->dataBuffer[samplePos];
-					
-					if(cornerValue >= minSampleVal && cornerValue <= maxSampleVal)
-					{
-						activeEdgeCounter |= 1 << i;
-					}
-				}
-				
-				totalVertexCount += vertexCountTable[activeEdgeCounter];
-			}
-		}
-	}
-
-	auto stop = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	//ULOGD("Triangle count CPU TIME: " << duration.count() << " microseconds");
 
 	return totalVertexCount;
 }

@@ -11,7 +11,7 @@ UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool uses
     UiElement(name, position, size),
     m_usesDepth(usesDepth)
 {
-    m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_SHADER);
+    m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_SHADER_COLOR);
     CreateResources();
 }
 
@@ -119,6 +119,7 @@ void UiArea::RenderBackground()
     m_shader->Bind();
 
     m_shader->SetFloat4("ourColor", m_color);
+    m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
 
     m_layout->Bind();
 

@@ -32,7 +32,14 @@ void main()
         return;
     }
 
-
+    //TODO: Some wierd bug with negative cutting planes
+    if(((cuttingPlanes.x >= 0 && gl_GlobalInvocationID.x > cuttingPlanes.x)) ||
+        ((cuttingPlanes.y >= 0 && gl_GlobalInvocationID.y > cuttingPlanes.y)) ||
+        ((cuttingPlanes.z >= 0 && gl_GlobalInvocationID.z > cuttingPlanes.z)))
+    {
+        vertexCountStorageData[gl_WorkGroupID.x + (gl_WorkGroupID.y * gl_NumWorkGroups.x) + (gl_WorkGroupID.z * gl_NumWorkGroups.x * gl_NumWorkGroups.y)] = 0;
+        return;
+    }
 
     if(gl_LocalInvocationID.x == 0 && gl_LocalInvocationID.y == 0 && gl_LocalInvocationID.z == 0)
         localVertexCounter = 0;

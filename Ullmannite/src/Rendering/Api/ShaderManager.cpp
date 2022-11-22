@@ -8,7 +8,7 @@ ShaderManager ShaderManager::m_shaderManagerInstance;
 
 ShaderManager::ShaderManager()
 {
-	m_shaderMap[ShaderTag::UI_SHADER] = nullptr;
+	m_shaderMap[ShaderTag::UI_SHADER_COLOR] = nullptr;
 }
 
 ShaderManager::~ShaderManager()

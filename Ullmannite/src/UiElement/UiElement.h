@@ -9,8 +9,7 @@ namespace Ull
     class UiElement : public EventHandler, public Drawable
     {
     public:
-        UiElement(std::string name, glm::uvec2 position, glm::uvec2 size) :
-            m_name(name), m_position(position), m_size(size) {}
+        UiElement(std::string name, glm::uvec2 position, glm::uvec2 size);
         virtual ~UiElement();
 
         virtual void CreateResources() = 0;
@@ -18,7 +17,8 @@ namespace Ull
         void AddUiElement(UiElement* newElement);
         NotOwner<UiElement> GetParent() const                   { return m_parent; }
         const std::vector<UiElement*>& GetChildren() const      { return m_children; }
-
+        
+        void SetParent(NotOwner<UiElement> parent)      { m_parent = parent; }               
         void SetPositiion(const glm::uvec2& position)   { m_position = position; }
         void SetSize(const glm::uvec2& size)            { m_size = size; }
         void SetScale(const float& scale)               { m_scale = scale; }
@@ -43,5 +43,6 @@ namespace Ull
         std::vector<UiElement*> m_children;
 
         using Drawable::Drawable;
+        glm::mat4x4 m_modelMatrix;
     };
 }

@@ -45,7 +45,6 @@ namespace Ull
         uint64_t m_vertexCount{ 0 };
 
         uint64_t CalculateVertexCountGPU();
-        uint64_t CalculateVertexCountCPU();
         void SetUpLight();
 
     };

@@ -17,10 +17,15 @@ namespace
 }
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiArea(name, position, size, false)
+    UiArea(name, position, size, false),
+    m_gradientMarker("Test", glm::uvec2(50, 200), glm::uvec2(12, 12), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f))
 {
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
-
+    
+    m_gradientMarker.SetViewSize(size);
+    m_gradientMarker.SetViewPos(position);
+    m_gradientMarker.SetMinMaxBounds(20, 100);
+    m_gradientMarker.CreateResources();
     Init();    
 }
 
@@ -43,11 +48,14 @@ void UiMenuView::HandleEvent(Event* event)
         }
     break;
     }
+
+    m_gradientMarker.HandleEvent(event);
 }
 
 void UiMenuView::Update()
 {
     m_areaUpdated = true;
+    m_gradientMarker.Update();
 }
 
 void UiMenuView::Render()
@@ -56,10 +64,12 @@ void UiMenuView::Render()
     {
         m_frameBuffer->Bind();
         RenderBackground();
+        m_gradientMarker.Render();
         m_frameBuffer->Unbind();
 
         m_areaUpdated = false;
     }
+
 
 	RenderUI();
 }
@@ -257,9 +267,10 @@ void UiMenuView::RenderDataSettings()
 void UiMenuView::RenderCutSettings()
 {
     auto& style = ImGui::GetStyle();
-    auto orginalFramePadding = style.FramePadding;
 
+    auto orginalFramePadding = style.FramePadding;
     style.FramePadding = ImVec2(0.0f, 4.0f);
+
     auto orginalCuttingSettings = m_cuttingSettings;
 
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
@@ -359,5 +370,35 @@ void UiMenuView::RenderCutSettings()
 
 void UiMenuView::RenderTransferFunctionSettings()
 {
+    auto& style = ImGui::GetStyle();
     
+    auto orginalFramePadding = style.FramePadding;
+    style.FramePadding = ImVec2(0.0f, 4.0f);
+
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 12);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(10.0f, 0.0f));
+
+    //Start
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+    ImGui::Text("Transfer settings:");
+
+    ImGui::SetCursorPosX(20);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
+
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar();
+
+    style.FramePadding = orginalFramePadding;
 }

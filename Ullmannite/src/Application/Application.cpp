@@ -101,7 +101,7 @@ void Application::InitApplciation()
     io.Fonts->AddFontFromFileTTF("Assets/Fonts/UllIcon.ttf", 22.0f, &config, icon_ranges);
 
     //Load Shaders
-    ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER, "TestVertex", "TestPixel");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER_COLOR, "UiPosVertex", "UiColorPixel");
     ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::MARKER, "MarkerVS", "MarkerPS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR, "CubeMarchCS");
