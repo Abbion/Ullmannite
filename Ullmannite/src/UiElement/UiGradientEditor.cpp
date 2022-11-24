@@ -125,10 +125,10 @@ void UiGradientEditor::RenderGradient()
     m_shader->Bind();
 
     m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
-    auto texture = m_transferFunctionRenderer->GetTransferFunctionTexture();
-    glActiveTexture(GL_TEXTURE0);
-    texture->Bind();
-    m_shader->SetInt("transferTexture", 0);
+    //auto texture = m_transferFunctionRenderer->GetTransferFunctionTexture();
+    //glActiveTexture(GL_TEXTURE0);
+    //texture->Bind();
+    //m_shader->SetInt("transferTexture", 0);
 
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }

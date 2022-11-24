@@ -23,7 +23,7 @@ UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     
     m_transferFunction.AddPoint(TransferPoint{0, glm::vec3(1.0f, 1.0f, 1.0f)});
-    //m_transferFunction.AddPoint(TransferPoint{100, glm::vec3(1.0f, 0.0f, 1.0f)});
+    m_transferFunction.AddPoint(TransferPoint{100, glm::vec3(1.0f, 0.0f, 1.0f)});
     m_transferFunction.AddPoint(TransferPoint{200, glm::vec3(0.0f, 0.0f, 0.0f)});
     m_transferFunction.GenerateTransferFunction();
 

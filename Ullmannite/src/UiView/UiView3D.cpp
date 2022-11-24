@@ -54,8 +54,8 @@ void UiView3D::Init()
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
     //cubeMarch->SetVolumeData(mainDataSet);
     //cubeMarch->GenerateMesh();
-    //std::vector<TransferPoint> tp = { TransferPoint{glm::vec3(1.0f, 0.0f, 0.0f), 0}, TransferPoint{glm::vec3(0.0f, 1.0f, 0.0f), 100}, TransferPoint{glm::vec3(0.0f, 0.0f, 1.0f), 200}, TransferPoint{glm::vec3(0.0f, 1.0f, 1.0f), 300} };
-    
+    //std::vector<TransferPoint> tp = { TransferPoint{0, glm::vec3(1.0f, 0.0f, 0.0f)}, TransferPoint{100, glm::vec3(0.0f, 1.0f, 0.0f)}, TransferPoint{200, glm::vec3(0.0f, 0.0f, 1.0f)}, TransferPoint{300, glm::vec3(0.0f, 1.0f, 1.0f)} };
+    //
     //m_transferFunciton = std::make_shared<TransferFunctionRenderer>(tp);
     //m_transferFunciton->GenerateTransferFunction();
 
