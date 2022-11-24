@@ -10,6 +10,18 @@ UiElement::UiElement(std::string name, glm::uvec2 position, glm::uvec2 size) :
     m_modelMatrix = glm::mat4x4(1.0f);
 }
 
+Ull::UiElement::UiElement(UiElement&& source) :
+    Drawable(std::move(source)),
+    m_position{ source.m_position },
+    m_size{ source.m_size },
+    m_scale{ source.m_scale },
+    m_name{ source.m_name },
+    m_parent{ source.m_parent },
+    m_children{ source.m_children }
+{
+    
+}
+
 UiElement::~UiElement()
 {
     for(auto& child : m_children)

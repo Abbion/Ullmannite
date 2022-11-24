@@ -75,7 +75,7 @@ void Application::InitApplciation()
     if (glfwInit() == -1)
         throw InitializationException("Can't initialize GLFW");
 
-    m_window.Create("Ullmanite 0.3v", glm::uvec2(1280, 720));
+    m_window.Create("Ullmanite 0.7v", glm::uvec2(1280, 720));
     m_window.SetEventQueueDataPointer(&m_eventQueue);
 
     //Renderer
@@ -108,6 +108,7 @@ void Application::InitApplciation()
     ShaderManager::GetInstance().LoadShader(ShaderTag::TRANSFER_FUNCTION_GENERATOR, "TransferFunctionGeneratorCS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER, "CubeMarchVertexCounterCS");
     ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER, "CubeMarchVS", "CubeMarchPS", "CubeMarchGS");
+    ShaderManager::GetInstance().LoadShader(ShaderTag::UI_GRADIENT_SHADER, "UiGradientVS", "UiGradientPS");
     
     //Layers
     auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());

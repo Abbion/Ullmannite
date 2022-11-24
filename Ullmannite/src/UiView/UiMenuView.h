@@ -2,6 +2,7 @@
 #include "UiElement/UiArea.h"
 #include "DataStructures/CuttingSettings.h"
 #include "UiElement/UiGradientEditor.h"
+#include "Rendering/Objects/TransferFunctionRenderer.h"
 #include <array>
 #include <optional>
 
@@ -31,6 +32,7 @@ namespace Ull
         glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
         CuttingSettings m_cuttingSettings;
         
-        GradientMarker m_gradientMarker;
+        UiGradientEditor m_gradientEditor;
+        TransferFunctionRenderer m_transferFunction;
     };
 }

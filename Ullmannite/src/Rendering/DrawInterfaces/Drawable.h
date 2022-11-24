@@ -13,6 +13,7 @@ namespace Ull
 
     protected:
         Drawable() {};
+        Drawable(Drawable&& source);
 
         VertexBuffer* m_vertexBuffer{ nullptr };
         IndexBuffer* m_indexBuffer{ nullptr };

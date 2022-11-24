@@ -67,6 +67,8 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
         glfwSetWindowPos(m_window, 50, 50);
     }
 
+    
+
     glfwSetWindowSizeLimits(m_window, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     InitCallBacks();

@@ -8,8 +8,8 @@ namespace Ull
 {
     struct TransferPoint
     {
-        glm::vec3 m_color;
         uint32_t position;
+        glm::vec3 m_color;
     };
 
     class TransferFunctionRenderer
@@ -28,6 +28,8 @@ namespace Ull
         void GenerateTransferFunction();
         Texture1D* GetTransferFunctionTexture() { return m_transferFunctionTexture; }
 
+
+        constexpr std::pair<uint32_t, uint32_t> GetMinMaxPos() { return std::make_pair(0u, 512u); } //TODO: normalize this to 0 - 1
     private:
         void Init();
 

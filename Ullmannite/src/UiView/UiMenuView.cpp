@@ -18,15 +18,23 @@ namespace
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiArea(name, position, size, false),
-    m_gradientMarker("Test", glm::uvec2(50, 200), glm::uvec2(12, 12), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f))
+    m_gradientEditor("GradientEditor", glm::uvec2(size.x * 0.5f, 150), glm::uvec2(size.x * 0.8f, 50))
 {
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     
-    m_gradientMarker.SetViewSize(size);
-    m_gradientMarker.SetViewPos(position);
-    m_gradientMarker.SetMinMaxBounds(20, 100);
-    m_gradientMarker.CreateResources();
-    Init();    
+    m_transferFunction.AddPoint(TransferPoint{0, glm::vec3(1.0f, 1.0f, 1.0f)});
+    //m_transferFunction.AddPoint(TransferPoint{100, glm::vec3(1.0f, 0.0f, 1.0f)});
+    m_transferFunction.AddPoint(TransferPoint{200, glm::vec3(0.0f, 0.0f, 0.0f)});
+    m_transferFunction.GenerateTransferFunction();
+
+    m_gradientEditor.SetViewSize(size);
+    m_gradientEditor.SetViewPos(position);
+    m_gradientEditor.SetTransferFunction(&m_transferFunction);
+    m_gradientEditor.CreateResources();
+
+
+
+    Init();   
 }
 
 
@@ -48,14 +56,12 @@ void UiMenuView::HandleEvent(Event* event)
         }
     break;
     }
-
-    m_gradientMarker.HandleEvent(event);
 }
 
 void UiMenuView::Update()
 {
     m_areaUpdated = true;
-    m_gradientMarker.Update();
+    m_gradientEditor.Update();
 }
 
 void UiMenuView::Render()
@@ -64,7 +70,7 @@ void UiMenuView::Render()
     {
         m_frameBuffer->Bind();
         RenderBackground();
-        m_gradientMarker.Render();
+        m_gradientEditor.Render();
         m_frameBuffer->Unbind();
 
         m_areaUpdated = false;

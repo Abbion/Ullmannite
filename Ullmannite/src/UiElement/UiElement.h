@@ -10,6 +10,7 @@ namespace Ull
     {
     public:
         UiElement(std::string name, glm::uvec2 position, glm::uvec2 size);
+        UiElement(UiElement&& source);
         virtual ~UiElement();
 
         virtual void CreateResources() = 0;
