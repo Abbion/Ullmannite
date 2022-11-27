@@ -8,8 +8,8 @@ namespace Ull
 {
     struct TransferPoint
     {
-        uint32_t position;
         glm::vec3 m_color;
+        uint32_t position;
     };
 
     class TransferFunctionRenderer

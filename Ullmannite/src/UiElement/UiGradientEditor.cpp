@@ -65,8 +65,8 @@ void UiGradientEditor::SetTransferFunction(NotOwner<TransferFunctionRenderer> tr
     auto minMax = m_transferFunctionRenderer->GetMinMaxPos();
     auto size = points.size();
 
-    markers.clear();
-    markers.reserve(sizeof(GradientMarker) * size);
+    m_markers.clear();
+    m_markers.reserve(sizeof(GradientMarker) * size);
 
     for(unsigned i = 0u; i < size; ++i)
     {
@@ -81,15 +81,25 @@ void UiGradientEditor::SetTransferFunction(NotOwner<TransferFunctionRenderer> tr
         auto marker = GradientMarker(ss.str(), markerPosition, markerSize, glm::vec4(markerColor.x, markerColor.y, markerColor.z, 1.0f));
         marker.SetViewPos(m_viewPos);
         marker.SetViewSize(m_viewSize);
+        marker.SetMinMaxBounds(m_position.x - (m_size.x / 2.0f), m_position.x + (m_size.x / 2.0f));
         marker.CreateResources();
 
-        markers.push_back(std::move(marker));
+        m_markers.push_back(std::move(marker));
     }
 }
 
 void UiGradientEditor::HandleEvent(Event* event)
 {
+    switch (event->GetType())
+    {
+    default:
+        break;
+    }
 
+    for (auto& marker : m_markers)
+    {
+        marker.HandleEvent(event);
+    }
 }
 
 void UiGradientEditor::Update()
@@ -101,7 +111,7 @@ void UiGradientEditor::Update()
     m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(translate.x, translate.y, 0.0f));
     m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3((float)m_size.x / (float)m_viewSize.x, ((float)m_size.y * 0.5f) / (float)m_viewSize.y, 1.0f));
 
-    for (auto& marker : markers)
+    for (auto& marker : m_markers)
         marker.Update();
 }
 
@@ -109,7 +119,7 @@ void UiGradientEditor::Render()
 {
     RenderGradient();
 
-    for (auto& marker : markers)
+    for (auto& marker : m_markers)
         marker.Render();
 }
 
@@ -125,17 +135,17 @@ void UiGradientEditor::RenderGradient()
     m_shader->Bind();
 
     m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
-    //auto texture = m_transferFunctionRenderer->GetTransferFunctionTexture();
-    //glActiveTexture(GL_TEXTURE0);
-    //texture->Bind();
-    //m_shader->SetInt("transferTexture", 0);
+    auto texture = m_transferFunctionRenderer->GetTransferFunctionTexture();
+    texture->Bind();
+    m_shader->SetInt("transferTexture", 0);
 
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }
 
 GradientMarker::GradientMarker(std::string name, glm::uvec2 position, glm::uvec2 size, glm::vec4 color) :
     UiElement(name, position, size),
-    m_color(color)
+    m_color(color),
+    m_pointerColor(0.7f, 0.7f, 0.7f, 1.0f)
 {
     m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_SHADER_COLOR);
 }
@@ -149,7 +159,8 @@ GradientMarker::GradientMarker(GradientMarker&& source) :
     m_color{ source.m_color },
     m_viewSize{ source.m_viewSize },
     m_viewPos{ source.m_viewPos },
-    m_minMax{ source.m_minMax }
+    m_minMax{ source.m_minMax },
+    m_pointerColor{ source.m_pointerColor }
 {
 }
 
@@ -208,7 +219,7 @@ void GradientMarker::HandleEvent(Event* event)
         if (mouseEvent->GetVal() == Mouse::Button::LEFT)
         {
             auto mousePos = Mouse::GetInstance().GetMousePosition();
-            if (PointInStaticRect<glm::ivec2>(mousePos - m_viewPos, glm::ivec2(m_position) - glm::ivec2(m_size) / 2, glm::ivec2(m_size)))
+            if (PointInMarker(mousePos))
             {
                 if(!m_openColorMenu)
                     m_markerGrabbed = true;
@@ -235,7 +246,7 @@ void GradientMarker::HandleEvent(Event* event)
         {
             auto mousePos = Mouse::GetInstance().GetMousePosition();
 
-            if (PointInStaticRect<glm::ivec2>(mousePos - m_viewPos, glm::ivec2(m_position) - glm::ivec2(m_size) / 2, glm::ivec2(m_size)))
+            if (PointInMarker(mousePos))
             {
                 m_openColorMenu = true;
                 m_colorMenuJustOpened = true;
@@ -259,6 +270,15 @@ void GradientMarker::Update()
             m_position.x = m_minMax.y;
     }
 
+    if (PointInMarker(Mouse::GetInstance().GetMousePosition()))
+    {
+        m_pointerColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    else
+    {
+        m_pointerColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    }
+
     m_modelMatrix = glm::identity<glm::mat4x4>();
     
     auto recenterSize = glm::vec2(m_viewSize) / 2.0f;
@@ -276,11 +296,10 @@ void GradientMarker::Render()
 
     m_shader->Bind();
 
-    m_shader->SetFloat4("ourColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_shader->SetFloat4("ourColor", m_pointerColor);
     m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
 
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
-
 
     glm::mat4x4 innerColorMatrix = m_modelMatrix;
     innerColorMatrix = glm::scale(innerColorMatrix, glm::vec3(0.85f, 0.85f, 0.85f));
@@ -288,7 +307,7 @@ void GradientMarker::Render()
     m_shader->SetFloat4("ourColor", m_color);
     m_shader->SetFloat4x4("modelMatrix", innerColorMatrix);
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize() - 2);
 
     if (m_openColorMenu)
     {
@@ -318,4 +337,9 @@ void GradientMarker::Render()
         m_colorMenuJustOpened = false;
     }
 
+}
+
+inline bool GradientMarker::PointInMarker(glm::ivec2 point)
+{
+    return PointInStaticRect<glm::ivec2>(point - m_viewPos, glm::ivec2(m_position) - glm::ivec2(m_size) / 2, glm::ivec2(m_size));
 }

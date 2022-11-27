@@ -25,6 +25,11 @@
 
 using namespace Ull;
 
+namespace
+{
+    constexpr double DoubleClickDurationWindow = 0.4;
+}
+
 UllWindow::UllWindow()
 {
 }
@@ -544,10 +549,28 @@ void UllWindow::InitCallBacks()
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
         auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
 
+        static auto lastTimePoint = std::chrono::high_resolution_clock::now();
+
         if (action == GLFW_PRESS)
+        {
             eventQueue->PushEvent(std::make_shared<MouseDownEvent>(EventType::MouseDown, static_cast<Mouse::Button>(button)));
+        }
         else if (action == GLFW_RELEASE)
+        {
             eventQueue->PushEvent(std::make_shared<MouseUpEvent>(EventType::MouseUp, static_cast<Mouse::Button>(button)));
+
+            if (static_cast<Mouse::Button>(button) == Mouse::Button::LEFT)
+            {
+                auto timePoint = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> duration = timePoint - lastTimePoint;
+                lastTimePoint = timePoint;
+
+                if (duration.count() < DoubleClickDurationWindow)
+                {
+                    eventQueue->PushEvent(std::make_shared<MouseDoubleUp>(EventType::MouseDoubleUp, static_cast<Mouse::Button>(button)));
+                }
+            }
+        }
     });
 
     glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos){

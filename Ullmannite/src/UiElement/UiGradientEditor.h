@@ -38,9 +38,12 @@ namespace Ull
 		bool m_pickerOutClick{ false };
 
 		glm::vec4 m_color;
+		glm::vec4 m_pointerColor;
 		glm::uvec2 m_viewSize;
 		glm::ivec2 m_viewPos;
 		glm::ivec2 m_minMax{ 0, 0 };
+
+		inline bool PointInMarker(glm::ivec2 point);
 	};
 
 
@@ -64,7 +67,7 @@ namespace Ull
 		void RenderMarkers();
 		void RenderGradient();
 
-		std::vector<GradientMarker> markers;
+		std::vector<GradientMarker> m_markers;
 		glm::uvec2 m_viewSize;
 		glm::ivec2 m_viewPos;
 

@@ -25,6 +25,7 @@ namespace Ull
         KeyUp,
 
         MouseDown,
+        MouseDoubleUp,
         MouseUp,
         MouseScroll,
         MouseMove,
@@ -81,6 +82,7 @@ namespace Ull
     typedef ValueEvent<Keyboard::Key> KeyUpEvent;
 
     typedef ValueEvent<Mouse::Button> MouseDownEvent;
+    typedef ValueEvent<Mouse::Button> MouseDoubleUp;
     typedef ValueEvent<Mouse::Button> MouseUpEvent;
     typedef ValueEvent<int> MouseScrollEvent;
     typedef ValueEvent<glm::ivec2> MouseMoveEvent;

@@ -10,6 +10,6 @@ uniform sampler1D transferTexture;
 
 void main()
 {
-	//vec3 fianlColor = texture(transferTexture, vs_out.texCoord).rgb;
-	FragColor = vec4(vs_out.texCoord, vs_out.texCoord, vs_out.texCoord, 1.0);
+	vec3 fianlColor = texture(transferTexture, vs_out.texCoord).rgb;
+	FragColor = vec4(fianlColor, 1.0);
 }

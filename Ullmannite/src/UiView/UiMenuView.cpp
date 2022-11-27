@@ -22,17 +22,15 @@ UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
 {
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     
-    m_transferFunction.AddPoint(TransferPoint{0, glm::vec3(1.0f, 1.0f, 1.0f)});
-    m_transferFunction.AddPoint(TransferPoint{100, glm::vec3(1.0f, 0.0f, 1.0f)});
-    m_transferFunction.AddPoint(TransferPoint{200, glm::vec3(0.0f, 0.0f, 0.0f)});
+    m_transferFunction.AddPoint(TransferPoint{glm::vec3(1.0f, 1.0f, 1.0f), 0});
+    m_transferFunction.AddPoint(TransferPoint{glm::vec3(1.0f, 0.0f, 1.0f), 100});
+    m_transferFunction.AddPoint(TransferPoint{glm::vec3(0.0f, 0.0f, 0.0f), 200});
     m_transferFunction.GenerateTransferFunction();
 
     m_gradientEditor.SetViewSize(size);
     m_gradientEditor.SetViewPos(position);
     m_gradientEditor.SetTransferFunction(&m_transferFunction);
     m_gradientEditor.CreateResources();
-
-
 
     Init();   
 }
@@ -56,6 +54,8 @@ void UiMenuView::HandleEvent(Event* event)
         }
     break;
     }
+
+    m_gradientEditor.HandleEvent(event);
 }
 
 void UiMenuView::Update()
