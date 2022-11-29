@@ -19,6 +19,9 @@ EventQueue::EventQueue()
     EventAggregator::Sbuscribe(EventType::CuttingSettingsChanged, [this](const std::shared_ptr<Event>& event) {
         PushEvent(event);
     });
+    EventAggregator::Sbuscribe(EventType::GradientUpdated, [this](const std::shared_ptr<Event>& event) {
+        PushEvent(event);
+    });
 }
 
 EventQueue::~EventQueue()

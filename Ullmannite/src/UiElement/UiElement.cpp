@@ -19,7 +19,6 @@ Ull::UiElement::UiElement(UiElement&& source) :
     m_parent{ source.m_parent },
     m_children{ source.m_children }
 {
-    
 }
 
 UiElement::~UiElement()

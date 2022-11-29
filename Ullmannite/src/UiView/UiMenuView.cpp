@@ -18,7 +18,7 @@ namespace
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiArea(name, position, size, false),
-    m_gradientEditor("GradientEditor", glm::uvec2(size.x * 0.5f, 150), glm::uvec2(size.x * 0.8f, 50))
+    m_gradientEditor("GradientEditor", glm::uvec2(size.x * 0.5f, 80), glm::uvec2(size.x * 0.8f, 50))
 {
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     
@@ -52,6 +52,14 @@ void UiMenuView::HandleEvent(Event* event)
             m_cubeMarchTresholds.y = newThresholds.y;
             m_newDataLoaded = false;
         }
+    case EventType::WindowResize:
+    {
+        m_gradientEditor.SetViewSize(m_size);
+        m_gradientEditor.SetViewPos(m_position);
+        m_gradientEditor.CreateResources();
+    }
+    break;
+
     break;
     }
 
@@ -70,7 +78,8 @@ void UiMenuView::Render()
     {
         m_frameBuffer->Bind();
         RenderBackground();
-        m_gradientEditor.Render();
+        if(m_renderTransferEditor)
+            m_gradientEditor.Render();
         m_frameBuffer->Unbind();
 
         m_areaUpdated = false;
@@ -118,6 +127,8 @@ void UiMenuView::RenderUI()
 
         style.FramePadding = ImVec2(12, 12);
 
+        m_renderTransferEditor = false;
+
         if (ImGui::BeginTabItem(ICON_LOAD))
         {
             RenderLoadTab();
@@ -132,6 +143,7 @@ void UiMenuView::RenderUI()
         {
             RenderTransferFunctionSettings();
             ImGui::EndTabItem();
+            m_renderTransferEditor = true;
         }
         if (ImGui::BeginTabItem(ICON_SETTINGS_1))
         {

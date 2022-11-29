@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "UiView3D.h"
+#include "UiMenuView.h"
 #include "Rendering/Objects/Cube.h"
 #include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
@@ -25,6 +26,14 @@ UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     Init();
 }
 
+void UiView3D::SetTransferFunction(const NotOwner<TransferFunctionRenderer>& transferFunction)
+{
+    m_transferFunction = transferFunction;
+
+    auto cubeMarch = static_cast<MarchCubeRenderer*>(m_scene.GetNodeByName("Cube march"));
+    cubeMarch->SetTransferTexture(m_transferFunction->GetTransferFunctionTexture());
+}
+
 void UiView3D::Init()
 {
     auto root = m_scene.GetRootNode();
@@ -46,25 +55,8 @@ void UiView3D::Init()
 
     root->AddNode(dirLight);
 
-    //Cube marcher
-    //TEMP data loading
-    //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/volumeTest.dat");
-    //auto mainDataSet = LoadVolumeData("Assets/VolumetricData/interpolationTest.dat");
-
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
-    //cubeMarch->SetVolumeData(mainDataSet);
-    cubeMarch->GenerateMesh();
-    //std::vector<TransferPoint> tp = { TransferPoint{glm::vec3(1.0f, 0.0f, 0.0f), 0}, TransferPoint{glm::vec3(0.0f, 1.0f, 0.0f), 100}, TransferPoint{glm::vec3(0.0f, 0.0f, 1.0f), 200}, TransferPoint{glm::vec3(0.0f, 1.0f, 1.0f), 300} };
-    
-    //m_transferFunciton = std::make_shared<TransferFunctionRenderer>(tp);
-    //m_transferFunciton->GenerateTransferFunction();
-
-    //auto texture = m_transferFunciton->GetTransferFunctionTexture();
-    //cubeMarch->SetTransferTexture(texture);
-
     root->AddNode(cubeMarch);
-    //auto cube = new Cube("Test Cube", &m_scene);
-    //root->AddNode(cube);
 }
 
 void UiView3D:: HandleEvent(Event* event)
@@ -106,6 +98,12 @@ void UiView3D:: HandleEvent(Event* event)
             renderer->GenerateMesh();
             m_scene.SetUpdated(true);
         }
+    }
+    break;
+
+    case EventType::GradientUpdated:
+    {
+        m_scene.SetUpdated(true);
     }
     break;
 

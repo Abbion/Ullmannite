@@ -12,6 +12,7 @@ namespace Ull
 	{
 	public:
 		UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size);
+		void SetTransferFunction(const NotOwner<TransferFunctionRenderer>& transferFunction);
 		
 		void SetWindow(const NotOwner<UllWindow>& window);
 
@@ -24,7 +25,6 @@ namespace Ull
 
 		Scene m_scene;
 		NotOwner<UllWindow> m_window{ nullptr };
-
-		std::shared_ptr<TransferFunctionRenderer> m_transferFunciton;
+		NotOwner<TransferFunctionRenderer> m_transferFunction{ nullptr };
 	};
 }

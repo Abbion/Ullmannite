@@ -1,6 +1,7 @@
 #pragma once
 #include "UiElement.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
+#include <glm/glm.hpp>
 
 namespace Ull
 {
@@ -17,8 +18,14 @@ namespace Ull
 		GradientMarker(GradientMarker&& source);
 		~GradientMarker();
 
+		GradientMarker& operator=(const GradientMarker& source);
+
 		bool IsColorPickerOpened() const { return m_openColorMenu; }
 		bool IsMarkerGrabbed() const { return m_markerGrabbed; }
+		bool IsMarkerActive() const { return m_markerGrabbed || m_openColorMenu; }
+		bool IsMarkerDeleted() const { return m_markerDeleted; }
+	
+		glm::vec3 GetColor() const { return m_color; }
 
 		void SetViewSize(glm::uvec2 size) { m_viewSize = size; }
 		void SetViewPos(glm::ivec2 pos) { m_viewPos = pos; }
@@ -31,11 +38,14 @@ namespace Ull
 		void Render() override;
 
 	private:
+		bool m_hovered{ false };
 		bool m_markerGrabbed{ false };
 		bool m_openColorMenu{ false };
 
 		bool m_colorMenuJustOpened{ false };
 		bool m_pickerOutClick{ false };
+		bool m_markerDeleted{ false };
+
 
 		glm::vec4 m_color;
 		glm::vec4 m_pointerColor;
@@ -56,8 +66,8 @@ namespace Ull
 
 		void SetTransferFunction(NotOwner<TransferFunctionRenderer> transferFunction);
 
-		void SetViewSize(glm::uvec2 size) { m_viewSize = size; }
-		void SetViewPos(glm::ivec2 pos) { m_viewPos = pos; }
+		void SetViewSize(glm::uvec2 size);
+		void SetViewPos(glm::ivec2 pos);
 
 		void HandleEvent(Event* event) override;
 		void Update() override;

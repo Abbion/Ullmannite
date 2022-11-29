@@ -20,7 +20,7 @@ namespace Ull
         WindowMinimized,
         WindowRestored,
         WindowClosed,
-        
+
         KeyDown,
         KeyUp,
 
@@ -33,7 +33,8 @@ namespace Ull
         FileLoaded,
         CuttingSettingsChanged,
         TransferFunctionChanged,
-        ExaminationThresholdChanged
+        ExaminationThresholdChanged,
+        GradientUpdated
     };
 
     //==================================================================
@@ -77,6 +78,7 @@ namespace Ull
     typedef Event WindowClosedEvent;
     typedef Event WindowMinimized;
     typedef Event WindowRestored;
+    typedef Event GradientUpdatedEvent;
 
     typedef ValueEvent<Keyboard::Key> KeyDownEvent;
     typedef ValueEvent<Keyboard::Key> KeyUpEvent;

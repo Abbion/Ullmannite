@@ -24,9 +24,10 @@ namespace Ull
         void AddPoint(const TransferPoint& point);
         void EditPoint(const TransferPoint& point);
         void DeletePoint(uint16_t position);
+        void DeleteAppLoints();
 
         void GenerateTransferFunction();
-        Texture1D* GetTransferFunctionTexture() { return m_transferFunctionTexture; }
+        Texture1D* GetTransferFunctionTexture() const { return m_transferFunctionTexture; }
 
 
         constexpr std::pair<uint32_t, uint32_t> GetMinMaxPos() { return std::make_pair(0u, 512u); } //TODO: normalize this to 0 - 1

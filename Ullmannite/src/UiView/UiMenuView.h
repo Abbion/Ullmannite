@@ -17,6 +17,8 @@ namespace Ull
 		void Update() override;
 		void Render() override;
 
+         TransferFunctionRenderer* GetTransferFunctionRenderer() { return &m_transferFunction; }
+
     private:
 		void Init();
         void RenderUI();
@@ -28,6 +30,7 @@ namespace Ull
         std::optional<std::wstring> m_filePath;
         bool m_firstDataLoaded{ false };
         bool m_newDataLoaded{ false };
+        bool m_renderTransferEditor{ false };
 
         glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
         CuttingSettings m_cuttingSettings;

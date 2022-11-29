@@ -4,6 +4,7 @@
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtx/transform.hpp"
 #include "Event/Event.h"
+#include "Event/EventAggregator.h"
 #include "Input/Mouse.h"
 #include "Utilities/CollisionCheckers.h"
 #include "Logger/Logger.h"
@@ -56,6 +57,8 @@ void UiGradientEditor::CreateResources()
     m_layout->Build();
     m_vertexBuffer->Unbind();
     m_layout->Unbind();
+
+    SetTransferFunction(m_transferFunctionRenderer); //TODO: DELETE THIS CANCER
 }
 
 void UiGradientEditor::SetTransferFunction(NotOwner<TransferFunctionRenderer> transferFunction)
@@ -88,10 +91,52 @@ void UiGradientEditor::SetTransferFunction(NotOwner<TransferFunctionRenderer> tr
     }
 }
 
+void UiGradientEditor::SetViewSize(glm::uvec2 size)
+{
+    m_viewSize = size;
+    for(auto& marker : m_markers)
+        marker.SetViewSize(m_size);
+}
+
+void UiGradientEditor::SetViewPos(glm::ivec2 pos)
+{
+    m_viewPos = pos;
+    for(auto& marker : m_markers)
+        marker.SetViewPos(m_viewPos);
+}
+
 void UiGradientEditor::HandleEvent(Event* event)
 {
     switch (event->GetType())
     {
+    case EventType::MouseDoubleUp:
+        auto mousePos = Mouse::GetInstance().GetMousePosition();
+        if (PointInStaticRect<glm::ivec2>(mousePos - m_viewPos, glm::ivec2(m_position) - glm::ivec2(m_size) / 2, glm::ivec2(m_size)))
+        {
+            auto points = m_transferFunctionRenderer->GetPoints();
+            auto minMax = m_transferFunctionRenderer->GetMinMaxPos();
+            auto size = points.size();
+
+            auto startPos = mousePos.x - ((int)m_position.x - (int)(m_size.x / 2));
+            auto pos = unsigned(((float)(startPos) / (float)m_size.x) * minMax.second);
+
+            auto transformMarkerPosition = (((float)pos / (float)minMax.second) * (float)m_size.x);
+            auto markerPosition = glm::uvec2(m_position.x - (m_size.x * 0.5f) + transformMarkerPosition, m_position.y + m_size.y * 0.6f);
+            auto markerSize = glm::uvec2(m_size.y * 0.3f, m_size.y * 0.3f);
+            auto markerColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+            auto marker = GradientMarker("Marker", markerPosition, markerSize, glm::vec4(markerColor.x, markerColor.y, markerColor.z, 1.0f));
+            marker.SetViewPos(m_viewPos);
+            marker.SetViewSize(m_viewSize);
+            marker.SetMinMaxBounds(m_position.x - (m_size.x / 2.0f), m_position.x + (m_size.x / 2.0f));
+            marker.CreateResources();
+
+            m_markers.push_back(std::move(marker));
+            m_transferFunctionRenderer->AddPoint({marker.GetColor(), (unsigned)(((float)(startPos) / (float)m_size.x) * 512)});
+            m_transferFunctionRenderer->GenerateTransferFunction();
+        }
+    break;
+
     default:
         break;
     }
@@ -111,8 +156,45 @@ void UiGradientEditor::Update()
     m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(translate.x, translate.y, 0.0f));
     m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3((float)m_size.x / (float)m_viewSize.x, ((float)m_size.y * 0.5f) / (float)m_viewSize.y, 1.0f));
 
+    //std::remove_if(m_markers.begin(), m_markers.end(), [](const GradientMarker& marker) { return marker.IsMarkerDeleted(); });
+
+    std::vector<int> toDelete;
+    bool refreshGradient = false;
+
+    for (int i = 0; i < m_markers.size(); ++i)
+    {
+        if (m_markers[i].IsMarkerDeleted())
+            toDelete.push_back(i);
+    }
+
+    for (auto itr : toDelete)
+    {
+        m_markers.erase(m_markers.begin() + itr);
+        refreshGradient = true;
+    }
+
     for (auto& marker : m_markers)
+    {
         marker.Update();
+
+        if(marker.IsMarkerActive())
+            refreshGradient = true;
+    }
+
+    if(refreshGradient)
+    {
+        EventAggregator::Publish(std::make_shared<GradientUpdatedEvent>(EventType::GradientUpdated));
+
+        m_transferFunctionRenderer->DeleteAppLoints();
+
+        for (auto& marker : m_markers)
+        {
+            auto pos = (unsigned)(((float)(marker.GetPosition().x - (m_position.x - (m_size.x / 2))) / (float)m_size.x) *512);
+            m_transferFunctionRenderer->AddPoint(TransferPoint{ marker.GetColor(),  pos});
+        }
+
+        m_transferFunctionRenderer->GenerateTransferFunction();
+    }
 }
 
 void UiGradientEditor::Render()
@@ -169,13 +251,23 @@ GradientMarker::~GradientMarker()
     
 }
 
+GradientMarker& Ull::GradientMarker::operator=(const GradientMarker& source)
+{
+    GradientMarker marker(m_name, m_position, m_size, m_color);
+    marker.SetMinMaxBounds(m_minMax.x, m_minMax.y);
+    marker.SetViewPos(m_viewPos);
+    marker.SetViewSize(m_viewSize);
+
+    return marker;
+}
+
 void GradientMarker::CreateResources()
 {
     if(m_vertexBuffer != nullptr)
         delete m_vertexBuffer;
 
     if(m_indexBuffer != nullptr)
-        delete m_vertexBuffer;
+        delete m_indexBuffer;
 
     if (m_layout != nullptr)
         delete m_layout;
@@ -273,10 +365,12 @@ void GradientMarker::Update()
     if (PointInMarker(Mouse::GetInstance().GetMousePosition()))
     {
         m_pointerColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        m_hovered = true;
     }
     else
     {
         m_pointerColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+        m_hovered = false;
     }
 
     m_modelMatrix = glm::identity<glm::mat4x4>();
@@ -314,23 +408,36 @@ void GradientMarker::Render()
         ImVec4 pickerColor = ImVec4(m_color.x, m_color.y, m_color.z, 1.0f);
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 12));
+
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
 
         ImGui::OpenPopup("colorPickPopup");
         if (ImGui::BeginPopup("colorPickPopup"))
         {
             ImGui::BeginGroup();
             ImGui::Text("Color picker");
-            ImGui::Separator();
             ImGui::ColorPicker3("##MyColor##6", (float*)&pickerColor, ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoAlpha);
+            if (ImGui::Button("Delete marker"))
+            {
+                m_markerDeleted = true;
+            }
             ImGui::EndGroup();
             if (m_pickerOutClick && !m_colorMenuJustOpened && !ImGui::IsItemHovered())
             {
                 m_openColorMenu = false;
             }
+
             ImGui::EndPopup();
         }
 
         ImGui::PopStyleVar();
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
         m_color = glm::vec4(pickerColor.x, pickerColor.y, pickerColor.z, 1.0f);
 
         m_pickerOutClick = false;

@@ -95,6 +95,7 @@ void MainLayer::CreateLayout()
     m_layout->AddUiElement(menuView);
 
     UiView3D* renderView = new UiView3D("view3DElement", glm::vec2(261, 30), glm::vec2(initSize.x - 261, initSize.y - 30));
+    renderView->SetTransferFunction(menuView->GetTransferFunctionRenderer());
     m_layout->AddUiElement(renderView);
 
     m_layout->CreateResources();

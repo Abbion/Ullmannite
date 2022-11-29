@@ -57,6 +57,11 @@ void TransferFunctionRenderer::DeletePoint(uint16_t position)
     }
 }
 
+void TransferFunctionRenderer::DeleteAppLoints()
+{
+    m_transferPoints.clear();
+}
+
 void TransferFunctionRenderer::GenerateTransferFunction()
 {
     std::sort(m_transferPoints.begin(), m_transferPoints.end(), [](const TransferPoint& a, const TransferPoint& b){ return a.position < b.position; });
