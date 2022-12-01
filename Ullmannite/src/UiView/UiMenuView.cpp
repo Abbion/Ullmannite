@@ -63,13 +63,16 @@ void UiMenuView::HandleEvent(Event* event)
     break;
     }
 
-    m_gradientEditor.HandleEvent(event);
+    if(m_renderTransferEditor)
+        m_gradientEditor.HandleEvent(event);
 }
 
 void UiMenuView::Update()
 {
     m_areaUpdated = true;
-    m_gradientEditor.Update();
+
+    if(m_renderTransferEditor)
+        m_gradientEditor.Update();
 }
 
 void UiMenuView::Render()

@@ -32,6 +32,8 @@ bin-obj/
 
 #Asssets
 *.dat
+*.dcm
+Ullmannite/Assets/DicomConverter/DicomConverter.exe
 
 #Visual studio
 .vs/

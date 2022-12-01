@@ -13,9 +13,32 @@
 #include "DataStructures/VolumeData.h"
 
 #include <algorithm>
-
+#include "Core/PlatformDependantFreeFunctions.h"
+#include <codecvt>
+#include <locale>
 
 using namespace Ull;
+
+namespace {
+    std::string ConvertDcmToDat(std::string str)
+    {
+        auto pos = str.find_last_of('.');
+        if (pos != std::string::npos)
+        {
+            auto extension = str.substr(pos);
+
+            if (extension == ".dcm")
+            {
+                using convert_t = std::codecvt_utf8<wchar_t>;
+                std::wstring_convert<convert_t, wchar_t> strconverter;
+                CreateDataFromDicom(strconverter.from_bytes(str));
+                return "Assets/VolumetricData/DICOM.dat";
+            }
+        }
+
+        return str;
+    }
+}
 
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiArea(name, position, size, true),
@@ -88,8 +111,8 @@ void UiView3D:: HandleEvent(Event* event)
     case EventType::FileLoaded:
     {
         auto path = static_cast<DataLoadEvent*>(event)->GetVal();
+        path = ConvertDcmToDat(path);
         auto dataSet = LoadVolumeData(path);
-
         auto cubeMarchRenderer = m_scene.GetNodeByName("Cube march");
         if (cubeMarchRenderer != nullptr)
         {

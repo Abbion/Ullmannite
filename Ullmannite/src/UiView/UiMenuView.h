@@ -8,6 +8,8 @@
 
 namespace Ull
 {
+    struct FileInfo;
+
     class UiMenuView : public UiArea
     {
     public:
@@ -27,7 +29,7 @@ namespace Ull
         void RenderTransferFunctionSettings();
         void RenderDataSettings();
 
-        std::optional<std::wstring> m_filePath;
+        std::optional<std::wstring > m_filePath;
         bool m_firstDataLoaded{ false };
         bool m_newDataLoaded{ false };
         bool m_renderTransferEditor{ false };
