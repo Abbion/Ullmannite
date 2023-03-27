@@ -3,7 +3,7 @@
 	url = https://github.com/SergiusTheBest/plog.git
 [submodule "Ullmannite/ThirdPartyLibs/glfw"]
 	path = Ullmannite/ThirdPartyLibs/glfw
-	url = https://github.com/glfw/glfw.git
+	url = https://github.com/Abbion/glfwBorderLess.git
 [submodule "Ullmannite/ThirdPartyLibs/imgui"]
 	path = Ullmannite/ThirdPartyLibs/imgui
 	url = https://github.com/ocornut/imgui.git
