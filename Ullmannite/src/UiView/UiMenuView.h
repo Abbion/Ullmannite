@@ -37,7 +37,7 @@ namespace Ull
         glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
         CuttingSettings m_cuttingSettings;
         
-        UiGradientEditor m_gradientEditor;
+        //UiGradientEditor m_gradientEditor;
         TransferFunctionRenderer m_transferFunction;
     };
 }

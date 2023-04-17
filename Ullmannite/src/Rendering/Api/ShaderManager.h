@@ -8,20 +8,18 @@ namespace Ull
 	{
 	public:
 		NON_COPYABLE(ShaderManager);
+		ShaderManager();
 		~ShaderManager();
 
-		static ShaderManager& GetInstance();
-		Shader* GetShader(ShaderTag tag);
+		std::shared_ptr<Shader> GetShader(ShaderTag tag);
 
-		void LoadShader(ShaderTag tag, std::string vertexShaderName, std::string pixelShaderName, std::string geometryShaderName = "");
-		void LoadShader(ShaderTag tag, std::string computeShaderName);
-		void UnloadShader(ShaderTag tag);
-
-	protected:
-		ShaderManager();
-		static ShaderManager m_shaderManagerInstance;
+		void LoadShader(const ShaderTag tag, const std::string vertexShaderName, const std::string pixelShaderName, const std::string geometryShaderName = "");
+		void LoadShader(const ShaderTag tag, const std::string computeShaderName);
+		void UnloadShader(const ShaderTag tag);
 
 	private:
-		std::map<ShaderTag, Shader*> m_shaderMap;
+		std::map<const ShaderTag, std::shared_ptr<Shader>> m_shaderMap;
+
+		bool IsShaderLoaded(const ShaderTag tag);
 	};
 }

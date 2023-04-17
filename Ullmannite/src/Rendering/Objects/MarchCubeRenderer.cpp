@@ -35,9 +35,10 @@ using namespace Ull;
 MarchCubeRenderer::MarchCubeRenderer(const std::string& name, NotOwner<Scene> scene) :
 	Node3D(name, scene)
 {
-	m_cubeMarchVertexCounter = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER);
-	m_cubeMarchShader = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR);
-	m_vertexRendererShader = ShaderManager::GetInstance().GetShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER);
+	auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+	m_cubeMarchVertexCounter = shaderManager.GetShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER);
+	m_cubeMarchShader = shaderManager.GetShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR);
+	m_vertexRendererShader = shaderManager.GetShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER);
 
 	TriangulationTable::GetInstance().CreateTriangulationTable();
 	TriangulationTable::GetInstance().CreateVectexCountTable();

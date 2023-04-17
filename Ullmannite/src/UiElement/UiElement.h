@@ -19,7 +19,7 @@ namespace Ull
         NotOwner<UiElement> GetParent() const                   { return m_parent; }
         const std::vector<UiElement*>& GetChildren() const      { return m_children; }
         
-        void SetParent(NotOwner<UiElement> parent)      { m_parent = parent; }               
+        void SetParent(NotOwner<UiElement> parent)      { m_parent = parent; }        
         void SetPositiion(const glm::uvec2& position)   { m_position = position; }
         void SetSize(const glm::uvec2& size)            { m_size = size; }
         void SetScale(const float& scale)               { m_scale = scale; }

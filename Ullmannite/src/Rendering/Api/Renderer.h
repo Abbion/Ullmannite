@@ -2,6 +2,7 @@
 #include "Ullpch.h"
 #include "Buffer.h"
 #include "Shader.h"
+#include "ShaderManager.h"
 
 #include <glad/glad.h>
 
@@ -12,15 +13,15 @@ namespace Ull
     public:
         enum class API : uint8_t
         {
-            NONE = 0,
-            OPEN_GL = 1
+            NONE = 0u,
+            OPEN_GL = 1u
         };
 
-        enum class ClearBits
+        enum class ClearBits : uint8_t
         {
-            COLOR = 1 << 0,
-            DEPTH = 1 << 1,
-            SETNCIL = 1 << 2
+            COLOR = 1 << 0u,
+            DEPTH = 1 << 1u,
+            SETNCIL = 1 << 2u
         };
 
         enum class State
@@ -61,6 +62,8 @@ namespace Ull
         void SetApi(API api);
         void Init();
 
+        ShaderManager& GetShaderManager() { return m_shaderManager; }
+
         void SetViewPort(const glm::uvec2& position, const glm::uvec2& size);
 
         void SetDepth(State state);
@@ -86,6 +89,8 @@ namespace Ull
     private:
         API m_api{ API::NONE };
         bool m_apiLocked{ false };
+
+        ShaderManager m_shaderManager;
     };
 
     inline Renderer::ClearBits operator|(Renderer::ClearBits flagA, Renderer::ClearBits flagB)

@@ -4,7 +4,7 @@
 namespace Ull
 {
     enum class ShaderTag {
-        UI_SHADER_COLOR,
+        UI_BASIC_COLOR,
         UI_GRADIENT_SHADER,
         FRAME_DISPLAY_SHADER,
         MARKER,
@@ -24,9 +24,6 @@ namespace Ull
     public:
         virtual ~Shader() {}
 
-        static Shader* CreateRenderShader(const char* vertexShaderName, const char* fragmentShaderName, const char* geometryShaderName = nullptr);
-        static Shader* CreateComputeShader(const char* computeShaderName);
-
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
 
@@ -41,8 +38,13 @@ namespace Ull
         virtual void SetDouble(std::string uniformName, double value) const = 0;
         virtual void SetBool(std::string uniformName, bool value) const = 0;
 
+        std::string GetShaderName() { return m_shaderName; }
+
     protected:
-        Shader() = default;
+        Shader(const std::string& shaderName);
         ShaderType m_shaderType{ ShaderType::RENDER };
+
+    private:
+        const std::string m_shaderName;
     };
 }

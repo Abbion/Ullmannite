@@ -63,18 +63,18 @@ void MainLayer::Update()
 
 void MainLayer::Render()
 {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
+    //ImGui_ImplOpenGL3_NewFrame();
+    //ImGui_ImplGlfw_NewFrame();
 
-    ImGui::NewFrame();
+    //ImGui::NewFrame();
 
     for (auto& element : m_layout->GetChildren())
     {
         element->Render();
     }
 
-    ImGui::EndFrame();
-    ImGui::Render();
+    //ImGui::EndFrame();
+    //ImGui::Render();
 
     m_layout->Render();
 }
@@ -94,7 +94,7 @@ void MainLayer::CreateLayout()
     UiMenuView* menuView = new UiMenuView("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31));
     m_layout->AddUiElement(menuView);
 
-    UiView3D* renderView = new UiView3D("view3DElement", glm::vec2(261, 30), glm::vec2(initSize.x - 261, initSize.y - 30));
+    UiView3D* renderView = new UiView3D("view3DElement", glm::vec2(261, 31), glm::vec2(initSize.x - 261, initSize.y - 31));
     renderView->SetTransferFunction(menuView->GetTransferFunctionRenderer());
     m_layout->AddUiElement(renderView);
 
@@ -124,8 +124,8 @@ void MainLayer::Resize(const glm::uvec2& size)
 
         else if(currentElementName == "view3DElement")
         {
-            element->SetPositiion(glm::vec2(261, 30));
-            element->SetSize(glm::vec2(size.x - 261, size.y - 30));
+            element->SetPositiion(glm::vec2(261, 31));
+            element->SetSize(glm::vec2(size.x - 261, size.y - 31));
         }
 
         element->CreateResources();

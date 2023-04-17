@@ -18,7 +18,8 @@ using namespace Ull;
 UiGradientEditor::UiGradientEditor(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiElement(name, position, size)
 {
-    m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_GRADIENT_SHADER);
+    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    m_shader = shaderManager.GetShader(ShaderTag::UI_GRADIENT_SHADER);
 }
 
 void UiGradientEditor::CreateResources()
@@ -229,7 +230,8 @@ GradientMarker::GradientMarker(std::string name, glm::uvec2 position, glm::uvec2
     m_color(color),
     m_pointerColor(0.7f, 0.7f, 0.7f, 1.0f)
 {
-    m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_SHADER_COLOR);
+    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
 }
 
 GradientMarker::GradientMarker(GradientMarker&& source) :
@@ -390,7 +392,7 @@ void GradientMarker::Render()
 
     m_shader->Bind();
 
-    m_shader->SetFloat4("ourColor", m_pointerColor);
+    m_shader->SetFloat4("color", m_pointerColor);
     m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
 
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
@@ -398,7 +400,7 @@ void GradientMarker::Render()
     glm::mat4x4 innerColorMatrix = m_modelMatrix;
     innerColorMatrix = glm::scale(innerColorMatrix, glm::vec3(0.85f, 0.85f, 0.85f));
     
-    m_shader->SetFloat4("ourColor", m_color);
+    m_shader->SetFloat4("color", m_color);
     m_shader->SetFloat4x4("modelMatrix", innerColorMatrix);
 
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize() - 2);

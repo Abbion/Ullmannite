@@ -43,7 +43,8 @@ namespace
     }
 }
 
-ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName)
+ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::string& fragmentShaderName, const std::string& geometryShaderName) :
+    Shader{ vertexShaderName }
 {
     m_shaderType = ShaderType::RENDER;
 
@@ -137,7 +138,8 @@ ShaderOpenGL::ShaderOpenGL(const std::string& vertexShaderName, const std::strin
         glDeleteShader(geometry);
 }
 
-ShaderOpenGL::ShaderOpenGL(const std::string& computeShaderName)
+ShaderOpenGL::ShaderOpenGL(const std::string& computeShaderName) :
+    Shader{ computeShaderName }
 {
     m_shaderType = ShaderType::COMPUTE;
 

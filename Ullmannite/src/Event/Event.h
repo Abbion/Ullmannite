@@ -29,6 +29,11 @@ namespace Ull
         MouseUp,
         MouseScroll,
         MouseMove,
+        MouseEnteredWindow,
+        MouseExitedWindow,
+
+        UiScaledUp,
+        UiScaledDown,
 
         FileLoaded,
         CuttingSettingsChanged,
@@ -38,7 +43,7 @@ namespace Ull
     };
 
     //==================================================================
-    class Event : public std::enable_shared_from_this<Event>
+    class Event
     {
     public:
         Event(EventType eventType) : m_type(eventType) {}
@@ -79,6 +84,8 @@ namespace Ull
     typedef Event WindowMinimized;
     typedef Event WindowRestored;
     typedef Event GradientUpdatedEvent;
+    typedef Event MouseEnteredWindowEvent;
+    typedef Event MouseExitedWindowEvent;
 
     typedef ValueEvent<Keyboard::Key> KeyDownEvent;
     typedef ValueEvent<Keyboard::Key> KeyUpEvent;
@@ -88,6 +95,9 @@ namespace Ull
     typedef ValueEvent<Mouse::Button> MouseUpEvent;
     typedef ValueEvent<int> MouseScrollEvent;
     typedef ValueEvent<glm::ivec2> MouseMoveEvent;
+
+    typedef ValueEvent<float> UiScaledUpEvent;
+    typedef ValueEvent<float> UiScaledDownEvent;
 
     typedef ValueEvent<std::string> DataLoadEvent;
     typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;

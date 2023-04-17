@@ -36,7 +36,7 @@ namespace Ull
 
         std::vector<TransferPoint> m_transferPoints;
 
-        Shader* m_transferFunctionGeneratorShader;
+        std::shared_ptr<Shader> m_transferFunctionGeneratorShader;
         Texture1D* m_transferFunctionTexture;
     };
 }

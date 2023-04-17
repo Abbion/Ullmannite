@@ -17,8 +17,12 @@ namespace
 }
 
 UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
-	UiArea(name, position, size, false)
+	UiArea(name, position, size, false),
+	m_closeButton("closeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)),
+	m_minimizeButton("minimizeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y))
 {
+	InitializeButtons();
+
 	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
 }
 
@@ -34,26 +38,15 @@ void UiTitleBar::HandleEvent(Event* event)
 
 	switch (event->GetType())
 	{	
-	case EventType::MouseDown:
-		if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize() - glm::uvec2(3 * buttonWidth, 0)))
-			m_window->EnableDrag(true);
-		else
-			m_window->EnableDrag(false);
-
-		m_areaUpdated = true;
-		break;
-
-	case EventType::MouseUp:
-		m_window->EnableDrag(false);
-		m_areaUpdated = true;
-		break;
-
 	case EventType::WindowRestored:
 		m_areaUpdated = true;
 		break;
 	}
 
 	UiArea::HandleEvent(event);
+
+	for (auto& child : m_children)
+		child->HandleEvent(event);
 }
 
 void UiTitleBar::Update()
@@ -85,6 +78,10 @@ void UiTitleBar::Render()
 	{
 		m_frameBuffer->Bind();
 		RenderBackground();
+
+		for (auto& child : m_children)
+			child->Render();
+
 		m_frameBuffer->Unbind();
 
 		m_areaUpdated = false;
@@ -95,6 +92,7 @@ void UiTitleBar::Render()
 
 void UiTitleBar::RenderUI()
 {
+	/*
 	ImGui::SetNextWindowSize(ImVec2((float)m_size.x, (float)m_size.y));
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
 
@@ -168,4 +166,36 @@ void UiTitleBar::RenderUI()
 	//-----------------------
 
 	ImGui::End();
+	*/
+}
+
+void UiTitleBar::InitializeButtons()
+{
+	const auto buttonWidth = (unsigned)((float)m_size.y * 1.5f);
+
+	m_closeButton.SetParent(this);
+	m_closeButton.SetHoverColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+	m_closeButton.SetPositiion(glm::uvec2(m_size.x - buttonWidth, 0));
+	m_closeButton.SetSize(glm::uvec2(buttonWidth, m_size.y));
+	m_closeButton.Update();
+
+	m_closeButton.SetOnClickFunction([this]() {
+		m_window->Close();
+		});
+
+	AddUiElement(&m_closeButton);
+
+
+	m_minimizeButton.SetParent(this);
+	m_minimizeButton.SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	m_minimizeButton.SetPositiion(glm::uvec2(m_size.x - (buttonWidth * 3.f), 0));
+	m_minimizeButton.SetSize(glm::uvec2(buttonWidth, m_size.y));
+	m_minimizeButton.Update();
+
+	m_minimizeButton.SetOnClickFunction([this]() {
+		m_window->Minimize();
+		});
+
+	AddUiElement(&m_minimizeButton);
 }

@@ -1,57 +1,84 @@
 #include "Ullpch.h"
 #include "ShaderManager.h"
 #include "Logger/Logger.h"
+#include "Renderer.h"
+#include "OpenGL/ShaderOpenGL.h"
 
 using namespace Ull;
 
-ShaderManager ShaderManager::m_shaderManagerInstance;
-
 ShaderManager::ShaderManager()
 {
-	m_shaderMap[ShaderTag::UI_SHADER_COLOR] = nullptr;
 }
 
 ShaderManager::~ShaderManager()
 {
-	for (auto shaderPair : m_shaderMap)
-		delete shaderPair.second;
+	for (auto& shaderPair : m_shaderMap)
+	{
+		UASSERT(shaderPair.second.use_count() == 2l, "This shader is still in use");
+	}
+
 	m_shaderMap.clear();
 }
 
-ShaderManager& ShaderManager::GetInstance()
+std::shared_ptr<Shader> ShaderManager::GetShader(const ShaderTag tag)
 {
-	return m_shaderManagerInstance;
-}
-
-Shader* ShaderManager::GetShader(ShaderTag tag)
-{
+	UASSERT(IsShaderLoaded(tag), "Can't get shader with current tag");
 	return m_shaderMap[tag];
 }
 
-void ShaderManager::LoadShader(ShaderTag tag, std::string vertexShaderName, std::string pixelShaderName, std::string geometryShaderName)
+void ShaderManager::LoadShader(const ShaderTag tag, const std::string vertexShaderName, const std::string pixelShaderName, const std::string geometryShaderName)
 {
-	if (m_shaderMap[tag] != nullptr)
+	if (IsShaderLoaded(tag))
 	{
 		ULOGE("Shader " << vertexShaderName << ", " << pixelShaderName << " already loaded");
 		return;
 	}
 
-	m_shaderMap[tag] = Shader::CreateRenderShader(vertexShaderName.c_str(), pixelShaderName.c_str(), geometryShaderName.empty() ? nullptr : geometryShaderName.c_str());
+	switch (Renderer::GetInstance().GetApi())
+	{
+	case Renderer::API::OPEN_GL:
+		m_shaderMap.insert(std::make_pair<const ShaderTag, std::shared_ptr<Shader>>(
+			std::move(tag),
+			std::move(std::make_shared<ShaderOpenGL>(vertexShaderName, pixelShaderName, geometryShaderName)))
+		);
+		break;
+
+	default:
+		ULOGE("Current API didn't implement compute shader");
+		break;
+	} 
 }
 
-void ShaderManager::LoadShader(ShaderTag tag, std::string computeShaderName)
+void ShaderManager::LoadShader(const ShaderTag tag, const std::string computeShaderName)
 {
-	if (m_shaderMap[tag] != nullptr)
+	if (IsShaderLoaded(tag))
 	{
 		ULOGE("Compute shader " << computeShaderName << " already loaded");
 		return;
 	}
 
-	m_shaderMap[tag] = Shader::CreateComputeShader(computeShaderName.c_str());
+	switch (Renderer::GetInstance().GetApi())
+	{
+	case Renderer::API::OPEN_GL:
+		m_shaderMap.insert(std::make_pair<const ShaderTag, std::shared_ptr<Shader>>(
+			std::move(tag),
+			std::move(std::make_shared<ShaderOpenGL>(computeShaderName)))
+		);
+		break;
+
+	default:
+		ULOGE("Current API didn't implement compute shader");
+		break;
+	}
 }
 
-void ShaderManager::UnloadShader(ShaderTag tag)
+void ShaderManager::UnloadShader(const ShaderTag tag)
 {
-	delete m_shaderMap[tag];
-	m_shaderMap[tag] = nullptr;
+	UASSERT(IsShaderLoaded(tag), "Can't delete shader with current tag");
+	m_shaderMap.erase(tag);
+}
+
+bool ShaderManager::IsShaderLoaded(const ShaderTag tag)
+{
+	return m_shaderMap.find(tag) == m_shaderMap.end() ? false : true;
 }

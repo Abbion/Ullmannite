@@ -9,7 +9,8 @@ using namespace Ull;
 Cube::Cube(const std::string& name, NotOwner<Scene> scene) :
 	Node3D(name, scene)
 {
-	m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::MARKER);
+	auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+	m_shader = shaderManager.GetShader(ShaderTag::MARKER);
 	CreateResources();
 }
 

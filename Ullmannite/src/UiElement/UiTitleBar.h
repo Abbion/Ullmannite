@@ -3,6 +3,7 @@
 #include "Window/UllWindow.h"
 #include <memory>
 #include "Utilities/PointerHelper.h"
+#include "Controls/UiButton.h"
 
 namespace Ull
 {
@@ -25,11 +26,16 @@ namespace Ull
 
 		void RenderUI();
 	private:
+		void InitializeButtons();
+
 		NotOwner<UllWindow> m_window{ nullptr };
 
 		bool m_onDragArea{ false };
 		bool m_closePressed{ false };
 		bool m_minimizePressed{ false };
 		bool m_maximizeRestorPressed{ false };
+
+		UiButton m_closeButton;
+		UiButton m_minimizeButton;
 	};
 }

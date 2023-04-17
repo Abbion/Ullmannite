@@ -11,7 +11,8 @@ UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool uses
     UiElement(name, position, size),
     m_usesDepth(usesDepth)
 {
-    m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::UI_SHADER_COLOR);
+    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
     CreateResources();
 }
 
@@ -81,19 +82,20 @@ void UiArea::HandleEvent(Event* event)
     if (event->IsHandeled())
         return;
 
-    if(event->GetType() == EventType::MouseMove)
+    switch (event->GetType())
     {
-        if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
-        {
-            m_areaUpdated = true;
-            m_inArea = true;
-        }
-        else
-        {
-            if (m_inArea = true)
-                m_areaUpdated = true;
-            m_inArea = false;
-        }
+    case EventType::MouseMove:
+    case EventType::MouseEnteredWindow:
+        CheckMouseInArea();
+    break;
+
+    case EventType::MouseExitedWindow:
+        m_areaUpdated = true;
+        m_inArea = false;
+    break;
+
+    default:
+        break;
     }
 }
 
@@ -118,10 +120,25 @@ void UiArea::RenderBackground()
 
     m_shader->Bind();
 
-    m_shader->SetFloat4("ourColor", m_color);
+    m_shader->SetFloat4("color", m_color);
     m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
 
     m_layout->Bind();
 
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+}
+
+void UiArea::CheckMouseInArea()
+{
+    if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
+    {
+        m_areaUpdated = true;
+        m_inArea = true;
+    }
+    else
+    {
+        if (m_inArea = true)
+            m_areaUpdated = true;
+        m_inArea = false;
+    }
 }

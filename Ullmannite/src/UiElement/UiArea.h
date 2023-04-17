@@ -19,9 +19,10 @@ namespace Ull
         void Update() override {};
         void Render() override;
 
-        void RenderBackground();
-
     protected:
+        void RenderBackground();
+        void CheckMouseInArea();
+
         FrameBuffer* m_frameBuffer{ nullptr };
         bool m_areaUpdated{ false };
         bool m_inArea{ false };

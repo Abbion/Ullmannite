@@ -34,9 +34,9 @@ namespace Ull
 
         glm::ivec3 m_cuttingSettingsInt{ 0, 0, 0 };
 
-        Shader* m_cubeMarchVertexCounter{ nullptr };
-        Shader* m_cubeMarchShader{ nullptr };
-        Shader* m_vertexRendererShader{ nullptr };
+        std::shared_ptr<Shader> m_cubeMarchVertexCounter{ nullptr };
+        std::shared_ptr<Shader> m_cubeMarchShader{ nullptr };
+        std::shared_ptr<Shader> m_vertexRendererShader{ nullptr };
 
         NotOwner<Texture1D> m_transferTexture{ nullptr };
         Texture3D* m_volumeTexture{ nullptr };

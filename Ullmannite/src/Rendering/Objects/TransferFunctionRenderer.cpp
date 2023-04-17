@@ -86,7 +86,8 @@ void TransferFunctionRenderer::GenerateTransferFunction()
 
 void TransferFunctionRenderer::Init()
 {
-    m_transferFunctionGeneratorShader = ShaderManager::GetInstance().GetShader(ShaderTag::TRANSFER_FUNCTION_GENERATOR);
+    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    m_transferFunctionGeneratorShader = shaderManager.GetShader(ShaderTag::TRANSFER_FUNCTION_GENERATOR);
     
     m_transferFunctionTexture = Texture1D::Create();
     m_transferFunctionTexture->SetData(512, InternalDataFormat::RGBA_32F, PixelDataFormat::RGBA, GraphicsDataType::FLOAT, nullptr);

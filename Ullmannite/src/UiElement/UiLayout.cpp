@@ -10,7 +10,8 @@ using namespace Ull;
 UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiElement(name, position, size)
 {
-	m_shader = ShaderManager::GetInstance().GetShader(ShaderTag::FRAME_DISPLAY_SHADER);
+    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+	m_shader = shaderManager.GetShader(ShaderTag::FRAME_DISPLAY_SHADER);
 	CreateResources();
 }
 

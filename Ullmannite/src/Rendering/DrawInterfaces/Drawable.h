@@ -18,6 +18,6 @@ namespace Ull
         VertexBuffer* m_vertexBuffer{ nullptr };
         IndexBuffer* m_indexBuffer{ nullptr };
         VertexLayout* m_layout{ nullptr };
-        Shader* m_shader{ nullptr };
+        std::shared_ptr<Shader> m_shader{ nullptr };
     };
 }

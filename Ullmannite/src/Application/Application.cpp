@@ -46,9 +46,7 @@ Application::~Application()
 void Application::Run()
 {    
     while (m_window.IsOpen())
-    {
-        m_window.CheckCursorInteractions();
-        
+    {        
         if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window.Close();
@@ -84,36 +82,26 @@ void Application::InitApplciation()
     Renderer::GetInstance().Init();
     Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window.GetSize());
 
-    //ImGui
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-
-    const char* glsl_version = "#version 140";
-    ImGui_ImplGlfw_InitForOpenGL(m_window.GetWindowContext(), true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans-Regular-Short.ttf", 13.0f);
-    ImFontConfig config;
-    config.MergeMode = true;
-    config.GlyphMinAdvanceX = 14.0f;
-    static const ImWchar icon_ranges[] = { ICON_START, ICON_END, 0 };
-    io.Fonts->AddFontFromFileTTF("Assets/Fonts/UllIcon.ttf", 22.0f, &config, icon_ranges);
-
     //Load Shaders
-    ShaderManager::GetInstance().LoadShader(ShaderTag::UI_SHADER_COLOR, "UiPosVertex", "UiColorPixel");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::MARKER, "MarkerVS", "MarkerPS");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR, "CubeMarchCS");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::TRANSFER_FUNCTION_GENERATOR, "TransferFunctionGeneratorCS");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER, "CubeMarchVertexCounterCS");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER, "CubeMarchVS", "CubeMarchPS", "CubeMarchGS");
-    ShaderManager::GetInstance().LoadShader(ShaderTag::UI_GRADIENT_SHADER, "UiGradientVS", "UiGradientPS");
+    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+
+    shaderManager.LoadShader(ShaderTag::UI_BASIC_COLOR, "UiBasicVS", "UiBasicColorPS");
+    shaderManager.LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
+    shaderManager.LoadShader(ShaderTag::MARKER, "MarkerVS", "MarkerPS");
+    shaderManager.LoadShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR, "CubeMarchCS");
+    shaderManager.LoadShader(ShaderTag::TRANSFER_FUNCTION_GENERATOR, "TransferFunctionGeneratorCS");
+    shaderManager.LoadShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER, "CubeMarchVertexCounterCS");
+    shaderManager.LoadShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER, "CubeMarchVS", "CubeMarchPS", "CubeMarchGS");
+    shaderManager.LoadShader(ShaderTag::UI_GRADIENT_SHADER, "UiGradientVS", "UiGradientPS");
     
     //Layers
     auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());
     mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));
     m_layerManager.PushLayer(mainLayer);
+
+    //First resizeEvent to inform components of the initial window size
+    const auto windowSize = m_window.GetSize();
+    m_eventQueue.PushEvent(std::make_shared<WindowResizeEvent>(EventType::WindowResize, glm::uvec2(windowSize.x, windowSize.y)));
 }
 
 void Application::HandleEvents()

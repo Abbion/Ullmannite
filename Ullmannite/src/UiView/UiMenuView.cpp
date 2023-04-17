@@ -17,8 +17,8 @@ namespace
 }
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiArea(name, position, size, false),
-    m_gradientEditor("GradientEditor", glm::uvec2(size.x * 0.5f, 80), glm::uvec2(size.x * 0.8f, 50))
+    UiArea(name, position, size, false)
+    //m_gradientEditor("GradientEditor", glm::uvec2(size.x * 0.5f, 80), glm::uvec2(size.x * 0.8f, 50))
 {
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     
@@ -27,10 +27,10 @@ UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     m_transferFunction.AddPoint(TransferPoint{glm::vec3(0.0f, 0.0f, 0.0f), 200});
     m_transferFunction.GenerateTransferFunction();
 
-    m_gradientEditor.SetViewSize(size);
-    m_gradientEditor.SetViewPos(position);
-    m_gradientEditor.SetTransferFunction(&m_transferFunction);
-    m_gradientEditor.CreateResources();
+    //m_gradientEditor.SetViewSize(size);
+    //m_gradientEditor.SetViewPos(position);
+    //m_gradientEditor.SetTransferFunction(&m_transferFunction);
+    //m_gradientEditor.CreateResources();
 
     Init();   
 }
@@ -54,25 +54,25 @@ void UiMenuView::HandleEvent(Event* event)
         }
     case EventType::WindowResize:
     {
-        m_gradientEditor.SetViewSize(m_size);
-        m_gradientEditor.SetViewPos(m_position);
-        m_gradientEditor.CreateResources();
+        //m_gradientEditor.SetViewSize(m_size);
+        //m_gradientEditor.SetViewPos(m_position);
+        //m_gradientEditor.CreateResources();
     }
     break;
 
     break;
     }
 
-    if(m_renderTransferEditor)
-        m_gradientEditor.HandleEvent(event);
+    //if(m_renderTransferEditor)
+      //  m_gradientEditor.HandleEvent(event);
 }
 
 void UiMenuView::Update()
 {
     m_areaUpdated = true;
 
-    if(m_renderTransferEditor)
-        m_gradientEditor.Update();
+    //if(m_renderTransferEditor)
+      //  m_gradientEditor.Update();
 }
 
 void UiMenuView::Render()
@@ -81,8 +81,8 @@ void UiMenuView::Render()
     {
         m_frameBuffer->Bind();
         RenderBackground();
-        if(m_renderTransferEditor)
-            m_gradientEditor.Render();
+        //if(m_renderTransferEditor)
+          //  m_gradientEditor.Render();
         m_frameBuffer->Unbind();
 
         m_areaUpdated = false;
@@ -103,6 +103,7 @@ void UiMenuView::Init()
 
 void UiMenuView::RenderUI()
 {
+    /*
     ImGui::SetNextWindowSize(ImVec2((float)m_size.x, (float)m_size.y));
 	ImGui::SetNextWindowPos(ImVec2((float)m_position.x, (float)m_position.y));
 
@@ -165,10 +166,12 @@ void UiMenuView::RenderUI()
     ImGui::PopStyleVar();
 
     ImGui::End();
+    */
 }
 
 void UiMenuView::RenderLoadTab()
 {
+    /*
     //Load file button
     ImGui::SetCursorPosX(20);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
@@ -246,10 +249,12 @@ void UiMenuView::RenderLoadTab()
         if(m_firstDataLoaded)
             ImGui::TextColored(ImVec4(0.86f, 0.2f, 0.31f, 1.0f), "No file loaded.");
     }
+    */
 }
 
 void UiMenuView::RenderDataSettings()
 {
+    /*
     ImGui::SetCursorPosX(20);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
 
@@ -283,10 +288,12 @@ void UiMenuView::RenderDataSettings()
     {
         EventAggregator::Publish(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, glm::uvec2(m_cubeMarchTresholds.x, m_cubeMarchTresholds.y)));
     }
+    */
 }
 
 void UiMenuView::RenderCutSettings()
 {
+    /*
     auto& style = ImGui::GetStyle();
 
     auto orginalFramePadding = style.FramePadding;
@@ -387,10 +394,12 @@ void UiMenuView::RenderCutSettings()
 
     if(orginalCuttingSettings != m_cuttingSettings)
         EventAggregator::Publish(std::make_shared<CuttingSettingsChangedEvent>(EventType::CuttingSettingsChanged, m_cuttingSettings));
+        */
 }
 
 void UiMenuView::RenderTransferFunctionSettings()
 {
+    /*
     auto& style = ImGui::GetStyle();
     
     auto orginalFramePadding = style.FramePadding;
@@ -422,4 +431,5 @@ void UiMenuView::RenderTransferFunctionSettings()
     ImGui::PopStyleVar();
 
     style.FramePadding = orginalFramePadding;
+    */
 }
