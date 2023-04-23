@@ -10,6 +10,7 @@ namespace Ull
     public:
         enum class Key : uint16_t
         {
+            NONE = 404u,
             SPACE = GLFW_KEY_SPACE,
             ZERO = GLFW_KEY_0,
             ONE = GLFW_KEY_1,
@@ -75,6 +76,12 @@ namespace Ull
             R_ALT = GLFW_KEY_RIGHT_ALT
         };
 
+        struct KeyState 
+        {
+            Key key = Key::NONE;
+            bool state = false;
+        };
+
     public:
         NON_COPYABLE(Keyboard);
 
@@ -92,7 +99,7 @@ namespace Ull
         std::map<Key, bool> m_keyMap;
 
     private:
-        void UpdateKeyMap(const std::map<Key, bool>& updatedKeyMap);
+        void UpdateKeyMap(const KeyState keyState);
         void InitKeyMap();
 
         friend class Application;

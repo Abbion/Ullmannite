@@ -4,15 +4,13 @@
 
 using namespace Ull;
 
-Layer::Layer(const std::string& name, const glm::uvec2& size) : m_name(name)
+Layer::Layer(const std::string& name, const glm::uvec2& size) : 
+    m_name{ name }
 {
-    auto layoutName = m_name + " Layout";
-    m_layout = new UiLayout(layoutName, glm::uvec2(0, 0), size);    
+    m_layout = std::make_shared<UiLayout>(m_name + " Layout", glm::uvec2(0, 0), size);
 }
 
 Layer::~Layer()
 {
-    delete m_layout;
-    
     ULOGD("Layer " << m_name << " terminated");
 }

@@ -26,5 +26,6 @@ namespace Ull
 		void InitApplciation();
 		void HandleEvents();
 		void WindowResizeHandler(const glm::uvec2& size);
+		void WindowRefreshFunction();
 	};
 }

@@ -59,7 +59,7 @@ void UiLayout::Render()
     {
         CreateRenderAreaForUiElements(i);
         m_layout->Bind();
-        static_cast<UiArea*>(m_children[i])->BindTargetTexture();
+        static_cast<UiArea*>(m_children[i].get())->BindTargetTexture();
         Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
     }
 }

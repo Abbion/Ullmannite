@@ -72,6 +72,8 @@ void UiBasicControl::HandleEvent(Event* event)
     break;
 
     case EventType::WindowResize:
+    case EventType::UiScaledDown:
+    case EventType::UiScaledUp:
         UpdatePerspective();
     break;
 
@@ -116,7 +118,6 @@ void UiBasicControl::CheckHover()
         m_hover = false;
     }
 }
-
 
 inline void UiBasicControl::UpdatePerspective()
 {

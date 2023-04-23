@@ -26,10 +26,10 @@ bool Mouse::IsButtonPressed(Button button) const
     return m_buttonMap.at(button);
 }
 
-void Mouse::UpdateButtonMap(const std::map<Button, bool>& updatedButtonMap)
+void Mouse::UpdateButtonMap(const ButtonState buttonState)
 {
-    for (const auto& button : updatedButtonMap)
-        m_buttonMap[button.first] = button.second;
+    if(buttonState.button == Button::NONE)
+        m_buttonMap[buttonState.button] = buttonState.state;
 }
 
 void Mouse::InitButtonMap()

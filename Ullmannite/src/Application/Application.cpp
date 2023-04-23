@@ -36,10 +36,6 @@ Application::Application()
 
 Application::~Application()
 {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
     ULOGD("Application terminated");
 }
 
@@ -75,6 +71,7 @@ void Application::InitApplciation()
 
     m_window.Create("Ullmanite 0.7v", glm::uvec2(1280, 720));
     m_window.SetEventQueueDataPointer(&m_eventQueue);
+    m_window.SetRefreshFunction([this]() { WindowRefreshFunction(); });
 
     //Renderer
     glfwMakeContextCurrent(m_window.GetWindowContext());
@@ -108,8 +105,8 @@ void Application::HandleEvents()
 {
     m_eventQueue.MakeEventUnique(EventType::WindowResize);
 
-    std::map<Keyboard::Key, bool> updatedKeyMap;
-    std::map<Mouse::Button, bool> updatedButtonMap;
+    Keyboard::KeyState keyState{};
+    Mouse::ButtonState buttonState{};
     int scroll = 0;
 
     while (m_eventQueue.HasPenddingEvents())
@@ -133,19 +130,23 @@ void Application::HandleEvents()
             break;
 
         case EventType::KeyDown:
-            updatedKeyMap[static_cast<KeyDownEvent*>(currentEvent.get())->GetVal()] = true;
+            keyState.key = static_cast<KeyDownEvent*>(currentEvent.get())->GetVal();
+            keyState.state = true;
             break;
 
         case EventType::KeyUp:
-            updatedKeyMap[static_cast<KeyUpEvent*>(currentEvent.get())->GetVal()] = false;
+            keyState.key = static_cast<KeyUpEvent*>(currentEvent.get())->GetVal();
+            keyState.state = false;
             break;
 
         case EventType::MouseDown:
-            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = true;
+            buttonState.button = static_cast<MouseDownEvent*>(currentEvent.get())->GetVal();
+            buttonState.state = true;
             break;
 
         case EventType::MouseUp:
-            updatedButtonMap[static_cast<MouseDownEvent*>(currentEvent.get())->GetVal()] = false;
+            buttonState.button = static_cast<MouseDownEvent*>(currentEvent.get())->GetVal();
+            buttonState.state = false;
             break;
 
         case EventType::MouseMove:
@@ -164,15 +165,24 @@ void Application::HandleEvents()
          m_layerManager.HandleEvent(currentEvent.get());
     }
 
-    Keyboard::GetInstance().UpdateKeyMap(updatedKeyMap);
-    Mouse::GetInstance().UpdateButtonMap(updatedButtonMap);
+    Keyboard::GetInstance().UpdateKeyMap(keyState);
+    Mouse::GetInstance().UpdateButtonMap(buttonState);
     Mouse::GetInstance().UpdateScroll(scroll);
-
-    updatedKeyMap.clear();
-    updatedButtonMap.clear();
 }
 
 void Application::WindowResizeHandler(const glm::uvec2& size)
 {
     Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), size);
+}
+
+void Application::WindowRefreshFunction()
+{
+    HandleEvents();
+
+    m_layerManager.GetTopLayer()->Update();
+    if (!m_window.IsMinimized())
+    {
+        m_layerManager.GetTopLayer()->Render();
+        m_window.SwapBuffers();
+    }
 }

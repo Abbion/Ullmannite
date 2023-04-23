@@ -21,6 +21,8 @@ namespace Ull
         void SetSize(glm::ivec2 size);
         void SetPosition(glm::ivec2 position);
         void SetEventQueueDataPointer(EventQueue* eventQueue);
+        void SetRefreshFunction(std::function<void()> refreshFunction);
+        void SetDragArea(const glm::uvec2 position, const glm::uvec2 size);
 
         void HandleEvent(Event* event) override;
 
@@ -44,12 +46,20 @@ namespace Ull
         void PullEvents();
 
     private:
+        struct WindowPointerDataStruct {
+            EventQueue* eventQueue;
+            std::function<void()> refreshFunction;
+        };
+
+        WindowPointerDataStruct m_windowPointerDataStruct;
+
+    private:
         std::string m_title;
         bool m_isOpen{ true };
         bool m_isMinimized{ false };
         bool m_isMaximized{ false };
         bool m_cursorLocked{ false };
-        float m_uiScale{ 1.0f };
+        int m_scaleCounter{ 0 };
 
         GLFWwindow* m_window{ nullptr };
 

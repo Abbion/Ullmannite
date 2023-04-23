@@ -59,7 +59,7 @@ void Ull::LogLayerTree(const Ull::Layer& layer)
    ULOGD(ss.str().c_str());
 }
 
-void Ull::LogElements(std::stringstream& ss, const std::vector<Ull::UiElement*> elements, unsigned int tabs)
+void Ull::LogElements(std::stringstream& ss, const std::vector<std::shared_ptr<Ull::UiElement>> elements, unsigned int tabs)
 {
     std::string depthStr;
     depthStr.resize(tabs);

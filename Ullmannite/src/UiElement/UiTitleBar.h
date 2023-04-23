@@ -4,6 +4,7 @@
 #include <memory>
 #include "Utilities/PointerHelper.h"
 #include "Controls/UiButton.h"
+#include "Controls/UiToggle.h"
 
 namespace Ull
 {
@@ -26,7 +27,8 @@ namespace Ull
 
 		void RenderUI();
 	private:
-		void InitializeButtons();
+		void CreateControls();
+		void ResizeControls();
 
 		NotOwner<UllWindow> m_window{ nullptr };
 
@@ -35,7 +37,8 @@ namespace Ull
 		bool m_minimizePressed{ false };
 		bool m_maximizeRestorPressed{ false };
 
-		UiButton m_closeButton;
-		UiButton m_minimizeButton;
+		std::shared_ptr<UiButton> m_closeButton;
+		std::shared_ptr<UiButton> m_minimizeButton;
+		std::shared_ptr<UiToggle> m_restoreButton;
 	};
 }

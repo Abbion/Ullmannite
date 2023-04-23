@@ -10,14 +10,14 @@ namespace Ull
         ~UiButton() {}
 
 
-        void SetOnClickFunction(std::function<void()> onClick)      { m_onClick = onClick; }
+        void SetOnClickFunction(std::function<void(UiButton& buttonElement)> onClick)      { m_onClick = onClick; }
 
         void HandleEvent(Event* event);
         void Update() override;
         void Render();
 
     private:
-
-        std::function<void()> m_onClick;
+        bool m_pressed{ false };
+        std::function<void(UiButton& buttonElement)> m_onClick;
     };
 }

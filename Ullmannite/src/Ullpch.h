@@ -19,15 +19,3 @@
 
 #define NON_COPYABLE(className) className(const className&) = delete; \
 								className& operator=(className&) = delete; \
-
-
-constexpr inline float powFloatHelper(const float val, unsigned rank) noexcept 
-{
-	float result = 1.0f;
-
-	for (int i = 0; i < rank; ++i)
-		result *= val;
-
-	return result;
-}
-

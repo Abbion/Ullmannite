@@ -15,11 +15,11 @@ namespace Ull
 
         virtual void CreateResources() = 0;
 
-        void AddUiElement(UiElement* newElement);
-        NotOwner<UiElement> GetParent() const                   { return m_parent; }
-        const std::vector<UiElement*>& GetChildren() const      { return m_children; }
+        void AddUiElement(std::shared_ptr<UiElement> newElement);
+        NotOwner<UiElement> GetParent() const                                      { return m_parent; }
+        const std::vector<std::shared_ptr<UiElement>>& GetChildren() const         { return m_children; }
         
-        void SetParent(NotOwner<UiElement> parent)      { m_parent = parent; }        
+        void SetParent(NotOwner<UiElement> parent)      { m_parent = parent; }
         void SetPositiion(const glm::uvec2& position)   { m_position = position; }
         void SetSize(const glm::uvec2& size)            { m_size = size; }
         void SetScale(const float& scale)               { m_scale = scale; }
@@ -41,7 +41,7 @@ namespace Ull
         std::string m_name;
 
         NotOwner<UiElement> m_parent{ nullptr };
-        std::vector<UiElement*> m_children;
+        std::vector<std::shared_ptr<UiElement>> m_children;
 
         using Drawable::Drawable;
         glm::mat4x4 m_modelMatrix;

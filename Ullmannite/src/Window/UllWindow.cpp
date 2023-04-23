@@ -30,8 +30,7 @@ namespace
     constexpr double DoubleClickDurationWindow = 0.4;
     constexpr float ScaleUpFactor = 1.25f;
     constexpr float ScaleDownFactor = 1.f / ScaleUpFactor;
-    constexpr float MaxScale = PowFloatHelper(ScaleUpFactor, 6);
-    constexpr float MinScale = PowFloatHelper(ScaleDownFactor, 6);
+    constexpr int MaxScaleCounter = 3;
 }
 
 UllWindow::UllWindow()
@@ -76,8 +75,6 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
         glfwSetWindowPos(m_window, 50, 50);
     }
 
-    glfwSetWindowBorderlessGrabArea(m_window, 200, 0, 100, 30);
-
     glfwSetWindowSizeLimits(m_window, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     InitCallBacks();
@@ -117,7 +114,19 @@ void UllWindow::SetPosition(glm::ivec2 position)
 
 void UllWindow::SetEventQueueDataPointer(EventQueue* eventQueue)
 {
-    glfwSetWindowUserPointer(m_window, reinterpret_cast<void*>(eventQueue));
+    m_windowPointerDataStruct.eventQueue = eventQueue;
+    glfwSetWindowUserPointer(m_window, reinterpret_cast<void*>(&m_windowPointerDataStruct));
+}
+
+void UllWindow::SetRefreshFunction(std::function<void()> refreshFunction)
+{
+    m_windowPointerDataStruct.refreshFunction = refreshFunction;
+    glfwSetWindowUserPointer(m_window, reinterpret_cast<void*>(&m_windowPointerDataStruct));
+}
+
+void UllWindow::SetDragArea(const glm::uvec2 position, const glm::uvec2 size)
+{
+    glfwSetWindowBorderlessGrabArea(m_window, position.x, position.y, size.x, size.y);
 }
 
 void UllWindow::HandleEvent(Event* event)
@@ -125,13 +134,32 @@ void UllWindow::HandleEvent(Event* event)
     if(event->IsHandeled())
         return;
     
-    if(event->GetType() == EventType::KeyDown)
+    switch (event->GetType())
     {
-        if(static_cast<KeyDownEvent*>(event)->GetVal() == Keyboard::Key::F)
+    case EventType::KeyDown:
+        if (static_cast<KeyDownEvent*>(event)->GetVal() == Keyboard::Key::F)
         {
-            if(Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
+            if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
                 SwitchHiddenCursor();
         }
+    break;
+
+    case EventType::UiScaledUp:
+        if (m_scaleCounter < MaxScaleCounter)
+            m_scaleCounter++;
+        else
+            event->MarkHandeled(true);
+    break;
+
+    case EventType::UiScaledDown:
+        if (m_scaleCounter > -MaxScaleCounter)
+            m_scaleCounter--;
+        else
+            event->MarkHandeled(true);
+    break;
+
+    default:
+        break;
     }
 }
 
@@ -206,17 +234,17 @@ void UllWindow::PullEvents()
 void UllWindow::InitCallBacks()
 {
     glfwSetWindowPosCallback(m_window, [](GLFWwindow* window, int positionX, int positionY){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
-        eventQueue->PushEvent(std::make_shared<WindowMoveEvent>(EventType::WindowMaximized, glm::uvec2(positionX, positionY)));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
+        eventQueue->PushEvent(std::make_shared<WindowMoveEvent>(EventType::WindowMove, glm::uvec2(positionX, positionY)));
     });
    
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
         eventQueue->PushEvent(std::make_shared<WindowResizeEvent>(EventType::WindowResize, glm::uvec2(width, height)));
     });
     
     glfwSetWindowFocusCallback(m_window, [](GLFWwindow* window, int focused){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
         
         if(focused)
             eventQueue->PushEvent(std::make_shared<WindowGainedFocusEvent>(EventType::WindowGainedFocus));
@@ -225,7 +253,7 @@ void UllWindow::InitCallBacks()
     });
 
     glfwSetWindowIconifyCallback(m_window, [](GLFWwindow* window, int iconified){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
 
         if(iconified)
             eventQueue->PushEvent(std::make_shared<WindowMinimizedEvent>(EventType::WindowMinimized));
@@ -234,7 +262,7 @@ void UllWindow::InitCallBacks()
     });
 
     glfwSetWindowMaximizeCallback(m_window, [](GLFWwindow* window, int maximized){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
 
         if(maximized)
             eventQueue->PushEvent(std::make_shared<WindowMaximizedEvent>(EventType::WindowMaximized));
@@ -243,22 +271,22 @@ void UllWindow::InitCallBacks()
     });
 
     glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
         eventQueue->PushEvent(std::make_shared<WindowClosedEvent>(EventType::WindowClosed));
     });
 
     glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
 
         if (mods & GLFW_MOD_CONTROL && action == GLFW_PRESS)
         {
             if (key == GLFW_KEY_KP_ADD || key == GLFW_KEY_EQUAL)
             {
-                eventQueue->PushEvent(std::make_shared<UiScaledUpEvent>(EventType::UiScaledUp, scaleUpFactor));
+                eventQueue->PushEvent(std::make_shared<UiScaledUpEvent>(EventType::UiScaledUp, ScaleUpFactor));
             }
             else if (key == GLFW_KEY_KP_SUBTRACT || key == GLFW_KEY_MINUS)
             {
-                eventQueue->PushEvent(std::make_shared<UiScaledDownEvent>(EventType::UiScaledDown, scaleDownFactor));
+                eventQueue->PushEvent(std::make_shared<UiScaledDownEvent>(EventType::UiScaledDown, ScaleDownFactor));
             }
         }
         else
@@ -271,7 +299,7 @@ void UllWindow::InitCallBacks()
     });
 
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
 
         static auto lastTimePoint = std::chrono::high_resolution_clock::now();
 
@@ -298,17 +326,17 @@ void UllWindow::InitCallBacks()
     });
 
     glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos){
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
         eventQueue->PushEvent(std::make_shared<MouseMoveEvent>(EventType::MouseMove, glm::ivec2(xpos, ypos)));
     });
 
     glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset) {
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
         eventQueue->PushEvent(std::make_shared<MouseScrollEvent>(EventType::MouseScroll, static_cast<int>(yoffset)));
     });
 
     glfwSetCursorEnterCallback(m_window, [](GLFWwindow* window, int entered) {
-        auto eventQueue = reinterpret_cast<EventQueue*>(glfwGetWindowUserPointer(window));
+        auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
 
         if (entered)
         {
@@ -318,6 +346,10 @@ void UllWindow::InitCallBacks()
         {
             eventQueue->PushEvent(std::make_shared<MouseExitedWindowEvent>(EventType::MouseExitedWindow));
         }
+    });
+
+    glfwSetWindowRefreshCallback(m_window, [](GLFWwindow* window) {
+        reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->refreshFunction();
     });
 
     glfwSetErrorCallback([](int code, const char* description) {

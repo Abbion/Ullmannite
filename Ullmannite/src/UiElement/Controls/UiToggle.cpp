@@ -1,18 +1,16 @@
 #include "Ullpch.h"
-#include "UiButton.h"
-#include "Rendering/Api/Renderer.h"
-#include "Utilities/CollisionCheckers.h"
-#include "glm/gtc/matrix_transform.hpp"
+#include "UiToggle.h"
 
 using namespace Ull;
 
-UiButton::UiButton(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiBasicControl(name, position, size)
+UiToggle::UiToggle(std::string name, glm::uvec2 position, glm::uvec2 size) :
+	UiBasicControl(name, position, size)
 {
 
 }
 
-void UiButton::HandleEvent(Event* event)
+
+void UiToggle::HandleEvent(Event* event)
 {
     if (event->IsHandeled())
         return;
@@ -23,28 +21,31 @@ void UiButton::HandleEvent(Event* event)
         CheckHover();
         if (m_hover)
             m_pressed = true;
-    break;
+        break;
 
     case EventType::MouseUp:
         CheckHover();
         if (m_pressed && m_hover)
-            m_onClick(*this);
+        {
+            m_state = !m_state;
+            m_state == true ? m_onEnabled(*this) : m_onDisabled(*this);
+        }
         m_pressed = false;
-    break;
+        break;
 
     default:
-    break;
+        break;
     }
 
     UiBasicControl::HandleEvent(event);
 }
 
-void UiButton::Update()
+void UiToggle::Update()
 {
     UiBasicControl::Update();
 }
 
-void UiButton::Render()
+void UiToggle::Render()
 {
     UiBasicControl::Render();
 }

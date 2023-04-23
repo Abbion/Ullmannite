@@ -25,10 +25,10 @@ bool Keyboard::IsKeyPressed(Key key) const
     return m_keyMap.at(key);
 }
 
-void Keyboard::UpdateKeyMap(const std::map<Key, bool>& updatedKeyMap)
+void Keyboard::UpdateKeyMap(const KeyState keyState)
 {
-    for (const auto& key : updatedKeyMap)
-        m_keyMap[key.first] = key.second;
+    if(keyState.key != Key::NONE)
+        m_keyMap[keyState.key] = keyState.state;
 }
 
 void Keyboard::InitKeyMap()

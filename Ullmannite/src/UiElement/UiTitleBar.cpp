@@ -18,10 +18,11 @@ namespace
 
 UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiArea(name, position, size, false),
-	m_closeButton("closeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)),
-	m_minimizeButton("minimizeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y))
+	m_closeButton{ std::make_shared<UiButton>("closeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
+	m_minimizeButton{ std::make_shared<UiButton>("minimizeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
+	m_restoreButton{ std::make_shared<UiToggle>("restoreButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) }
 {
-	InitializeButtons();
+	CreateControls();
 
 	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
 }
@@ -29,6 +30,11 @@ UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 void UiTitleBar::CreateResources()
 {
 	UiArea::CreateResources();	//TODO: What does it do
+
+	const auto buttonWidth = ((float)m_size.y * 1.5f);
+	m_window->SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(m_size.x - (3.0f * buttonWidth), m_size.y));
+
+	ResizeControls();
 }
 
 void UiTitleBar::HandleEvent(Event* event)
@@ -40,7 +46,15 @@ void UiTitleBar::HandleEvent(Event* event)
 	{	
 	case EventType::WindowRestored:
 		m_areaUpdated = true;
-		break;
+		if (m_restoreButton->IsEnabled())
+			m_restoreButton->SetEnabled(false);
+	break;
+
+	case EventType::WindowMaximized:
+		if (!m_restoreButton->IsEnabled())
+			m_restoreButton->SetEnabled(true);
+	break;
+
 	}
 
 	UiArea::HandleEvent(event);
@@ -169,33 +183,53 @@ void UiTitleBar::RenderUI()
 	*/
 }
 
-void UiTitleBar::InitializeButtons()
+void UiTitleBar::CreateControls()
+{
+	m_closeButton->SetParent(this);
+	m_closeButton->SetHoverColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+	m_closeButton->SetOnClickFunction([this](UiButton& buttonElement) {
+		m_window->Close();
+	});
+
+	AddUiElement(m_closeButton);
+
+
+	m_minimizeButton->SetParent(this);
+	m_minimizeButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+	m_minimizeButton->SetOnClickFunction([this](UiButton& buttonElement) {
+		m_window->Minimize();
+	});
+
+	AddUiElement(m_minimizeButton);
+
+	m_restoreButton->SetParent(this);
+	m_restoreButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
+
+	m_restoreButton->SetOnEnabledFunction([this](UiToggle& buttonElement) {
+		m_window->Maximize();
+	});
+	m_restoreButton->SetOnDisambledFunction([this](UiToggle& buttonElement) {
+		m_window->Restore();
+	});
+
+	AddUiElement(m_restoreButton);
+}
+
+void UiTitleBar::ResizeControls()
 {
 	const auto buttonWidth = (unsigned)((float)m_size.y * 1.5f);
 
-	m_closeButton.SetParent(this);
-	m_closeButton.SetHoverColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	m_closeButton->SetPositiion(glm::uvec2(m_size.x - buttonWidth, 0));
+	m_closeButton->SetSize(glm::uvec2(buttonWidth, m_size.y));
+	m_closeButton->Update();
 
-	m_closeButton.SetPositiion(glm::uvec2(m_size.x - buttonWidth, 0));
-	m_closeButton.SetSize(glm::uvec2(buttonWidth, m_size.y));
-	m_closeButton.Update();
+	m_restoreButton->SetPositiion(glm::uvec2(m_size.x - (buttonWidth * 2.f), 0));
+	m_restoreButton->SetSize(glm::uvec2(buttonWidth, m_size.y));
+	m_restoreButton->Update();
 
-	m_closeButton.SetOnClickFunction([this]() {
-		m_window->Close();
-		});
-
-	AddUiElement(&m_closeButton);
-
-
-	m_minimizeButton.SetParent(this);
-	m_minimizeButton.SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	m_minimizeButton.SetPositiion(glm::uvec2(m_size.x - (buttonWidth * 3.f), 0));
-	m_minimizeButton.SetSize(glm::uvec2(buttonWidth, m_size.y));
-	m_minimizeButton.Update();
-
-	m_minimizeButton.SetOnClickFunction([this]() {
-		m_window->Minimize();
-		});
-
-	AddUiElement(&m_minimizeButton);
+	m_minimizeButton->SetPositiion(glm::uvec2(m_size.x - (buttonWidth * 3.f), 0));
+	m_minimizeButton->SetSize(glm::uvec2(buttonWidth, m_size.y));
+	m_minimizeButton->Update();
 }

@@ -20,7 +20,7 @@ namespace Ull
 	void ClearLogs();
 
 	void LogLayerTree(const Layer& layer);
-	void LogElements(std::stringstream& ss, const std::vector<Ull::UiElement*> elements, unsigned int tabs = 0);
+	void LogElements(std::stringstream& ss, const std::vector<std::shared_ptr<Ull::UiElement>> elements, unsigned int tabs = 0);
 }
 
 #define ULOGF(message) PLOGF << message

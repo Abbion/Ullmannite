@@ -82,6 +82,11 @@ void Renderer::Init()
     }
 }
 
+void Renderer::Terminate()
+{
+    m_shaderManager.UnloadAllShaders();
+}
+
 void Renderer::SetViewPort(const glm::uvec2& position, const glm::uvec2& size)
 {
     if(m_api == API::OPEN_GL)

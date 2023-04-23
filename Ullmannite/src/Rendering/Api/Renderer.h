@@ -61,6 +61,7 @@ namespace Ull
         inline API GetApi() { return m_api; }
         void SetApi(API api);
         void Init();
+        void Terminate();
 
         ShaderManager& GetShaderManager() { return m_shaderManager; }
 

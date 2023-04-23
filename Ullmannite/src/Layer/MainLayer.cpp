@@ -5,9 +5,6 @@
 #include "Rendering/Api/ShaderManager.h"
 #include "Rendering/Api/Renderer.h"
 #include "UiElement/UiArea.h"
-#include "UiElement/UiTitleBar.h"
-#include "UiView/UiMenuView.h"
-#include "UiView/UiView3D.h"
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -22,20 +19,8 @@ MainLayer::MainLayer(glm::uvec2 size) : Layer("main", size)
 
 void MainLayer::SetWindow(const NotOwner<UllWindow>& window)
 {
-    auto titleElement = std::find_if(m_layout->GetChildren().begin(), m_layout->GetChildren().end(), [](const auto& element) { return element->GetName() == "titleBarElement"; });
-    if (m_layout->GetChildren().end() != titleElement)
-    {
-        auto titleBar = static_cast<UiTitleBar*>(*titleElement);
-        titleBar->SetWindow(window);
-    }
-
-    auto view3DElement = std::find_if(m_layout->GetChildren().begin(), m_layout->GetChildren().end(), [](const auto& element) { return element->GetName() == "view3DElement"; });
-    
-    if (m_layout->GetChildren().end() != view3DElement)
-    {
-        auto view3D = static_cast<UiView3D*>(*view3DElement);
-        view3D->SetWindow(window);
-    }
+    m_titleBar->SetWindow(window);
+    m_3DView->SetWindow(window);
 }
 
 void MainLayer::HandleEvent(Event* event)
@@ -46,7 +31,18 @@ void MainLayer::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::WindowResize:
-        Resize(static_cast<WindowResizeEvent*>(event)->GetVal());
+        m_layout->SetSize(static_cast<WindowResizeEvent*>(event)->GetVal());
+        Resize(m_layout->GetSize());
+    break;
+
+    case EventType::UiScaledUp:
+        m_layout->SetScale(m_layout->GetScale() * static_cast<UiScaledUpEvent*>(event)->GetVal());
+        Resize(m_layout->GetSize());
+    break;
+
+    case EventType::UiScaledDown:
+        m_layout->SetScale(m_layout->GetScale() * static_cast<UiScaledDownEvent*>(event)->GetVal());
+        Resize(m_layout->GetSize());
     break;
     }
 
@@ -84,50 +80,37 @@ void MainLayer::CreateLayout()
     //Assuming we are working with a 1280 x 720 pixel window
     //Then we can scale content up and down
 
-    auto initSize = m_layout->GetSize();
-
-    m_viewMatrix = glm::ortho(0.0f, (float)initSize.x, (float)initSize.y, 0.0f, -1.0f, 1.0f);
-
-    UiTitleBar* titleBarView = new UiTitleBar("titleBarElement", glm::vec2(0, 0), glm::vec2(initSize.x, 30));
-    m_layout->AddUiElement(titleBarView);
-
-    UiMenuView* menuView = new UiMenuView("menuElement", glm::vec2(0, 31), glm::vec2(260, initSize.y - 31));
-    m_layout->AddUiElement(menuView);
-
-    UiView3D* renderView = new UiView3D("view3DElement", glm::vec2(261, 31), glm::vec2(initSize.x - 261, initSize.y - 31));
-    renderView->SetTransferFunction(menuView->GetTransferFunctionRenderer());
-    m_layout->AddUiElement(renderView);
-
+    const auto initSize = m_layout->GetSize();
+    const auto initScale = m_layout->GetScale();
     m_layout->CreateResources();
+
+    m_titleBar = std::make_shared<UiTitleBar>("titleBarElement", glm::vec2(0.f, 0.f), glm::vec2(initSize.x, 30.f * initScale));
+    m_titleBar->SetParent(m_layout.get());
+    m_layout->AddUiElement(m_titleBar);
+
+    m_menuView = std::make_shared<UiMenuView>("menuElement", glm::vec2(0.f, (30.f * initScale) + 1), glm::vec2(260.f, initSize.y - (30.f * initScale) - 1.f));
+    m_menuView->SetParent(m_layout.get());
+    m_layout->AddUiElement(m_menuView);
+
+    m_3DView = std::make_shared<UiView3D>("view3DElement", glm::vec2((260.f + initScale) + 1.f, (30.f * initScale) + 1.f), glm::vec2(initSize.x - (260.f * initScale) - 1.f, initSize.y - (30.f * initScale) - 1.f));
+    m_3DView->SetParent(m_layout.get());
+    m_3DView->SetTransferFunction(m_menuView->GetTransferFunctionRenderer());
+    m_layout->AddUiElement(m_3DView);
 }
 
 void MainLayer::Resize(const glm::uvec2& size)
 {
-    m_viewMatrix = glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f, -1.0f, 1.0f);
-
-    m_layout->SetSize(size);
     m_layout->CreateResources();
+    const auto scale = m_layout->GetScale();
     
-    for(auto& element : m_layout->GetChildren())
-    {
-        auto currentElementName = element->GetName(); 
+    m_titleBar->SetSize(glm::vec2(size.x, 30.f * scale));
+    m_titleBar->CreateResources();
 
-        if(currentElementName == "titleBarElement")
-        {
-            element->SetSize(glm::vec2(size.x, 30));
-        }
+    m_menuView->SetPositiion(glm::vec2(0.f, (30.f * scale) + 1.f));
+    m_menuView->SetSize(glm::vec2(260.f * scale, size.y - (30.f * scale) - 1.f));
+    m_menuView->CreateResources();
 
-        else if(currentElementName == "menuElement")
-        {
-            element->SetSize(glm::vec2(260, size.y - 31));
-        }
-
-        else if(currentElementName == "view3DElement")
-        {
-            element->SetPositiion(glm::vec2(261, 31));
-            element->SetSize(glm::vec2(size.x - 261, size.y - 31));
-        }
-
-        element->CreateResources();
-    }
+    m_3DView->SetPositiion(glm::vec2((260.f * scale) + 1.0f, (30.f * scale) + 1.f));
+    m_3DView->SetSize(glm::vec2(size.x - (260.f * scale) - 1.0f, size.y - (30.f * scale) - 1.f));
+    m_3DView->CreateResources();
 }

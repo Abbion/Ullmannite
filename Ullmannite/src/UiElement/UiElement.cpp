@@ -23,9 +23,6 @@ Ull::UiElement::UiElement(UiElement&& source) :
 
 UiElement::~UiElement()
 {
-    for(auto& child : m_children)
-        delete child;
-
     ULOGD("UiElement: " << m_name << " terminated!");
 }
 
@@ -38,7 +35,7 @@ void UiElement::HandleEvent(Event* event)
         child->HandleEvent(event);
 }
 
-void UiElement::AddUiElement(UiElement* newElement)
+void UiElement::AddUiElement(std::shared_ptr<UiElement> newElement)
 {
     m_children.push_back(newElement);
 }

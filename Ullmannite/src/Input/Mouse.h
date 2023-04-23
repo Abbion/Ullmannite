@@ -11,9 +11,16 @@ namespace Ull
     public:
         enum class Button : uint16_t
         {
+            NONE = 404u,
             LEFT = GLFW_MOUSE_BUTTON_LEFT,
             RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
             MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE
+        };
+
+        struct ButtonState 
+        {
+            Button button = Button::NONE;
+            bool state = false;
         };
 
     public:
@@ -42,7 +49,7 @@ namespace Ull
     private:
         void UpdatePosition(const glm::ivec2& position); 
         void UpdateScroll(int scroll) { m_scroll = scroll; }
-        void UpdateButtonMap(const std::map<Button, bool>& updatedButtonMap);
+        void UpdateButtonMap(const ButtonState buttonState);
         void InitButtonMap();
 
         friend class Application;

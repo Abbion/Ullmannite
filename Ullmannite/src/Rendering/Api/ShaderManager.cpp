@@ -78,6 +78,11 @@ void ShaderManager::UnloadShader(const ShaderTag tag)
 	m_shaderMap.erase(tag);
 }
 
+void ShaderManager::UnloadAllShaders()
+{
+	m_shaderMap.clear();
+}
+
 bool ShaderManager::IsShaderLoaded(const ShaderTag tag)
 {
 	return m_shaderMap.find(tag) == m_shaderMap.end() ? false : true;
