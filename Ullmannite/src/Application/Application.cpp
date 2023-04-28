@@ -16,7 +16,12 @@
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
 
+#include "Resources/ResourceManager.h"
+
 #include "Rendering/IconsCode/IconCodes.h"
+
+#include <ft2build.h>
+#include FT_FREETYPE_H  
 
 using namespace Ull;
 
@@ -91,6 +96,12 @@ void Application::InitApplciation()
     shaderManager.LoadShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER, "CubeMarchVS", "CubeMarchPS", "CubeMarchGS");
     shaderManager.LoadShader(ShaderTag::UI_GRADIENT_SHADER, "UiGradientVS", "UiGradientPS");
     
+    //Resources
+    auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
+    fontManager.InitLoader();
+    fontManager.LoadFont("arial.ttf", FontTag::UI_FONT);
+    fontManager.ReleaseLoader();
+
     //Layers
     auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());
     mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));

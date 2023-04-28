@@ -64,6 +64,7 @@ namespace Ull
         void Terminate();
 
         ShaderManager& GetShaderManager() { return m_shaderManager; }
+        const ShaderManager& GetShaderManager() const { return m_shaderManager; }
 
         void SetViewPort(const glm::uvec2& position, const glm::uvec2& size);
 

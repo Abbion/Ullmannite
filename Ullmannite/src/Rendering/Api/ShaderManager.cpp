@@ -12,12 +12,7 @@ ShaderManager::ShaderManager()
 
 ShaderManager::~ShaderManager()
 {
-	for (auto& shaderPair : m_shaderMap)
-	{
-		UASSERT(shaderPair.second.use_count() == 2l, "This shader is still in use");
-	}
-
-	m_shaderMap.clear();
+	UASSERT(m_shaderMap.empty(), "Forgot to unload shaders");
 }
 
 std::shared_ptr<Shader> ShaderManager::GetShader(const ShaderTag tag)
@@ -75,11 +70,16 @@ void ShaderManager::LoadShader(const ShaderTag tag, const std::string computeSha
 void ShaderManager::UnloadShader(const ShaderTag tag)
 {
 	UASSERT(IsShaderLoaded(tag), "Can't delete shader with current tag");
+	UASSERT(m_shaderMap[tag].use_count() == 1l, m_shaderMap[tag]->GetShaderName() << " shader is still in use");
+
 	m_shaderMap.erase(tag);
 }
 
 void ShaderManager::UnloadAllShaders()
 {
+	for (auto& shaderPair : m_shaderMap)
+		UASSERT(shaderPair.second.use_count() == 1l, shaderPair.second->GetShaderName() << " shader is still in use");
+
 	m_shaderMap.clear();
 }
 

@@ -23,6 +23,12 @@ Ull::UiElement::UiElement(UiElement&& source) :
 
 UiElement::~UiElement()
 {
+    for (auto& child : m_children)
+    {
+        if (child.use_count() > 1)
+            ULOGW("Element " << m_name << " was deleted but " << child->GetName() << " element is still in use");
+    }
+
     ULOGD("UiElement: " << m_name << " terminated!");
 }
 

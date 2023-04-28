@@ -201,6 +201,91 @@ project "IMGUI"
 		runtime "Release"
 		optimize "on"
 
+
+--====================================================================
+project "FreeType"
+    kind "StaticLib"
+    language "C"
+    
+    targetdir("bin/" .. outputdir .. "/%{prj.name}")
+    objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
+
+    defines
+    {
+        "FT2_BUILD_LIBRARY",
+        "_CRT_SECURE_NO_WARNINGS",
+        "_CRT_NONSTDC_NO_WARNINGS",
+        "DLL_EXPORT",
+    }
+
+    includedirs
+    {
+        "Ullmannite/ThirdPartyLibs/freeType/include",
+    }
+
+    files
+    {
+        "Ullmannite/ThirdPartyLibs/freeType/src/autofit/autofit.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbase.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbbox.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbdf.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbitmap.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftcid.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftfstype.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftgasp.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftglyph.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftgxval.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftinit.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftmm.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftotval.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftpatent.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftpfr.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftstroke.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftsynth.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/fttype1.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftwinfnt.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/bdf/bdf.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/bzip2/ftbzip2.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/cache/ftcache.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/cff/cff.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/cid/type1cid.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/gzip/ftgzip.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/lzw/ftlzw.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/pcf/pcf.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/pfr/pfr.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/psaux/psaux.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/pshinter/pshinter.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/psnames/psnames.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/raster/raster.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/sdf/sdf.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/sfnt/sfnt.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/smooth/smooth.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/svg/svg.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/truetype/truetype.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/type1/type1.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/type42/type42.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/winfonts/winfnt.c",
+        "Ullmannite/ThirdPartyLibs/freeType/src/winfonts/winfnt.c",
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+        staticruntime "On"
+        defines { "_CRT_SECURE_NO_WARNINGS" }
+        files
+        {
+            "Ullmannite/ThirdPartyLibs/freeType/builds/windows/ftdebug.c",
+            "Ullmannite/ThirdPartyLibs/freeType/builds/windows/ftsystem.c",
+        }
+
+    filter "configurations:Debug"
+        defines { "DEBUG" }
+        symbols "On"
+
+    filter "configurations:Release"
+        defines { "NDEBUG" }
+        optimize "On"
+
 --====================================================================
 
 project "Ullmannite"
@@ -228,6 +313,7 @@ project "Ullmannite"
         "%{prj.name}/ThirdPartyLibs/plog/include",
         "%{prj.name}/ThirdPartyLibs/glfw/include",
         "%{prj.name}/ThirdPartyLibs/glad/include",
+        "%{prj.name}/ThirdPartyLibs/freeType/include",
         "%{prj.name}/ThirdPartyLibs/imgui",
         "%{prj.name}/ThirdPartyLibs/glm"
     }
@@ -236,7 +322,8 @@ project "Ullmannite"
     {
         "GLFW",
         "GLAD",
-        "IMGUI"
+        "IMGUI",
+        "FreeType",
     }
 
     defines
@@ -291,4 +378,3 @@ project "Ullmannite"
         buildoptions "/MD"
 
 --====================================================================
-

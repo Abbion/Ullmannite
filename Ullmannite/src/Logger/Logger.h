@@ -35,7 +35,7 @@ namespace Ull
 	
 	//Assert stops when condition is false
 	#ifdef PLATFORM_WINDOWS
-		#define UASSERT(condition, message) { if(!condition) {PLOGF << "Assert! " << message; __debugbreak(); } }
+		#define UASSERT(condition, message) { if(!(condition)) {PLOGF << "Assert! " << message; __debugbreak(); } }
 	#endif
 	#ifdef PLATFORM_LINUX
 		#define UASSERT(condition, message) { if(!condition) {PLOGF << "Assert! " << message; } }

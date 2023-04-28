@@ -84,11 +84,23 @@ Texture2DOpenGL::~Texture2DOpenGL()
 
 void Texture2DOpenGL::SetData(glm::uvec2 size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data)
 {
+    //Don't do Bind, Use m_textureID instead of GL_TEXTURE_2D
     Bind();
     glTexImage2D(GL_TEXTURE_2D, 0, ConverterInternalFormat(internalDataFormat), size.x, size.y, 0, ConverterPixelFormat(pixelDataFormat), ConvetDataType(dataType), data);
     Unbind();
 
     m_size = size;
+}
+
+void Texture2DOpenGL::SetStorage(glm::uvec2 size, InternalDataFormat internalDataFormat)
+{
+    glTextureStorage2D(m_textureID, 1, ConverterInternalFormat(internalDataFormat), size.x, size.y);
+    m_size = size;
+}
+
+void Texture2DOpenGL::SetSubData(glm::uvec2 position, glm::uvec2 size, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data)
+{
+    glTextureSubImage2D(m_textureID, 0, position.x, position.y, size.x, size.y, ConverterPixelFormat(pixelDataFormat), ConvetDataType(dataType), data);
 }
 
 void Texture2DOpenGL::EnableMinMap() const
