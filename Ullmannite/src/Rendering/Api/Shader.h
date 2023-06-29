@@ -11,7 +11,9 @@ namespace Ull
         CUBE_MARCH_MESH_GENERATOR,
         TRANSFER_FUNCTION_GENERATOR,
         CUBE_MARCH_VERTEX_COUNTER,
-        CUBE_MARCH_VERTEX_RENDERER
+        CUBE_MARCH_VERTEX_RENDERER,
+        SIGNED_DISTANCE_FIELD_FOR_2D_TEXTURES,
+        CHANGE_VALUE_IF_GREATHER_THAN_UIIMAGE_2D,
     };
 
     enum class ShaderType {
@@ -30,6 +32,7 @@ namespace Ull
         virtual void SetInt(std::string uniformName, int value) const = 0;
         virtual void SetUint(std::string uniformName, unsigned int value) const = 0;
         virtual void SetInt3(std::string uniformName, glm::ivec3 value) const = 0;
+        virtual void SetInt2(std::string uniformName, glm::ivec2 value) const = 0;
         virtual void SetUint3(std::string uniformName, glm::uvec3 value) const = 0;
         virtual void SetFloat(std::string uniformName, float value) const = 0;
         virtual void SetFloat4(std::string uniformName, glm::vec4 value) const = 0;

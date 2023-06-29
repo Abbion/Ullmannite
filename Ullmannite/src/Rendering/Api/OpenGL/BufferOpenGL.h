@@ -68,9 +68,11 @@ namespace Ull
     {
     public:
         FrameBufferOpenGL(glm::uvec2 size, bool enableDepth);
+        FrameBufferOpenGL(Texture2D* attachedTexture);
         ~FrameBufferOpenGL();
 
         unsigned int GetOpenGLBufferID() const { return m_bufferID; }
+        void GetPixels(const glm::uvec2 position, const glm::uvec2 size, const PixelDataFormat pixelDataFormat, const GraphicsDataType dataType, void* data) const override;
 
         void Bind() const override;
         void Unbind() const override;

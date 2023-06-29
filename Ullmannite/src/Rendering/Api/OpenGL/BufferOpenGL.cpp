@@ -136,7 +136,7 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
     m_colorTarget->SetData(size, InternalDataFormat::RGB_32F, PixelDataFormat::RGB, GraphicsDataType::UBYTE, nullptr);
     m_colorTarget->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 
-    auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
+    const auto txId = static_cast<Texture2DOpenGL*>(m_colorTarget)->GetOpenGLTextureID();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, txId, 0);
 
     //Attach depth target
@@ -153,14 +153,37 @@ FrameBufferOpenGL::FrameBufferOpenGL(glm::uvec2 size, bool enableDepth)
     Unbind();
 }
 
+FrameBufferOpenGL::FrameBufferOpenGL(Texture2D* attachedTexture)
+{
+    glGenFramebuffers(1, &m_bufferID);
+    Bind();
+
+    //Attaches as color
+    const auto txId = static_cast<Texture2DOpenGL*>(attachedTexture)->GetOpenGLTextureID();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, txId, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        ULOGE("Framebuffer is not complete!");
+
+    Unbind();
+}
+
 FrameBufferOpenGL::~FrameBufferOpenGL()
 {
-    delete m_colorTarget;
+    if(m_colorTarget != nullptr)
+        delete m_colorTarget;
 
     if(m_depthTarget != nullptr)
         delete m_depthTarget;
 
     glDeleteFramebuffers(1, &m_bufferID);
+}
+
+void FrameBufferOpenGL::GetPixels(const glm::uvec2 position, const glm::uvec2 size, const PixelDataFormat pixelDataFormat, const GraphicsDataType dataType, void* data) const
+{
+    Bind();
+    glReadPixels(position.x, position.y, size.x, size.y, ConverterPixelFormat(pixelDataFormat), ConvetDataType(dataType), data);
+    Unbind();
 }
 
 void FrameBufferOpenGL::Bind() const

@@ -11,7 +11,7 @@ namespace Ull
         RGBA,
 
         R_I,
-        RB_I,
+        RG_I,
         RGB_I
     };
 
@@ -28,6 +28,9 @@ namespace Ull
         R_16UI,
         RG_16UI,
         RGB_16UI,
+
+        R_32I,
+        R_32UI,
     };
 
     enum class WrapMode
@@ -88,6 +91,7 @@ namespace Ull
         virtual void SetData(glm::uvec2 size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) = 0;
         virtual void SetStorage(glm::uvec2 size, InternalDataFormat internalDataFormat) = 0;
         virtual void SetSubData(glm::uvec2 position, glm::uvec2 size, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) = 0;
+        virtual void ClearSubData(glm::uvec2 position, glm::uvec2 size, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) = 0;
         virtual void EnableMinMap() const = 0;
         virtual void SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap) const = 0;
         virtual void SetBorderColor(glm::vec4 color) const = 0;

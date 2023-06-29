@@ -19,10 +19,9 @@ namespace Ull
 		};
 
 	public:
-		Font(const std::string& fontPath, FT_Library& library, int width, int height, unsigned firstCharacterIndex, unsigned lastCharacterIndex);
+		Font(const std::string& fontPath, FT_Library& library, const int width, const int height, const unsigned firstCharacterIndex, const unsigned lastCharacterIndex, const unsigned sdfOffset);
 
 	private:
-		//std::shared_ptr<Texture2D> m_gliphTexture;
 		Texture2D* m_gliphTexture;
 		std::map<wchar_t, Character> m_characters;
 	};

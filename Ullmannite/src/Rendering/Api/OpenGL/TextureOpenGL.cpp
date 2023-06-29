@@ -103,6 +103,11 @@ void Texture2DOpenGL::SetSubData(glm::uvec2 position, glm::uvec2 size, PixelData
     glTextureSubImage2D(m_textureID, 0, position.x, position.y, size.x, size.y, ConverterPixelFormat(pixelDataFormat), ConvetDataType(dataType), data);
 }
 
+void Texture2DOpenGL::ClearSubData(glm::uvec2 position, glm::uvec2 size, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data)
+{
+    glClearTexSubImage(m_textureID, 0, position.x, position.y, 0, size.x, size.y, 1, ConverterPixelFormat(pixelDataFormat), ConvetDataType(dataType), data);
+}
+
 void Texture2DOpenGL::EnableMinMap() const
 {
 	Bind();

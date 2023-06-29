@@ -37,6 +37,7 @@ namespace Ull
         void SetData(glm::uvec2 size, InternalDataFormat internalDataFormat, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) override;
         void SetStorage(glm::uvec2 size, InternalDataFormat internalDataFormat) override;
         void SetSubData(glm::uvec2 position, glm::uvec2 size, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) override;
+        void ClearSubData(glm::uvec2 position, glm::uvec2 size, PixelDataFormat pixelDataFormat, GraphicsDataType dataType, const void* data) override;
         void EnableMinMap() const override;
         void SetWrap(WrapMode horizontalWrap, WrapMode verticalWrap) const override;
         void SetBorderColor(glm::vec4 color) const override;

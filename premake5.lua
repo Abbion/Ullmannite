@@ -315,7 +315,8 @@ project "Ullmannite"
         "%{prj.name}/ThirdPartyLibs/glad/include",
         "%{prj.name}/ThirdPartyLibs/freeType/include",
         "%{prj.name}/ThirdPartyLibs/imgui",
-        "%{prj.name}/ThirdPartyLibs/glm"
+        "%{prj.name}/ThirdPartyLibs/glm",
+        "%{prj.name}/ThirdPartyLibs/StbImage/",
     }
 
     links

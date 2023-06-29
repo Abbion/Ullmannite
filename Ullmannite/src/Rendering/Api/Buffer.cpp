@@ -71,6 +71,19 @@ FrameBuffer* FrameBuffer::Create(glm::uvec2 size, bool enableDepth)
     return nullptr;
 }
 
+FrameBuffer* FrameBuffer::Create(Texture2D* attachedTexture)
+{
+    switch (Renderer::GetInstance().GetApi())
+    {
+    case Renderer::API::OPEN_GL:
+        return new FrameBufferOpenGL(attachedTexture);
+        break;
+    }
+
+    UASSERT(false, "Current API didn't implement frame buffer");
+    return nullptr;
+}
+
 StorageBuffer* StorageBuffer::Create(void* data, size_t size)
 {    
     switch (Renderer::GetInstance().GetApi())

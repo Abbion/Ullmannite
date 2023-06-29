@@ -148,6 +148,12 @@ namespace Ull
             return GL_RED_INTEGER;
             break;
 
+        case PixelDataFormat::RG_I:
+            return GL_RG_INTEGER;
+
+        case PixelDataFormat::RGB_I:
+            return GL_RGB_INTEGER;
+
         default:
             ULOGE("Can't conver this pixel format");
             return 0;
@@ -188,6 +194,14 @@ namespace Ull
         case InternalDataFormat::RGB_16UI:
             return GL_RGB16UI;
             break;
+
+        case InternalDataFormat::R_32I:
+            return GL_R32I;
+        break;
+
+        case InternalDataFormat::R_32UI:
+            return GL_R32UI;
+        break;
 
         default:
             ULOGE("Can't conver this internal format");

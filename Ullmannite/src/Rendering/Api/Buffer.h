@@ -106,6 +106,8 @@ namespace Ull
         RenderBuffer* GetDepthTarget() const { return m_depthTarget; }
         
         static FrameBuffer* Create(glm::uvec2 size, bool enableDepth);
+        static FrameBuffer* Create(Texture2D* attachedTexture);
+        virtual void GetPixels(const glm::uvec2 position, const glm::uvec2 size, const PixelDataFormat pixelDataFormat, const GraphicsDataType dataType, void* data) const = 0;
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
