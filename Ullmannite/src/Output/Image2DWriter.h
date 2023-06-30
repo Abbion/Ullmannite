@@ -28,9 +28,11 @@ namespace Ull
 	public:
 		Image2DWriter(glm::uvec2 size, const Channels channels);
 
+		//MAKE IT A TEMPLATE
 		void SetImageData(const std::vector<uint8_t>& pixelData);
 		void AddImageData(glm::uvec2 position, glm::uvec2 size, const std::vector<uint8_t>& pixelData);
 		void AddImageData(glm::uvec2 position, glm::uvec2 size, const std::vector<uint16_t>& pixelData);
+		void AddImageData(glm::uvec2 position, glm::uvec2 size, const std::vector<float>& pixelData, const float maxValue);
 
 		void SaveToFile(const std::string& fileName, const Format format = Format::BMP, const std::optional<const std::string> outputPath = std::nullopt);
 

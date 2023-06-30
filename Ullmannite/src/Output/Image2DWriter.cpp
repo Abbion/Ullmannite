@@ -82,6 +82,16 @@ void Image2DWriter::AddImageData(glm::uvec2 position, glm::uvec2 size, const std
 	AddImageData(position, size, pixelData8bit);
 }
 
+void Image2DWriter::AddImageData(glm::uvec2 position, glm::uvec2 size, const std::vector<float>& pixelData, const float maxValue)
+{
+	std::vector<uint8_t> pixelData8bit(pixelData.size());
+	std::transform(pixelData.begin(), pixelData.end(), pixelData8bit.begin(), [maxValue](uint16_t value) {
+		return (uint8_t)(max8ui * ((float)value / maxValue));
+	});
+
+	AddImageData(position, size, pixelData8bit);
+}
+
 void Image2DWriter::SaveToFile(const std::string& fileName, const Format format, const std::optional<const std::string> outputPath)
 {
 	std::string fullFileName = (outputPath.has_value() ? outputPath.value() : "") + fileName + FormatToStringConverter(format);

@@ -21,6 +21,7 @@ namespace Ull
         RGB_32F,
 
         R_8F,
+        R_32F,
 
         R_8I,
         R_8UI,

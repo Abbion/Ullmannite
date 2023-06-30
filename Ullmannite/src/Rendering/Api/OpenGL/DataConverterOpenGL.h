@@ -177,6 +177,10 @@ namespace Ull
             return GL_R8;
             break;
 
+        case InternalDataFormat::R_32F:
+            return GL_R32F;
+            break;
+
         case InternalDataFormat::R_8I:
             return GL_R8I;
 
