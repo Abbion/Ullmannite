@@ -45,3 +45,12 @@ void UiElement::AddUiElement(std::shared_ptr<UiElement> newElement)
 {
     m_children.push_back(newElement);
 }
+
+void UiElement::SetParent(NotOwner<UiElement> parent)
+{
+    m_parent = parent;
+    m_root = m_parent;
+
+    while (m_root->GetParent() != nullptr)
+        m_root->SetParent(m_root->GetParent());
+}

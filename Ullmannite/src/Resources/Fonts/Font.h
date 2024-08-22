@@ -21,8 +21,13 @@ namespace Ull
 	public:
 		Font(const std::string& fontPath, FT_Library& library, const int width, const int height, const unsigned firstCharacterIndex, const unsigned lastCharacterIndex, const unsigned sdfOffset);
 
+		std::map<wchar_t, Character> GenerateDictionary(const std::wstring& text);
+		Character GetCharacter(const wchar_t character);
+		const int GetLoadedHeight() const { return m_loadedHeight; }
+
 	private:
 		Texture2D* m_gliphTexture;
 		std::map<wchar_t, Character> m_characters;
+		const int m_loadedHeight;
 	};
 }

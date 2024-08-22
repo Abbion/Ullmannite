@@ -20,7 +20,8 @@ UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiArea(name, position, size, false),
 	m_closeButton{ std::make_shared<UiButton>("closeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
 	m_minimizeButton{ std::make_shared<UiButton>("minimizeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
-	m_restoreButton{ std::make_shared<UiToggle>("restoreButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) }
+	m_restoreButton{ std::make_shared<UiToggle>("restoreButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
+	m_titleText{ std::make_shared<UiText>("titleText", glm::uvec2(0, 0), glm::uvec2(size.y, size.y), L"Hello world gjA")  }
 {
 	CreateControls();
 
@@ -187,6 +188,7 @@ void UiTitleBar::CreateControls()
 {
 	m_closeButton->SetParent(this);
 	m_closeButton->SetHoverColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	m_closeButton->CreateResources();
 
 	m_closeButton->SetOnClickFunction([this](UiButton& buttonElement) {
 		m_window->Close();
@@ -194,9 +196,9 @@ void UiTitleBar::CreateControls()
 
 	AddUiElement(m_closeButton);
 
-
 	m_minimizeButton->SetParent(this);
 	m_minimizeButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	m_minimizeButton->CreateResources();
 
 	m_minimizeButton->SetOnClickFunction([this](UiButton& buttonElement) {
 		m_window->Minimize();
@@ -206,6 +208,7 @@ void UiTitleBar::CreateControls()
 
 	m_restoreButton->SetParent(this);
 	m_restoreButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
+	m_restoreButton->CreateResources();
 
 	m_restoreButton->SetOnEnabledFunction([this](UiToggle& buttonElement) {
 		m_window->Maximize();
@@ -215,6 +218,10 @@ void UiTitleBar::CreateControls()
 	});
 
 	AddUiElement(m_restoreButton);
+
+	m_titleText->SetParent(this);
+	m_titleText->CreateResources();
+	AddUiElement(m_titleText);
 }
 
 void UiTitleBar::ResizeControls()
@@ -232,4 +239,8 @@ void UiTitleBar::ResizeControls()
 	m_minimizeButton->SetPositiion(glm::uvec2(m_size.x - (buttonWidth * 3.f), 0));
 	m_minimizeButton->SetSize(glm::uvec2(buttonWidth, m_size.y));
 	m_minimizeButton->Update();
+
+	m_titleText->SetSize(glm::uvec2(m_size.x - (10.0f * buttonWidth), m_size.y));
+	m_titleText->CreateResources();
+	m_titleText->Update();
 }

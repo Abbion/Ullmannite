@@ -11,7 +11,7 @@ UiBasicControl::UiBasicControl(std::string name, glm::uvec2 position, glm::uvec2
 {
     auto& shaderManager = Renderer::GetInstance().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
-    CreateResources();
+
     m_perspective = glm::mat4x4(1.0f);
     m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(m_position.x, m_position.y, 0.0f));
     m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(m_size.x, m_size.y, 1.0f));
@@ -55,7 +55,7 @@ void UiBasicControl::CreateResources()
     m_vertexBuffer = VertexBuffer::Create(sizeof(vertices), vertices, GraphicsBufferType::STATIC_DRAW);
     m_indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
 
-     m_layout->Build();
+    m_layout->Build();
     m_vertexBuffer->Unbind();
     m_layout->Unbind();
 }

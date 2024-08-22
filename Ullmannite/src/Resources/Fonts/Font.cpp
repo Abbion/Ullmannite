@@ -3,6 +3,7 @@
 #include "Rendering/Api/Texture.h"
 #include "Output/Image2DWriter.h"
 #include "Rendering/Api/Renderer.h"
+#include <set>
 #include <algorithm>
 
 using namespace Ull;
@@ -21,7 +22,8 @@ namespace
 	};
 }
 
-Font::Font(const std::string& fontPath, FT_Library& library, const int width, const int height, const unsigned firstCharacterIndex, const unsigned lastCharacterIndex, const unsigned sdfOffset)
+Font::Font(const std::string& fontPath, FT_Library& library, const int width, const int height, const unsigned firstCharacterIndex, const unsigned lastCharacterIndex, const unsigned sdfOffset) :
+	m_loadedHeight(height)
 {
 	FT_Face face;
 
@@ -94,7 +96,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 
 		outerSdf->SetSubData(cursor + sdfOffset, glyphSize, PixelDataFormat::R_I, GraphicsDataType::USHORT, bitmapBuffer.data());
 
-		Character character{ cursor + sdfOffset, glyphSize, glm::uvec2{ face->glyph->bitmap_left, face->glyph->bitmap_top }, face->glyph->advance.x };
+		Character character{ cursor + sdfOffset, glyphSize, glm::uvec2{ face->glyph->bitmap_left, face->glyph->bitmap_top }, (face->glyph->advance.x >> 6) };
 		m_characters.insert(std::pair<wchar_t, Character>((wchar_t)gliphInfo.id, std::move(character)));
 
 		cursor.x += sizeWithOffset.x;
@@ -207,4 +209,24 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	imageWriter.SaveToFile(fontName);
 
 	//CHECK IF I HAVE TO DELETE frameBuffer and other stuff or the destructor deletes it
+}
+
+std::map<wchar_t, Font::Character> Font::GenerateDictionary(const std::wstring& text)
+{
+	std::set<wchar_t> characterSet;
+
+	for (const auto character : text)
+		characterSet.insert(character);
+
+	std::map<wchar_t, Character> dictionary;
+
+	for (const auto character : characterSet)
+		dictionary.insert(std::pair<wchar_t, Character>(character, m_characters[character]));
+	
+	return dictionary;
+}
+
+Font::Character Font::GetCharacter(const wchar_t character)
+{
+	return m_characters[character];
 }

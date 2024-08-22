@@ -5,6 +5,7 @@
 #include "Utilities/PointerHelper.h"
 #include "Controls/UiButton.h"
 #include "Controls/UiToggle.h"
+#include "Controls/UiText.h"
 
 namespace Ull
 {
@@ -40,5 +41,6 @@ namespace Ull
 		std::shared_ptr<UiButton> m_closeButton;
 		std::shared_ptr<UiButton> m_minimizeButton;
 		std::shared_ptr<UiToggle> m_restoreButton;
+		std::shared_ptr<UiText> m_titleText;
 	};
 }
