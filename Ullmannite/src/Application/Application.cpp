@@ -86,6 +86,22 @@ void Application::InitApplciation()
     Renderer::GetInstance().Init();
     Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window.GetSize());
 
+    //ImGui
+    const char* glsl_version = "#version 140";
+
+    IMGUI_CHECKVERSION();
+    const auto context = ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    const auto state = ImGui_ImplGlfw_InitForOpenGL(m_window.GetWindowContext(), true);
+    const auto state2 = ImGui_ImplOpenGL3_Init(glsl_version);
+
     //Load Shaders
     auto& shaderManager = Renderer::GetInstance().GetShaderManager();
 
@@ -100,12 +116,14 @@ void Application::InitApplciation()
     shaderManager.LoadShader(ShaderTag::SIGNED_DISTANCE_FIELD_FOR_2D_TEXTURES, "SignedDistanceField2DCS");
     shaderManager.LoadShader(ShaderTag::INVERSE_2D_BIT_MAP, "Inverse2DBitMapCS");
     shaderManager.LoadShader(ShaderTag::MEREGE_INNSER_OUTER_SDF, "MergeInnerOuterSdfCS");
+    shaderManager.LoadShader(ShaderTag::SDF_TEXT, "SdfTextVS", "SdfTextPS");
     //shaderManager.LoadShader(ShaderTag::CHANGE_VALUE_IF_GREATHER_THAN_UIIMAGE_2D, "ChangeValueInUIImage2DIfGreaterThan");
 
     //Resources
     auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
     fontManager.InitLoader();
-    fontManager.LoadFont("arial.ttf", FontTag::UI_FONT);
+    fontManager.LoadFont("segoeuil.ttf", FontTag::UI_FONT, 128, 33, 126);
+    fontManager.LoadFont("UllIcon.ttf", FontTag::UI_ICON, 256, 61440, 61448);
     fontManager.ReleaseLoader();
 
     //Layers

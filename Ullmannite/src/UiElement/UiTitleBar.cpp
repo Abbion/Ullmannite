@@ -21,8 +21,9 @@ UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	m_closeButton{ std::make_shared<UiButton>("closeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
 	m_minimizeButton{ std::make_shared<UiButton>("minimizeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
 	m_restoreButton{ std::make_shared<UiToggle>("restoreButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
-	m_titleText{ std::make_shared<UiText>("titleText", glm::uvec2(0, 0), glm::uvec2(size.y, size.y), L"Hello world gjA")  }
+	m_titleText{ std::make_shared<UiText>("titleText", glm::uvec2(0, 0), glm::uvec2(size.y, size.y), L"Ullmanite")  }
 {
+	m_titleText->SetSmoothingExceptance({ L'i', L'l' });
 	CreateControls();
 
 	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
@@ -85,6 +86,9 @@ void UiTitleBar::Update()
 		m_window->Close();
 		m_closePressed = false;
 	}
+
+	for (auto& child : m_children)
+		child->Render();
 }
 
 void UiTitleBar::Render()
@@ -219,8 +223,9 @@ void UiTitleBar::CreateControls()
 
 	AddUiElement(m_restoreButton);
 
+	m_titleText->SetFontSize(14);
+	m_titleText->SetSampleThreshold(1.0f);
 	m_titleText->SetParent(this);
-	m_titleText->CreateResources();
 	AddUiElement(m_titleText);
 }
 
@@ -240,7 +245,8 @@ void UiTitleBar::ResizeControls()
 	m_minimizeButton->SetSize(glm::uvec2(buttonWidth, m_size.y));
 	m_minimizeButton->Update();
 
-	m_titleText->SetSize(glm::uvec2(m_size.x - (10.0f * buttonWidth), m_size.y));
-	m_titleText->CreateResources();
+	m_titleText->SetPositiion(glm::uvec2(3.0f * buttonWidth, 0.0f));
+	m_titleText->SetSize(glm::uvec2(m_size.x - (6.0f * buttonWidth), m_size.y));
+	m_titleText->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
 	m_titleText->Update();
 }

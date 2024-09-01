@@ -14,7 +14,7 @@ namespace Ull
 		{
 			glm::uvec2 position;
 			glm::uvec2 size;
-			glm::uvec2 bearing;
+			glm::ivec2 bearing;
 			unsigned int advance;
 		};
 
@@ -24,6 +24,7 @@ namespace Ull
 		std::map<wchar_t, Character> GenerateDictionary(const std::wstring& text);
 		Character GetCharacter(const wchar_t character);
 		const int GetLoadedHeight() const { return m_loadedHeight; }
+		NotOwner<Texture2D> GetTexture() { return m_gliphTexture; }
 
 	private:
 		Texture2D* m_gliphTexture;

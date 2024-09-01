@@ -223,6 +223,7 @@ void UllWindow::SwitchHiddenCursor()
 
 void UllWindow::SwapBuffers()
 {
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfwSwapBuffers(m_window);
 }
 

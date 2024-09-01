@@ -12,7 +12,7 @@ FontManager::~FontManager()
 	UASSERT(m_fontMap.empty(), "Forgot to unload fonts");
 }
 
-void FontManager::LoadFont(const std::string& fontName, const FontTag fontTag)
+void FontManager::LoadFont(const std::string& fontName, const FontTag fontTag, const unsigned size, const unsigned start, const unsigned end)
 {
 	if (IsFontLoaded(fontTag))
 	{
@@ -22,7 +22,7 @@ void FontManager::LoadFont(const std::string& fontName, const FontTag fontTag)
 
 	std::string fontPath = OPENGL_SHADDER_PATH + fontName;
 
-	m_fontMap.emplace(std::pair<FontTag, std::unique_ptr<Font>>(fontTag, std::make_unique<Font>(fontPath, m_fontLibrary, 0, 96, 33, 126, 36)));
+	m_fontMap.emplace(std::pair<FontTag, std::unique_ptr<Font>>(fontTag, std::make_unique<Font>(fontPath, m_fontLibrary, 0, size, start, end, size / 4)));
 }
 
 void FontManager::UnloadFont(const FontTag fontTag)

@@ -12,5 +12,5 @@ void main()
     const uint outerSdfSample = imageLoad(outerSdf, samplePosition).x;
     const uint innerSdfSample = imageLoad(innerSdf, samplePosition).x;
     
-    imageStore(outputImage, samplePosition, vec4(sqrt(outerSdfSample + innerSdfSample)));
+    imageStore(outputImage, samplePosition, vec4(sqrt(outerSdfSample) - sqrt(innerSdfSample)));
 }

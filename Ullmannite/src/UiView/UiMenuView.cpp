@@ -88,7 +88,6 @@ void UiMenuView::Render()
         m_areaUpdated = false;
     }
 
-
 	RenderUI();
 }
 

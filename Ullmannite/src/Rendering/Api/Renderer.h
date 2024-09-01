@@ -83,6 +83,8 @@ namespace Ull
         void FlushContext();
         void Barrier(BarrierType barrier);
 
+        void SetBlending(const bool enableState);
+
     protected:
         Renderer() = default;
 

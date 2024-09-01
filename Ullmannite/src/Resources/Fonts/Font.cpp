@@ -51,7 +51,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	unsigned maxLineHeight = 0;
 
 	Texture2D* outerSdf = Texture2D::Create();
-	outerSdf->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
+	outerSdf->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 	outerSdf->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP);
 	outerSdf->SetStorage(glm::uvec2(TextureDimensions, TextureDimensions), InternalDataFormat::R_16UI);
 
@@ -105,7 +105,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	FT_Done_Face(face);
 
 	Texture2D* innerSdf = Texture2D::Create();
-	innerSdf->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
+	innerSdf->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 	innerSdf->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP);
 	innerSdf->SetStorage(glm::uvec2(TextureDimensions, TextureDimensions), InternalDataFormat::R_16UI);
 
@@ -185,7 +185,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	innerSdf->BindImage(InternalDataFormat::R_16UI, ReadWriteRights::READ, 1);
 	
 	m_gliphTexture = Texture2D::Create();
-	m_gliphTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
+	m_gliphTexture->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 	m_gliphTexture->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP);
 	m_gliphTexture->SetStorage(glm::uvec2(TextureDimensions, TextureDimensions), InternalDataFormat::R_32F);
 	m_gliphTexture->BindImage(InternalDataFormat::R_32F, ReadWriteRights::WRITE, 2);

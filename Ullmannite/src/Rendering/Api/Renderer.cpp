@@ -207,3 +207,19 @@ void Renderer::Barrier(BarrierType barrier)
         glMemoryBarrier(ConvertBarrierTypeOpenGL(barrier));
     }
 }
+
+void Renderer::SetBlending(const bool blendState)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        if (blendState)
+        {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        else
+        {
+            glDisable(GL_BLEND);
+        }
+    }
+}

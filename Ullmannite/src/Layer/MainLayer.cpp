@@ -59,18 +59,18 @@ void MainLayer::Update()
 
 void MainLayer::Render()
 {
-    //ImGui_ImplOpenGL3_NewFrame();
-    //ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
 
-    //ImGui::NewFrame();
+    ImGui::NewFrame();
 
     for (auto& element : m_layout->GetChildren())
     {
         element->Render();
     }
 
-    //ImGui::EndFrame();
-    //ImGui::Render();
+    ImGui::EndFrame();
+    ImGui::Render();
 
     m_layout->Render();
 }

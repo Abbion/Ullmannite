@@ -16,6 +16,7 @@ namespace Ull
         CHANGE_VALUE_IF_GREATHER_THAN_UIIMAGE_2D, //NOT USED?
         INVERSE_2D_BIT_MAP,
         MEREGE_INNSER_OUTER_SDF,
+        SDF_TEXT,
     };
 
     enum class ShaderType {

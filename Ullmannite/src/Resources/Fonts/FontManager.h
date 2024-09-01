@@ -8,6 +8,7 @@ namespace Ull
 	enum class FontTag
 	{
 		UI_FONT,
+		UI_ICON
 	};
 
 	class ResourceManager;
@@ -21,7 +22,7 @@ namespace Ull
 
 		std::unique_ptr<Font>& GetFont(const FontTag fontTag);
 
-		void LoadFont(const std::string& fontName, const FontTag fontTag);
+		void LoadFont(const std::string& fontName, const FontTag fontTag, const unsigned size, const unsigned start, const unsigned end);
 		void UnloadFont(const FontTag fontTag);
 		void UnloadAllFonts();
 

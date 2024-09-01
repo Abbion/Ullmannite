@@ -42,7 +42,8 @@ namespace {
 
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiArea(name, position, size, true),
-    m_scene("Scene 3D")
+    m_scene("Scene 3D"),
+    m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y), L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") }
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
 
@@ -80,6 +81,11 @@ void UiView3D::Init()
 
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
     root->AddNode(cubeMarch);
+
+
+    m_titleText->SetParent(this);
+    m_titleText->CreateResources();
+    AddUiElement(m_titleText);
 }
 
 void UiView3D:: HandleEvent(Event* event)
@@ -158,14 +164,43 @@ void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
         camera->SetWindow(m_window);
     }
 }
-
+#include <imgui.h>
 void UiView3D::Render()
 {
+    ImGui::Text("Text settings");
+
+    auto fontSize = static_cast<int>(m_titleText->GetFontSize());
+    auto spaceing = m_titleText->GetSpaceing();
+    auto leading = m_titleText->GetLeading();
+    auto smoothing = m_titleText->GetEdgeSmoothing();
+    auto threshold = m_titleText->GetSampleThreshold();
+    auto color = m_titleText->GetColor();
+
+    ImGui::SliderInt("fontSize", &fontSize, 1, 256);
+    ImGui::SliderFloat("spaceing", &spaceing, -10.0f, 100.0f);
+    ImGui::SliderFloat("leading", &leading, -2.0f, 5.0f);
+    ImGui::SliderFloat("smoothing", &smoothing, 0.0f, 20.0f);
+    ImGui::SliderFloat("threshold", &threshold, -10.0f, 50.0f);
+    ImGui::SliderFloat4("color", (float*)&color, 0.0f, 1.0f);
+
+    m_titleText->SetFontSize(static_cast<unsigned>(fontSize));
+    m_titleText->SetSpaceing(spaceing);
+    m_titleText->SetLeading(leading);
+    m_titleText->SetEdgeSmoothing(smoothing);
+    m_titleText->SetSampleThreshold(threshold);
+    m_titleText->SetColor(color);
+    m_titleText->CreateResources();
+
+    m_areaUpdated = true;
+
     if(m_areaUpdated)
     {
         m_frameBuffer->Bind();
 
 		RenderBackground();
+
+        for (auto& child : m_children)
+            child->Render();
 
         Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
         Renderer::GetInstance().Clear(Renderer::ClearBits::DEPTH);
@@ -180,4 +215,5 @@ void UiView3D::Render()
 
 		m_areaUpdated = false;
     }
+
 }

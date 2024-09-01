@@ -5,6 +5,7 @@
 #include "Utilities/PointerHelper.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
 #include <memory>
+#include "UiElement/Controls/UiText.h"
 
 namespace Ull
 {
@@ -26,5 +27,7 @@ namespace Ull
 		Scene m_scene;
 		NotOwner<UllWindow> m_window{ nullptr };
 		NotOwner<TransferFunctionRenderer> m_transferFunction{ nullptr };
+
+		std::shared_ptr<UiText> m_titleText;
 	};
 }
