@@ -67,25 +67,27 @@ void UiGradientEditor::SetTransferFunction(NotOwner<TransferFunctionRenderer> tr
     m_transferFunctionRenderer = transferFunction;
     auto points = m_transferFunctionRenderer->GetPoints();
     auto minMax = m_transferFunctionRenderer->GetMinMaxPos();
-    auto size = points.size();
+    auto pointCount = points.size();
+    const auto position = GetPosition();
+    const auto size = GetSize();
 
     m_markers.clear();
-    m_markers.reserve(sizeof(GradientMarker) * size);
+    m_markers.reserve(sizeof(GradientMarker) * pointCount);
 
-    for(unsigned i = 0u; i < size; ++i)
+    for(unsigned i = 0u; i < pointCount; ++i)
     {
         std::stringstream ss;
         ss << "Marker_" << i;
 
-        auto transformMarkerPosition = (((float)points[i].position / (float)minMax.second) * (float)m_size.x);
-        auto markerPosition = glm::uvec2(m_position.x - (m_size.x * 0.5f) + transformMarkerPosition, m_position.y + m_size.y * 0.6f);
-        auto markerSize = glm::uvec2(m_size.y* 0.3f, m_size.y * 0.3f);
+        auto transformMarkerPosition = (((float)points[i].position / (float)minMax.second) * (float)size.x);
+        auto markerPosition = glm::uvec2(position.x - (size.x * 0.5f) + transformMarkerPosition, position.y + size.y * 0.6f);
+        auto markerSize = glm::uvec2(size.y* 0.3f, size.y * 0.3f);
         auto markerColor = points[i].m_color;
 
         auto marker = GradientMarker(ss.str(), markerPosition, markerSize, glm::vec4(markerColor.x, markerColor.y, markerColor.z, 1.0f));
         marker.SetViewPos(m_viewPos);
         marker.SetViewSize(m_viewSize);
-        marker.SetMinMaxBounds(m_position.x - (m_size.x / 2.0f), m_position.x + (m_size.x / 2.0f));
+        marker.SetMinMaxBounds(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f));
         marker.CreateResources();
 
         m_markers.push_back(std::move(marker));
@@ -95,8 +97,10 @@ void UiGradientEditor::SetTransferFunction(NotOwner<TransferFunctionRenderer> tr
 void UiGradientEditor::SetViewSize(glm::uvec2 size)
 {
     m_viewSize = size;
+    const auto sizeAAA = GetSize();
+
     for(auto& marker : m_markers)
-        marker.SetViewSize(m_size);
+        marker.SetViewSize(sizeAAA);
 }
 
 void UiGradientEditor::SetViewPos(glm::ivec2 pos)
@@ -112,28 +116,30 @@ void UiGradientEditor::HandleEvent(Event* event)
     {
     case EventType::MouseDoubleUp:
         auto mousePos = Mouse::GetInstance().GetMousePosition();
-        if (PointInStaticRect<glm::ivec2>(mousePos - m_viewPos, glm::ivec2(m_position) - glm::ivec2(m_size) / 2, glm::ivec2(m_size)))
+        const auto position = GetPosition();
+        const auto size = GetSize();
+
+        if (PointInStaticRect<glm::ivec2>(mousePos - m_viewPos, glm::ivec2(position) - glm::ivec2(size) / 2, glm::ivec2(size)))
         {
             auto points = m_transferFunctionRenderer->GetPoints();
             auto minMax = m_transferFunctionRenderer->GetMinMaxPos();
-            auto size = points.size();
 
-            auto startPos = mousePos.x - ((int)m_position.x - (int)(m_size.x / 2));
-            auto pos = unsigned(((float)(startPos) / (float)m_size.x) * minMax.second);
+            auto startPos = mousePos.x - ((int)position.x - (int)(size.x / 2));
+            auto pos = unsigned(((float)(startPos) / (float)size.x) * minMax.second);
 
-            auto transformMarkerPosition = (((float)pos / (float)minMax.second) * (float)m_size.x);
-            auto markerPosition = glm::uvec2(m_position.x - (m_size.x * 0.5f) + transformMarkerPosition, m_position.y + m_size.y * 0.6f);
-            auto markerSize = glm::uvec2(m_size.y * 0.3f, m_size.y * 0.3f);
+            auto transformMarkerPosition = (((float)pos / (float)minMax.second) * (float)size.x);
+            auto markerPosition = glm::uvec2(position.x - (size.x * 0.5f) + transformMarkerPosition, position.y + size.y * 0.6f);
+            auto markerSize = glm::uvec2(size.y * 0.3f, size.y * 0.3f);
             auto markerColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
             auto marker = GradientMarker("Marker", markerPosition, markerSize, glm::vec4(markerColor.x, markerColor.y, markerColor.z, 1.0f));
             marker.SetViewPos(m_viewPos);
             marker.SetViewSize(m_viewSize);
-            marker.SetMinMaxBounds(m_position.x - (m_size.x / 2.0f), m_position.x + (m_size.x / 2.0f));
+            marker.SetMinMaxBounds(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f));
             marker.CreateResources();
 
             m_markers.push_back(std::move(marker));
-            m_transferFunctionRenderer->AddPoint({marker.GetColor(), (unsigned)(((float)(startPos) / (float)m_size.x) * 512)});
+            m_transferFunctionRenderer->AddPoint({marker.GetColor(), (unsigned)(((float)(startPos) / (float)size.x) * 512)});
             m_transferFunctionRenderer->GenerateTransferFunction();
         }
     break;
@@ -150,12 +156,15 @@ void UiGradientEditor::HandleEvent(Event* event)
 
 void UiGradientEditor::Update()
 {
-    auto recenterSize = glm::vec2(m_viewSize) / 2.0f;
-    glm::vec2 translate = glm::vec2(-recenterSize.x + m_position.x, recenterSize.y - m_position.y) / recenterSize;
+    const auto position = GetPosition();
+    const auto size = GetSize();
 
-    m_modelMatrix = glm::identity<glm::mat4x4>();
-    m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(translate.x, translate.y, 0.0f));
-    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3((float)m_size.x / (float)m_viewSize.x, ((float)m_size.y * 0.5f) / (float)m_viewSize.y, 1.0f));
+    auto recenterSize = glm::vec2(m_viewSize) / 2.0f;
+    glm::vec2 translate = glm::vec2(-recenterSize.x + position.x, recenterSize.y - position.y) / recenterSize;
+
+    //m_modelMatrix = glm::identity<glm::mat4x4>();
+    //m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(translate.x, translate.y, 0.0f));
+    //m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3((float)size.x / (float)m_viewSize.x, ((float)size.y * 0.5f) / (float)m_viewSize.y, 1.0f));
 
     //std::remove_if(m_markers.begin(), m_markers.end(), [](const GradientMarker& marker) { return marker.IsMarkerDeleted(); });
 
@@ -190,7 +199,7 @@ void UiGradientEditor::Update()
 
         for (auto& marker : m_markers)
         {
-            auto pos = (unsigned)(((float)(marker.GetPosition().x - (m_position.x - (m_size.x / 2))) / (float)m_size.x) *512);
+            auto pos = (unsigned)(((float)(marker.GetPosition().x - (position.x - (size.x / 2))) / (float)size.x) *512);
             m_transferFunctionRenderer->AddPoint(TransferPoint{ marker.GetColor(),  pos});
         }
 
@@ -217,7 +226,7 @@ void UiGradientEditor::RenderGradient()
 
     m_shader->Bind();
 
-    m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
+    m_shader->SetFloat4x4("modelMatrix", GetTransform());
     auto texture = m_transferFunctionRenderer->GetTransferFunctionTexture();
     texture->Bind();
     m_shader->SetInt("transferTexture", 0);
@@ -251,16 +260,6 @@ GradientMarker::GradientMarker(GradientMarker&& source) :
 GradientMarker::~GradientMarker()
 {
     
-}
-
-GradientMarker& Ull::GradientMarker::operator=(const GradientMarker& source)
-{
-    GradientMarker marker(m_name, m_position, m_size, m_color);
-    marker.SetMinMaxBounds(m_minMax.x, m_minMax.y);
-    marker.SetViewPos(m_viewPos);
-    marker.SetViewSize(m_viewSize);
-
-    return marker;
 }
 
 void GradientMarker::CreateResources()
@@ -353,7 +352,7 @@ void GradientMarker::HandleEvent(Event* event)
 }
 void GradientMarker::Update()
 {
-    if (m_markerGrabbed)
+    /*if (m_markerGrabbed)
     {
         auto mousePosOnView = Mouse::GetInstance().GetMousePosition() - m_viewPos;
         m_position.x = mousePosOnView.x;
@@ -382,13 +381,11 @@ void GradientMarker::Update()
 
     m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(translate.x, translate.y, 0.0f));
 
-    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3((float)m_size.x / (float)m_viewSize.x, (float)m_size.y / (float)m_viewSize.y, 1.0f));
-
-
+    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3((float)m_size.x / (float)m_viewSize.x, (float)m_size.y / (float)m_viewSize.y, 1.0f));*/
 }
 void GradientMarker::Render()
 {
-    m_layout->Bind();
+ /*   m_layout->Bind();
 
     m_shader->Bind();
 
@@ -444,11 +441,12 @@ void GradientMarker::Render()
 
         m_pickerOutClick = false;
         m_colorMenuJustOpened = false;
-    }
-
+    }*/
 }
 
 inline bool GradientMarker::PointInMarker(glm::ivec2 point)
 {
-    return PointInStaticRect<glm::ivec2>(point - m_viewPos, glm::ivec2(m_position) - glm::ivec2(m_size) / 2, glm::ivec2(m_size));
+    const auto position = GetPosition();
+    const auto size = GetSize();
+    return PointInStaticRect<glm::ivec2>(point - m_viewPos, glm::ivec2(position) - glm::ivec2(size) / 2, glm::ivec2(size));
 }

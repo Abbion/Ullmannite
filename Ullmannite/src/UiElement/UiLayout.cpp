@@ -22,7 +22,8 @@ UiLayout::~UiLayout()
 
 void UiLayout::CreateResources()
 {
-    m_viewMatrix = glm::ortho(0.0f, (float)m_size.x, (float)m_size.y, 0.0f, -1.0f, 1.0f);
+    const auto size = GetSize();
+    m_viewMatrix = glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f, -1.0f, 1.0f);
 }
 
 void UiLayout::HandleEvent(Event* event)
@@ -30,7 +31,7 @@ void UiLayout::HandleEvent(Event* event)
     if (event->IsHandeled())
         return;
 
-    for (const auto& uiElement : m_children)
+    for (const auto& uiElement : GetChildren())
     {
         uiElement->HandleEvent(event);
     }
@@ -43,30 +44,32 @@ void UiLayout::Update()
 
 void UiLayout::Render()
 {
+    const auto size = GetSize();
+
     Renderer::GetInstance().SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
     Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
-    Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), m_size);
+    Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), size);
 
     Renderer::GetInstance().SetClearColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
 
     m_shader->Bind();
     m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);
 
-    const auto elementCount = m_children.size();
+    const auto elementCount = GetChildren().size();
 
     for (int i = 0; i < elementCount; ++i)
     {
         CreateRenderAreaForUiElements(i);
         m_layout->Bind();
-        static_cast<UiArea*>(m_children[i].get())->BindTargetTexture();
+        static_cast<UiArea*>(GetChildren()[i].get())->BindTargetTexture();
         Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
     }
 }
 
 void UiLayout::CreateRenderAreaForUiElements(unsigned int elementID)
 {
-    const auto element = m_children[elementID];
+    const auto element = GetChildren()[elementID];
 
     if (m_vertexBuffer != nullptr)
         delete m_vertexBuffer;

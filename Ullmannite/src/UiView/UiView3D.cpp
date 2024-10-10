@@ -85,7 +85,7 @@ void UiView3D::Init()
 
     m_titleText->SetParent(this);
     m_titleText->CreateResources();
-    AddUiElement(m_titleText);
+    AddChildNode(m_titleText);
 }
 
 void UiView3D:: HandleEvent(Event* event)
@@ -199,8 +199,6 @@ void UiView3D::Render()
 
 		RenderBackground();
 
-        for (auto& child : m_children)
-            child->Render();
 
         Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
         Renderer::GetInstance().Clear(Renderer::ClearBits::DEPTH);

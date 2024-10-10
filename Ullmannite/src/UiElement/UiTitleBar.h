@@ -25,8 +25,6 @@ namespace Ull
 
 		void Update() override;
 		void Render() override;
-
-		void RenderUI();
 	private:
 		void CreateControls();
 		void ResizeControls();

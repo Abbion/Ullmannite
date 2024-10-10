@@ -11,16 +11,12 @@ UiBasicControl::UiBasicControl(std::string name, glm::uvec2 position, glm::uvec2
 {
     auto& shaderManager = Renderer::GetInstance().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
-
-    m_perspective = glm::mat4x4(1.0f);
-    m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(m_position.x, m_position.y, 0.0f));
-    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(m_size.x, m_size.y, 1.0f));
 }
 
 void UiBasicControl::SetParent(NotOwner<UiElement> parent)
 {
-    UiElement::SetParent(parent);
-    UpdatePerspective();
+    //UiElement::SetParent(parent);
+    //UpdatePerspective();
 }
 
 void UiBasicControl::CreateResources()
@@ -74,6 +70,8 @@ void UiBasicControl::HandleEvent(Event* event)
     case EventType::WindowResize:
     case EventType::UiScaledDown:
     case EventType::UiScaledUp:
+    case EventType::ParentPositionChanged:
+    case EventType::ParentSizeChanged:
         UpdatePerspective();
     break;
 
@@ -86,13 +84,13 @@ void UiBasicControl::HandleEvent(Event* event)
     default:
         break;
     }
+
+    UiElement::HandleEvent(event);
 }
 
 void UiBasicControl::Update()
 {
-    m_modelMatrix = glm::mat4(1.0f);
-    m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(m_position.x, m_position.y, 0.0f));
-    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(m_size.x, m_size.y, 1.0f));
+    UiElement::Update();
 }
 
 void UiBasicControl::Render()
@@ -100,11 +98,13 @@ void UiBasicControl::Render()
     m_shader->Bind();
 
     m_shader->SetFloat4("color", m_hover ? m_hoverColor : m_backgroundColor);
-    m_shader->SetFloat4x4("modelMatrix", m_perspective * m_modelMatrix);
+    m_shader->SetFloat4x4("modelMatrix", m_perspective * GetTransform());
 
     m_layout->Bind();
 
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+
+    UiElement::Render();
 }
 
 void UiBasicControl::CheckHover()
@@ -121,8 +121,16 @@ void UiBasicControl::CheckHover()
 
 inline void UiBasicControl::UpdatePerspective()
 {
-    UASSERT((m_parent != nullptr), "No parent assigned!");
+    auto parent = GetParent();
 
-    const auto parentSize = m_parent->GetSize();
-    m_perspective = glm::ortho(0.0f, (float)parentSize.x, (float)parentSize.y, 0.f);
+    UASSERT((parent != nullptr), "No parent assigned!");
+
+    const auto parentSize = static_cast<Object2D*>(parent.Get())->GetSize();
+
+    if (parentSize.x == 45)
+    {
+        m_perspective = glm::ortho(0.0f, 1280.0f, 30.0f, 0.0f);
+    }
+    else
+        m_perspective = glm::ortho(0.0f, (float)parentSize.x, (float)parentSize.y, 0.0f);
 }

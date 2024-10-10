@@ -36,7 +36,7 @@ glm::uvec2 UiText::GetTextSize()
 	return glm::uvec2(static_cast<unsigned>(m_cursorPos.x), static_cast<unsigned>(m_cursorPos.y));
 }
 
-void UiText::SetSize(const glm::uvec2& size)
+void UiText::SetSize(const glm::uvec2 size)
 {
 	UiElement::SetSize(size);
 	m_updateDrawData = true;
@@ -117,8 +117,10 @@ void UiText::CreateResources()
 	const auto loadedFontSize = fontManager.GetFont(m_fontTag)->GetLoadedHeight();
 	const auto spaceWidth = fontManager.GetFont(m_fontTag)->GetCharacter(L'i').advance;
 
-	const glm::vec2 scale{ static_cast<float>(m_fontSize) / static_cast<float>(m_size.x) / static_cast<float>(loadedFontSize),
-					 static_cast<float>(m_fontSize) / static_cast<float>(m_size.y) / static_cast<float>(loadedFontSize) };
+	const auto size = GetSize();
+
+	const glm::vec2 scale{ static_cast<float>(m_fontSize) / static_cast<float>(size.x) / static_cast<float>(loadedFontSize),
+					 static_cast<float>(m_fontSize) / static_cast<float>(size.y) / static_cast<float>(loadedFontSize) };
 
 	//TODO: Subtract whitespaces form the text length
 	std::vector<GpuLetterData> vertices((m_text.length()) * 4);
@@ -192,7 +194,7 @@ void UiText::CreateResources()
 	m_layout->Bind();
 
 	m_vertexBuffer = VertexBuffer::Create(sizeof(GpuLetterData) * vertices.size(), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
-	m_indexBuffer = IndexBuffer::Create(sizeof(unsigned int) * indices.size(), indices.data(), GraphicsBufferType::STATIC_DRAW);
+	m_indexBuffer = IndexBuffer::Create(static_cast<int>(sizeof(unsigned int) * indices.size()), indices.data(), GraphicsBufferType::STATIC_DRAW);
 
 	m_layout->Build();
 	m_vertexBuffer->Unbind();
@@ -215,13 +217,22 @@ void UiText::Render()
 {
 	m_shader->Bind();
 
-	m_shader->SetFloat4x4("modelMatrix", m_perspective * m_textAlignmentlMatrix * m_modelMatrix);
+
+	//m_perspective[3] = { 1.0f, 1.0f, 0.0f, 1.0f };
+	if (m_text[0] == 61440)
+	{
+		//m_perspective[3].x -= 0.0005f;
+		//m_textAlignmentlMatrix = glm::mat4x4(1.0f);
+		int b = 2;
+	}
+
+	m_shader->SetFloat4x4("modelMatrix", m_perspective * m_textAlignmentlMatrix * GetTransform());
 	m_shader->SetFloat("smoothing", m_smoothing);
 	m_shader->SetFloat("threshold", m_threshold);
 	m_shader->SetFloat4("color", m_color);
 
 	auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
-	const auto texture = fontManager.GetFont(FontTag::UI_FONT)->GetTexture();
+	const auto texture = fontManager.GetFont(m_fontTag)->GetTexture();
 	texture->Bind();
 
 	m_layout->Bind();
@@ -240,6 +251,7 @@ void UiText::RealignText()
 {
 	float horizontalOffset = 0.0f;
 	float verticalOffset = 0.0f;
+	const auto size = GetSize();
 
 	switch (m_horizontalAlignment)
 	{
@@ -247,10 +259,10 @@ void UiText::RealignText()
 		horizontalOffset = 0.0f;
 		break;
 	case HorizontalAlignment::CENTER:
-		horizontalOffset = (m_size.x / 2.0f) - ((m_cursorPos.x / 2.0f) * m_size.x);
+		horizontalOffset = (size.x / 2.0f) - ((m_cursorPos.x / 2.0f) * size.x);
 		break;
 	case HorizontalAlignment::RIGHT:
-		horizontalOffset = m_size.x - (m_cursorPos.x * m_size.x);
+		horizontalOffset = size.x - (m_cursorPos.x * size.x);
 		break;
 	}
 
@@ -260,10 +272,10 @@ void UiText::RealignText()
 		verticalOffset = 0.0f;
 		break;
 	case VerticalAlignment::CENTER:
-		verticalOffset = (m_size.y / 2.0f) - ((m_cursorPos.y / 2.0f) * m_size.y);
+		verticalOffset = (size.y / 2.0f) - ((m_cursorPos.y / 2.0f) * size.y);
 		break;
 	case VerticalAlignment::BOTTOM:
-		verticalOffset = m_size.y - (m_cursorPos.y * m_size.y);
+		verticalOffset = size.y - (m_cursorPos.y * size.y);
 		break;
 	}
 

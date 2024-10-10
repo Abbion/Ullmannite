@@ -1,7 +1,6 @@
 #include "Ullpch.h"
 #include "UiMenuView.h"
 #include "Core/PlatformDependantFreeFunctions.h"
-#include "Rendering/IconsCode/IconCodes.h"
 #include "Logger/Logger.h"
 #include "Event/EventAggregator.h"
 #include <limits>

@@ -39,7 +39,11 @@ namespace Ull
         CuttingSettingsChanged,
         TransferFunctionChanged,
         ExaminationThresholdChanged,
-        GradientUpdated
+        GradientUpdated,
+
+        ParentPositionChanged,
+        ParentSizeChanged,
+        ParentScaleChanged
     };
 
     //==================================================================
@@ -102,4 +106,8 @@ namespace Ull
     typedef ValueEvent<std::string> DataLoadEvent;
     typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;
     typedef ValueEvent<CuttingSettings> CuttingSettingsChangedEvent;
+
+    typedef Event ParentPositionChanged;
+    typedef Event ParentSizeChanged;
+    typedef Event ParentScaleChanged;
 };

@@ -18,8 +18,6 @@
 
 #include "Resources/ResourceManager.h"
 
-#include "Rendering/IconsCode/IconCodes.h"
-
 #include <ft2build.h>
 #include FT_FREETYPE_H  
 

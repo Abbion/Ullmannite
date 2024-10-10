@@ -1,5 +1,6 @@
 #pragma once
 #include "UiElement/Controls/UiBasicControl.h"
+#include "UiElement/Controls/UiText.h"
 
 namespace Ull
 {
@@ -10,10 +11,13 @@ namespace Ull
         ~UiToggle() {}
 
         bool IsEnabled() const { return m_state; }
+        UiText& GetTextControl() { return m_buttonText; }
 
         void SetEnabled(const bool state) { m_state = state; }
         void SetOnEnabledFunction(std::function<void(UiToggle& toggleElement)> onEnabled) { m_onEnabled = onEnabled; }
         void SetOnDisambledFunction(std::function<void(UiToggle& toggleElement)> onDisabled) { m_onDisabled = onDisabled; }
+
+        void SetSize(const glm::uvec2 size);
 
         void HandleEvent(Event* event);
         void Update() override;
@@ -22,6 +26,8 @@ namespace Ull
     private:
         bool m_pressed{ false };
         bool m_state{ false };
+
+        UiText m_buttonText;
 
         std::function<void(UiToggle& toggleElement)> m_onEnabled;
         std::function<void(UiToggle& toggleElement)> m_onDisabled;

@@ -36,7 +36,7 @@ void UiArea::CreateResources()
     if(m_frameBuffer != nullptr)
         delete m_frameBuffer;
 
-    m_frameBuffer = FrameBuffer::Create(m_size, m_usesDepth);
+    m_frameBuffer = FrameBuffer::Create(GetSize(), m_usesDepth);
 
     float vertices[] = { 
         -1.0f, -1.0f, 0.0f,
@@ -97,15 +97,23 @@ void UiArea::HandleEvent(Event* event)
     default:
         break;
     }
+
+    UiElement::HandleEvent(event);
+}
+
+void UiArea::Update()
+{
+    UiElement::Update();
 }
 
 void UiArea::Render()
 {
-    if(m_areaUpdated)
+    //if(m_areaUpdated)
     {
         m_frameBuffer->Bind();
 
         RenderBackground();
+        UiElement::Render();
 
         m_frameBuffer->Unbind();
 
@@ -116,12 +124,12 @@ void UiArea::Render()
 void UiArea::RenderBackground()
 {
     Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
-    Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), m_size);
+    Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), GetSize());
 
     m_shader->Bind();
 
     m_shader->SetFloat4("color", m_color);
-    m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
+    m_shader->SetFloat4x4("modelMatrix", GetTransform());
 
     m_layout->Bind();
 

@@ -16,8 +16,8 @@ namespace Ull
 
         void CreateResources() override;
         void HandleEvent(Event* event) override;
-        void Update() override;
-        void Render() override;
+        virtual void Update() override;
+        virtual void Render() override;
 
     protected:
         void CheckHover();

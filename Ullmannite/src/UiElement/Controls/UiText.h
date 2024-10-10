@@ -35,7 +35,7 @@ namespace Ull
         float GetSampleThreshold() const        { return m_threshold; }
         glm::uvec2 GetTextSize();
 
-        void SetSize(const glm::uvec2& size);
+        void SetSize(const glm::uvec2 size);
 
         void SetString(std::wstring& text);
         void SetFont(const FontTag font);
@@ -70,7 +70,7 @@ namespace Ull
         VerticalAlignment   m_verticalAlignment{ VerticalAlignment::TOP };
 
         float                   m_smoothing{ 5.0f };
-        float                   m_threshold{ 0.0f };
+        float                   m_threshold{ 50.0f };
         std::vector<wchar_t>    m_smoothingExceptance{};
 
         glm::mat4x4         m_textAlignmentlMatrix;

@@ -18,7 +18,7 @@ namespace Ull
 		GradientMarker(GradientMarker&& source);
 		~GradientMarker();
 
-		GradientMarker& operator=(const GradientMarker& source);
+		GradientMarker& operator=(const GradientMarker& source) { return *this; }
 
 		bool IsColorPickerOpened() const { return m_openColorMenu; }
 		bool IsMarkerGrabbed() const { return m_markerGrabbed; }

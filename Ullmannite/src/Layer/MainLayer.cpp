@@ -85,17 +85,14 @@ void MainLayer::CreateLayout()
     m_layout->CreateResources();
 
     m_titleBar = std::make_shared<UiTitleBar>("titleBarElement", glm::vec2(0.f, 0.f), glm::vec2(initSize.x, 30.f * initScale));
-    m_titleBar->SetParent(m_layout.get());
-    m_layout->AddUiElement(m_titleBar);
+    m_layout->AddChildNode(m_titleBar);
 
     m_menuView = std::make_shared<UiMenuView>("menuElement", glm::vec2(0.f, (30.f * initScale) + 1), glm::vec2(260.f, initSize.y - (30.f * initScale) - 1.f));
-    m_menuView->SetParent(m_layout.get());
-    m_layout->AddUiElement(m_menuView);
+    m_layout->AddChildNode(m_menuView);
 
     m_3DView = std::make_shared<UiView3D>("view3DElement", glm::vec2((260.f + initScale) + 1.f, (30.f * initScale) + 1.f), glm::vec2(initSize.x - (260.f * initScale) - 1.f, initSize.y - (30.f * initScale) - 1.f));
-    m_3DView->SetParent(m_layout.get());
     m_3DView->SetTransferFunction(m_menuView->GetTransferFunctionRenderer());
-    m_layout->AddUiElement(m_3DView);
+    m_layout->AddChildNode(m_3DView);
 }
 
 void MainLayer::Resize(const glm::uvec2& size)
@@ -106,11 +103,11 @@ void MainLayer::Resize(const glm::uvec2& size)
     m_titleBar->SetSize(glm::vec2(size.x, 30.f * scale));
     m_titleBar->CreateResources();
 
-    m_menuView->SetPositiion(glm::vec2(0.f, (30.f * scale) + 1.f));
+    m_menuView->SetPosition(glm::vec2(0.f, (30.f * scale) + 1.f));
     m_menuView->SetSize(glm::vec2(260.f * scale, size.y - (30.f * scale) - 1.f));
     m_menuView->CreateResources();
 
-    m_3DView->SetPositiion(glm::vec2((260.f * scale) + 1.0f, (30.f * scale) + 1.f));
+    m_3DView->SetPosition(glm::vec2((260.f * scale) + 1.0f, (30.f * scale) + 1.f));
     m_3DView->SetSize(glm::vec2(size.x - (260.f * scale) - 1.0f, size.y - (30.f * scale) - 1.f));
     m_3DView->CreateResources();
 }
