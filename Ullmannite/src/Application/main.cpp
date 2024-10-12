@@ -1,4 +1,15 @@
 ﻿#include "Ullpch.h"
+
+#ifdef GTEST
+#include <iostream>
+
+int main()
+{
+	std::cout << "Hello wrold\n";
+	return 0;
+}
+
+#else
 #include "Application.h"
 #include "Rendering/Api/Renderer.h"
 #include "Resources/ResourceManager.h"
@@ -17,3 +28,4 @@ int main()
 
 	return 0;
 }
+#endif

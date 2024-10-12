@@ -6,7 +6,8 @@ workspace (workspaceName)
     configurations
     {
         "Debug",
-        "Release"
+        "Release",
+        "Tests"
     }
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
@@ -97,7 +98,7 @@ project "GLFW"
 			"_GLFW_X11"
 		}
 
-    filter "configurations:Debug"
+    filter {"configurations:Debug", "configurations:Tests"}
 		runtime "Debug"
 		symbols "on"
 
@@ -135,7 +136,7 @@ project "GLAD"
 	filter "system:linux"
 		systemversion "latest"
 
-    filter "configurations:Debug"
+    filter {"configurations:Debug", "configurations:Tests"}
 		runtime "Debug"
 		symbols "on"
 
@@ -202,7 +203,7 @@ project "IMGUI"
         cppdialect "C++17"
         staticruntime "On"
 
-    filter "configurations:Debug"
+    filter {"configurations:Debug", "configurations:Tests"}
 		runtime "Debug"
 		symbols "on"
 
@@ -289,7 +290,7 @@ project "FreeType"
             freetype_libdir.."/builds/windows/ftsystem.c",
         }
 
-    filter "configurations:Debug"
+    filter {"configurations:Debug", "configurations:Test"}
         defines { "DEBUG" }
         symbols "On"
 
@@ -327,7 +328,7 @@ project "GoogleTest"
         systemversion "latest"
         cppdialect "C++17"
 
-    filter "configurations:Debug"
+    filter {"configurations:Debug", "configurations:Tests"}
 		runtime "Debug"
 		symbols "on"
         defines { "DEBUG" }
@@ -377,7 +378,6 @@ project "Ullmannite"
         "GLAD",
         "IMGUI",
         "FreeType",
-        "GoogleTest",
     }
 
     defines
@@ -397,7 +397,8 @@ project "Ullmannite"
 
         links
         {
-            "opengl32.lib"
+            "opengl32.lib",
+            "GoogleTest"
         }
 
     filter "system:linux"
@@ -418,6 +419,10 @@ project "Ullmannite"
 
     filter "configurations:Debug"
         defines "DEBUG"
+        symbols "On"
+
+    filter "configurations:Tests"
+        defines {"DEBUG", "GTEST"}
         symbols "On"
 
     filter "configurations:Release"
