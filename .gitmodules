@@ -13,3 +13,9 @@
 [submodule "Ullmannite/ThirdPartyLibs/freeType"]
 	path = Ullmannite/ThirdPartyLibs/freeType
 	url = https://github.com/freetype/freetype.git
+[submodule "Ullmannite/ThirdPartyLibs/GoogleTest"]
+	path = Ullmannite/ThirdPartyLibs/GoogleTest
+	url = https://github.com/google/googletest.git
+[submodule "Ullmannite/ThirdPartyLibs/googleTest"]
+	path = Ullmannite/ThirdPartyLibs/googleTest
+	url = https://github.com/google/googletest.git

@@ -129,7 +129,7 @@ void UiArea::RenderBackground()
     m_shader->Bind();
 
     m_shader->SetFloat4("color", m_color);
-    m_shader->SetFloat4x4("modelMatrix", GetTransform());
+    m_shader->SetFloat4x4("modelMatrix", glm::mat4(1.0f));
 
     m_layout->Bind();
 

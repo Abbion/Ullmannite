@@ -95,10 +95,24 @@ void UiBasicControl::Update()
 
 void UiBasicControl::Render()
 {
+    auto parent = GetParent();
+    auto position = GetPosition();
+    const auto size = GetSize();
+
+    while (parent != nullptr)
+    {
+        position += parent->GetPosition();
+        parent = parent->GetParent();
+    }
+
+    auto transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, glm::vec3{ position.x, position.y, 0.0f });
+    transform = glm::scale(transform, glm::vec3{ size.x, size.y, 1.0f });
+
     m_shader->Bind();
 
     m_shader->SetFloat4("color", m_hover ? m_hoverColor : m_backgroundColor);
-    m_shader->SetFloat4x4("modelMatrix", m_perspective * GetTransform());
+    m_shader->SetFloat4x4("modelMatrix", m_perspective * transform);
 
     m_layout->Bind();
 

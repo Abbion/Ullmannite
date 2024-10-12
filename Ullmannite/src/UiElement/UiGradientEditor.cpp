@@ -87,7 +87,7 @@ void UiGradientEditor::SetTransferFunction(NotOwner<TransferFunctionRenderer> tr
         auto marker = GradientMarker(ss.str(), markerPosition, markerSize, glm::vec4(markerColor.x, markerColor.y, markerColor.z, 1.0f));
         marker.SetViewPos(m_viewPos);
         marker.SetViewSize(m_viewSize);
-        marker.SetMinMaxBounds(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f));
+        marker.SetMinMaxBounds(static_cast<int>(position.x - (size.x / 2.0f) + 0.5f), static_cast<int>(position.x + (size.x / 2.0f) + 0.5f));
         marker.CreateResources();
 
         m_markers.push_back(std::move(marker));
@@ -135,7 +135,7 @@ void UiGradientEditor::HandleEvent(Event* event)
             auto marker = GradientMarker("Marker", markerPosition, markerSize, glm::vec4(markerColor.x, markerColor.y, markerColor.z, 1.0f));
             marker.SetViewPos(m_viewPos);
             marker.SetViewSize(m_viewSize);
-            marker.SetMinMaxBounds(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f));
+            marker.SetMinMaxBounds(static_cast<int>(position.x - (size.x / 2.0f) + 0.5f), static_cast<int>(position.x + (size.x / 2.0f) + 0.5f));
             marker.CreateResources();
 
             m_markers.push_back(std::move(marker));
@@ -226,7 +226,7 @@ void UiGradientEditor::RenderGradient()
 
     m_shader->Bind();
 
-    m_shader->SetFloat4x4("modelMatrix", GetTransform());
+    m_shader->SetFloat4x4("modelMatrix", glm::mat4(1.0f));
     auto texture = m_transferFunctionRenderer->GetTransferFunctionTexture();
     texture->Bind();
     m_shader->SetInt("transferTexture", 0);

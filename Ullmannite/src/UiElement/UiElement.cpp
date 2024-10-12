@@ -3,14 +3,10 @@
 
 using namespace Ull;
 
-void UiElement::AddChildNode(UiElementRef childNode)
+UiElement::UiElement(const std::string& name, const glm::vec2 position, const glm::vec2 size) :
+	TreeNode{ name },
+	Object2D{ position, size }
 {
-	TreeNode::AddChildNode(childNode);
-}
-
-std::vector<UiElementRef>& UiElement::GetChildren()
-{
-	return reinterpret_cast<std::vector<UiElementRef>&>(TreeNode::GetChildren());
 }
 
 void UiElement::HandleEvent(Event* event)
@@ -18,17 +14,17 @@ void UiElement::HandleEvent(Event* event)
 	event->IsHandeled();
 
 	for (auto& child : GetChildren())
-		static_cast<UiElement*>(child.get())->HandleEvent(event);
+		child->HandleEvent(event);
 }
 
 void UiElement::Update()
 {
 	for (auto& child : GetChildren())
-		static_cast<UiElement*>(child.get())->Update();
+		child->Update();
 }
 
 void UiElement::Render()
 {
 	for (auto& child : GetChildren())
-		static_cast<UiElement*>(child.get())->Render();
+		child->Render();
 }

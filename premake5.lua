@@ -1,4 +1,6 @@
-workspace "Ullmannite"
+workspaceName = "Ullmannite"
+
+workspace (workspaceName)
     architecture "x64"
 
     configurations
@@ -8,6 +10,7 @@ workspace "Ullmannite"
     }
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+libdir = workspaceName.."/ThirdPartyLibs"
 
 --====================================================================
 
@@ -18,27 +21,29 @@ project "GLFW"
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
 
+    glfw_libdir = libdir.."/glfw"
+
 	files
 	{
-        "Ullmannite/ThirdPartyLibs/glfw/include/GLFW/glfw3.h",
-        "Ullmannite/ThirdPartyLibs/glfw/include/GLFW/glfw3native.h",
-        "Ullmannite/ThirdPartyLibs/glfw/src/glfw_config.h",
-        "Ullmannite/ThirdPartyLibs/glfw/src/internal.h",
-        "Ullmannite/ThirdPartyLibs/glfw/src/mappings.h",
-        "Ullmannite/ThirdPartyLibs/glfw/src/platform.h",
-        "Ullmannite/ThirdPartyLibs/glfw/src/context.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/init.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/input.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/monitor.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/platform.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/vulkan.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/window.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/egl_context.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/null_init.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/null_joystick.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/null_monitor.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/null_window.c",
-        "Ullmannite/ThirdPartyLibs/glfw/src/osmesa_context.c",
+        glfw_libdir.."/include/GLFW/glfw3.h",
+        glfw_libdir.."/include/GLFW/glfw3native.h",
+        glfw_libdir.."/src/glfw_config.h",
+        glfw_libdir.."/src/internal.h",
+        glfw_libdir.."/src/mappings.h",
+        glfw_libdir.."/src/platform.h",
+        glfw_libdir.."/src/context.c",
+        glfw_libdir.."/src/init.c",
+        glfw_libdir.."/src/input.c",
+        glfw_libdir.."/src/monitor.c",
+        glfw_libdir.."/src/platform.c",
+        glfw_libdir.."/src/vulkan.c",
+        glfw_libdir.."/src/window.c",
+        glfw_libdir.."/src/egl_context.c",
+        glfw_libdir.."/src/null_init.c",
+        glfw_libdir.."/src/null_joystick.c",
+        glfw_libdir.."/src/null_monitor.c",
+        glfw_libdir.."/src/null_window.c",
+        glfw_libdir.."/src/osmesa_context.c",
 	}
 
     filter "system:windows"
@@ -47,14 +52,14 @@ project "GLFW"
 
 		files
 		{
-            "Ullmannite/ThirdPartyLibs/glfw/src/win32_init.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/win32_joystick.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/win32_monitor.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/win32_time.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/win32_thread.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/win32_window.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/win32_module.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/wgl_context.c"
+            glfw_libdir.."/src/win32_init.c",
+            glfw_libdir.."/src/win32_joystick.c",
+            glfw_libdir.."/src/win32_monitor.c",
+            glfw_libdir.."/src/win32_time.c",
+            glfw_libdir.."/src/win32_thread.c",
+            glfw_libdir.."/src/win32_window.c",
+            glfw_libdir.."/src/win32_module.c",
+            glfw_libdir.."/src/wgl_context.c"
 		}
 
 		defines 
@@ -71,20 +76,20 @@ project "GLFW"
 
         files
         {
-            "Ullmannite/ThirdPartyLibs/glfw/src/x11_platform.h",
-            "Ullmannite/ThirdPartyLibs/glfw/src/x11_init.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/x11_monitor.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/x11_window.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/xkb_unicode.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/posix_module.h",
-            "Ullmannite/ThirdPartyLibs/glfw/src/posix_module.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/posix_poll.h",
-            "Ullmannite/ThirdPartyLibs/glfw/src/posix_poll.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/posix_time.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/posix_thread.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/glx_context.c",
-            "Ullmannite/ThirdPartyLibs/glfw/src/linux_joystick.h",
-            "Ullmannite/ThirdPartyLibs/glfw/src/linux_joystick.c"
+            glfw_libdir.."/src/x11_platform.h",
+            glfw_libdir.."/src/x11_init.c",
+            glfw_libdir.."/src/x11_monitor.c",
+            glfw_libdir.."/src/x11_window.c",
+            glfw_libdir.."/src/xkb_unicode.c",
+            glfw_libdir.."/src/posix_module.h",
+            glfw_libdir.."/src/posix_module.c",
+            glfw_libdir.."/src/posix_poll.h",
+            glfw_libdir.."/src/posix_poll.c",
+            glfw_libdir.."/src/posix_time.c",
+            glfw_libdir.."/src/posix_thread.c",
+            glfw_libdir.."/src/glx_context.c",
+            glfw_libdir.."/src/linux_joystick.h",
+            glfw_libdir.."/src/linux_joystick.c"
         }
 
         defines
@@ -110,16 +115,18 @@ project "GLAD"
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
 
+    glad_libdir = libdir.."/glad"
+
 	files
 	{
-        "Ullmannite/ThirdPartyLibs/glad/include/glad/glad.h",
-        "Ullmannite/ThirdPartyLibs/glad/include/KHR/khrplatform.h",
-        "Ullmannite/ThirdPartyLibs/glad/src/glad.c"
+        glad_libdir.."/include/glad/glad.h",
+        glad_libdir.."/include/KHR/khrplatform.h",
+        glad_libdir.."/src/glad.c"
 	}
 
     includedirs
     {
-        "Ullmannite/ThirdPartyLibs/glad/include"
+        glad_libdir.."/include"
     }
 
     filter "system:windows"
@@ -145,35 +152,37 @@ project "IMGUI"
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
 
+    imgui_libdir = libdir.."/imgui"
+
 	files
 	{
-        "Ullmannite/ThirdPartyLibs/imgui/imconfig.h",
-		"Ullmannite/ThirdPartyLibs/imgui/imgui.h",
-		"Ullmannite/ThirdPartyLibs/imgui/imgui.cpp",
-		"Ullmannite/ThirdPartyLibs/imgui/imgui_draw.cpp",
-		"Ullmannite/ThirdPartyLibs/imgui/imgui_internal.h",
-		"Ullmannite/ThirdPartyLibs/imgui/imgui_widgets.cpp",
-		"Ullmannite/ThirdPartyLibs/imgui/imstb_rectpack.h",
-		"Ullmannite/ThirdPartyLibs/imgui/imstb_textedit.h",
-		"Ullmannite/ThirdPartyLibs/imgui/imstb_truetype.h",
-		"Ullmannite/ThirdPartyLibs/imgui/imgui_demo.cpp",
-        "Ullmannite/ThirdPartyLibs/imgui/imgui_tables.cpp",
+        imgui_libdir.."/imconfig.h",
+		imgui_libdir.."/imgui.h",
+		imgui_libdir.."/imgui.cpp",
+		imgui_libdir.."/imgui_draw.cpp",
+		imgui_libdir.."/imgui_internal.h",
+		imgui_libdir.."/imgui_widgets.cpp",
+		imgui_libdir.."/imstb_rectpack.h",
+		imgui_libdir.."/imstb_textedit.h",
+		imgui_libdir.."/imstb_truetype.h",
+		imgui_libdir.."/imgui_demo.cpp",
+        imgui_libdir.."/imgui_tables.cpp",
 
         --Backend loader
-        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3_loader.h",
+        imgui_libdir.."/imgui_impl_opengl3_loader.h",
 
         --GLUT
-        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3.h",
-        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_opengl3.cpp",
+        imgui_libdir.."/imgui_impl_opengl3.h",
+        imgui_libdir.."/imgui_impl_opengl3.cpp",
 
         --GLFW
-        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_glfw.h",
-        "Ullmannite/ThirdPartyLibs/imgui/imgui_impl_glfw.cpp"
+        imgui_libdir.."/imgui_impl_glfw.h",
+        imgui_libdir.."/imgui_impl_glfw.cpp"
 	}
 
     includedirs
     {
-        "Ullmannite/ThirdPartyLibs/glfw/include",
+        libdir.."/glfw/include",
     }
 
     links
@@ -218,54 +227,56 @@ project "FreeType"
         "DLL_EXPORT",
     }
 
+    freetype_libdir = libdir.."/freeType"
+
     includedirs
     {
-        "Ullmannite/ThirdPartyLibs/freeType/include",
+        freetype_libdir.."/include",
     }
 
     files
     {
-        "Ullmannite/ThirdPartyLibs/freeType/src/autofit/autofit.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbase.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbbox.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbdf.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftbitmap.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftcid.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftfstype.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftgasp.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftglyph.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftgxval.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftinit.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftmm.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftotval.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftpatent.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftpfr.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftstroke.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftsynth.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/fttype1.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/base/ftwinfnt.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/bdf/bdf.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/bzip2/ftbzip2.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/cache/ftcache.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/cff/cff.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/cid/type1cid.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/gzip/ftgzip.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/lzw/ftlzw.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/pcf/pcf.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/pfr/pfr.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/psaux/psaux.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/pshinter/pshinter.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/psnames/psnames.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/raster/raster.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/sdf/sdf.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/sfnt/sfnt.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/smooth/smooth.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/svg/svg.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/truetype/truetype.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/type1/type1.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/type42/type42.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/winfonts/winfnt.c",
-        "Ullmannite/ThirdPartyLibs/freeType/src/winfonts/winfnt.c",
+        freetype_libdir.."/src/autofit/autofit.c",
+        freetype_libdir.."/src/base/ftbase.c",
+        freetype_libdir.."/src/base/ftbbox.c",
+        freetype_libdir.."/src/base/ftbdf.c",
+        freetype_libdir.."/src/base/ftbitmap.c",
+        freetype_libdir.."/src/base/ftcid.c",
+        freetype_libdir.."/src/base/ftfstype.c",
+        freetype_libdir.."/src/base/ftgasp.c",
+        freetype_libdir.."/src/base/ftglyph.c",
+        freetype_libdir.."/src/base/ftgxval.c",
+        freetype_libdir.."/src/base/ftinit.c",
+        freetype_libdir.."/src/base/ftmm.c",
+        freetype_libdir.."/src/base/ftotval.c",
+        freetype_libdir.."/src/base/ftpatent.c",
+        freetype_libdir.."/src/base/ftpfr.c",
+        freetype_libdir.."/src/base/ftstroke.c",
+        freetype_libdir.."/src/base/ftsynth.c",
+        freetype_libdir.."/src/base/fttype1.c",
+        freetype_libdir.."/src/base/ftwinfnt.c",
+        freetype_libdir.."/src/bdf/bdf.c",
+        freetype_libdir.."/src/bzip2/ftbzip2.c",
+        freetype_libdir.."/src/cache/ftcache.c",
+        freetype_libdir.."/src/cff/cff.c",
+        freetype_libdir.."/src/cid/type1cid.c",
+        freetype_libdir.."/src/gzip/ftgzip.c",
+        freetype_libdir.."/src/lzw/ftlzw.c",
+        freetype_libdir.."/src/pcf/pcf.c",
+        freetype_libdir.."/src/pfr/pfr.c",
+        freetype_libdir.."/src/psaux/psaux.c",
+        freetype_libdir.."/src/pshinter/pshinter.c",
+        freetype_libdir.."/src/psnames/psnames.c",
+        freetype_libdir.."/src/raster/raster.c",
+        freetype_libdir.."/src/sdf/sdf.c",
+        freetype_libdir.."/src/sfnt/sfnt.c",
+        freetype_libdir.."/src/smooth/smooth.c",
+        freetype_libdir.."/src/svg/svg.c",
+        freetype_libdir.."/src/truetype/truetype.c",
+        freetype_libdir.."/src/type1/type1.c",
+        freetype_libdir.."/src/type42/type42.c",
+        freetype_libdir.."/src/winfonts/winfnt.c",
+        freetype_libdir.."/src/winfonts/winfnt.c",
     }
 
     filter "system:windows"
@@ -274,8 +285,8 @@ project "FreeType"
         defines { "_CRT_SECURE_NO_WARNINGS" }
         files
         {
-            "Ullmannite/ThirdPartyLibs/freeType/builds/windows/ftdebug.c",
-            "Ullmannite/ThirdPartyLibs/freeType/builds/windows/ftsystem.c",
+            freetype_libdir.."/builds/windows/ftdebug.c",
+            freetype_libdir.."/builds/windows/ftsystem.c",
         }
 
     filter "configurations:Debug"
@@ -285,6 +296,46 @@ project "FreeType"
     filter "configurations:Release"
         defines { "NDEBUG" }
         optimize "On"
+
+--====================================================================
+project "GoogleTest"
+    kind "StaticLib"
+    language "C++"
+
+    targetdir("bin/" .. outputdir .. "/%{prj.name}")
+    objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
+
+    gtest_libdir = libdir.."/googleTest/googletest"
+
+    includedirs
+    {
+        gtest_libdir.."/include",
+        gtest_libdir.."",
+    }
+
+    files
+    {
+        gtest_libdir.."/src/*.cc",
+    }
+
+    filter "system:windows"
+        cppdialect "C++17"
+		systemversion "latest"
+
+	filter "system:linux"
+        pic "On"
+        systemversion "latest"
+        cppdialect "C++17"
+
+    filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+        defines { "DEBUG" }
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "on"
+        defines { "NDEBUG" }
 
 --====================================================================
 
@@ -303,20 +354,21 @@ project "Ullmannite"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
-        "%{prj.name}/ThirdPartyLibs/glm/**.hpp",
-        "%{prj.name}/ThirdPartyLibs/glm/**.inl"
+        libdir.."/glm/**.hpp",
+        libdir.."/glm/**.inl"
     }
 
     includedirs
     {
         "%{prj.name}/src",
-        "%{prj.name}/ThirdPartyLibs/plog/include",
-        "%{prj.name}/ThirdPartyLibs/glfw/include",
-        "%{prj.name}/ThirdPartyLibs/glad/include",
-        "%{prj.name}/ThirdPartyLibs/freeType/include",
-        "%{prj.name}/ThirdPartyLibs/imgui",
-        "%{prj.name}/ThirdPartyLibs/glm",
-        "%{prj.name}/ThirdPartyLibs/StbImage/",
+        libdir.."/plog/include",
+        libdir.."/glfw/include",
+        libdir.."/glad/include",
+        libdir.."/freeType/include",
+        libdir.."/imgui",
+        libdir.."/glm",
+        libdir.."/StbImage/",
+        libdir.."/googleTest/googletest/include",
     }
 
     links
@@ -325,6 +377,7 @@ project "Ullmannite"
         "GLAD",
         "IMGUI",
         "FreeType",
+        "GoogleTest",
     }
 
     defines

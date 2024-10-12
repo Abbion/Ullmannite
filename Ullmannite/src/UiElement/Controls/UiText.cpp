@@ -226,7 +226,7 @@ void UiText::Render()
 		int b = 2;
 	}
 
-	m_shader->SetFloat4x4("modelMatrix", m_perspective * m_textAlignmentlMatrix * GetTransform());
+	m_shader->SetFloat4x4("modelMatrix", m_perspective * m_textAlignmentlMatrix);
 	m_shader->SetFloat("smoothing", m_smoothing);
 	m_shader->SetFloat("threshold", m_threshold);
 	m_shader->SetFloat4("color", m_color);

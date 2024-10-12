@@ -3,6 +3,12 @@
 
 namespace Ull
 {
+    enum class ControlType {
+        UiButton,
+        UiText,
+        UiToggle
+    };
+
     class UiBasicControl : public UiElement
     {
     public:
