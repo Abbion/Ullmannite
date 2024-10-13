@@ -435,6 +435,11 @@ project "Ullmannite"
         runtime "Debug"
         symbols "On"
 
+        includedirs
+        {
+            "%{prj.name}/tests",
+        }
+
     filter "configurations:Release"
         defines "RELEASE"
         optimize "On"

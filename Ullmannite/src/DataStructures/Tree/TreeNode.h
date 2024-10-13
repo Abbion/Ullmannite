@@ -9,6 +9,17 @@
 
 namespace Ull
 {
+    namespace 
+    {
+        #ifdef GTEST
+        constexpr auto DOWN_SYMBOL = L"| ";
+        constexpr auto RIGHT_SYMBOL = L"> ";
+        #else
+        constexpr auto DOWN_SYMBOL = L"\u2502 ";
+        constexpr auto RIGHT_SYMBOL = L"\u251C ";
+        #endif
+    }
+
     template<typename T>
     class TreeNode : private NonCopyable<TreeNode<T>>
     {
@@ -88,8 +99,8 @@ namespace Ull
             if (depth != 0)
             {
                 for (uint32_t i = 0; i < depth - 1; ++i)
-                    line.append(L"\u2502 ");
-                line.append(L"\u251C ");
+                    line.append(DOWN_SYMBOL);
+                line.append(RIGHT_SYMBOL);
             }
 
             ULOGD(line << m_name);
