@@ -98,9 +98,11 @@ project "GLFW"
 			"_GLFW_X11"
 		}
 
-    filter {"configurations:Debug", "configurations:Tests"}
-		runtime "Debug"
+    filter "configurations:Debug or configurations:Tests"
+        runtime "Debug"
+        staticruntime "on"
 		symbols "on"
+        defines {"DEBUG"}
 
 	filter "configurations:Release"
 		runtime "Release"
@@ -136,9 +138,11 @@ project "GLAD"
 	filter "system:linux"
 		systemversion "latest"
 
-    filter {"configurations:Debug", "configurations:Tests"}
-		runtime "Debug"
-		symbols "on"
+    filter "configurations:Debug or configurations:Tests"
+        runtime "Debug"
+        staticruntime "on"
+	    symbols "on"
+        defines {"DEBUG"}
 
 	filter "configurations:Release"
 		runtime "Release"
@@ -203,9 +207,11 @@ project "IMGUI"
         cppdialect "C++17"
         staticruntime "On"
 
-    filter {"configurations:Debug", "configurations:Tests"}
-		runtime "Debug"
+    filter "configurations:Debug or configurations:Tests"
+        runtime "Debug"
+        staticruntime "on"
 		symbols "on"
+        defines {"DEBUG"}
 
 	filter "configurations:Release"
 		runtime "Release"
@@ -290,9 +296,11 @@ project "FreeType"
             freetype_libdir.."/builds/windows/ftsystem.c",
         }
 
-    filter {"configurations:Debug", "configurations:Test"}
-        defines { "DEBUG" }
-        symbols "On"
+    filter "configurations:Debug or configurations:Tests"
+        runtime "Debug"
+        staticruntime "on"
+		symbols "on"
+        defines {"DEBUG"}
 
     filter "configurations:Release"
         defines { "NDEBUG" }
@@ -328,10 +336,11 @@ project "GoogleTest"
         systemversion "latest"
         cppdialect "C++17"
 
-    filter {"configurations:Debug", "configurations:Tests"}
-		runtime "Debug"
+    filter "configurations:Debug or configurations:Tests"
+        runtime "Debug"
+        staticruntime "on"
 		symbols "on"
-        defines { "DEBUG" }
+        defines {"DEBUG"}
 
 	filter "configurations:Release"
 		runtime "Release"
@@ -423,6 +432,7 @@ project "Ullmannite"
 
     filter "configurations:Tests"
         defines {"DEBUG", "GTEST"}
+        runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"

@@ -2,11 +2,28 @@
 
 #ifdef GTEST
 #include <iostream>
+#include <gtest/gtest.h>
+
+struct BankAcount {
+	int balance;
+
+	explicit BankAcount(const int balance) :
+		balance{ balance }
+	{
+
+	}
+};
+
+TEST(first_test, first_name)
+{
+	BankAcount account(15);
+	EXPECT_EQ(account.balance, 15);
+}
 
 int main()
 {
-	std::cout << "Hello wrold\n";
-	return 0;
+	testing::InitGoogleTest();
+	return RUN_ALL_TESTS();
 }
 
 #else
