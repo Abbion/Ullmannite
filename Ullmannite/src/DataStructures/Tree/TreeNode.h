@@ -5,6 +5,7 @@
 #include <vector>
 #include "Utilities/PointerHelper.h"
 #include "Utilities/NonCopyable.h"
+#include "Utilities/StrongType.h"
 #include "Logger/Logger.h"
 
 namespace Ull
@@ -19,6 +20,8 @@ namespace Ull
         constexpr auto RIGHT_SYMBOL = L"\u251C ";
         #endif
     }
+
+    typedef StrongType<size_t, struct NodeIdStruct, StrongTypeEq> NodeId;
 
     template<typename T>
     class TreeNode : private NonCopyable<TreeNode<T>>
@@ -41,56 +44,61 @@ namespace Ull
         }
 
         std::string         GetName() const     { return m_name; }
-        std::size_t         GetId() const       { return m_id; }
+        NodeId              GetId() const       { return m_id; }
         NotOwner<T>         GetParent() const   { return m_parent; }
         std::vector<TRef>&  GetChildren()       { return m_children; }
-        NotOwner<T>         GetRoot() const     { return m_root; }
-        std::optional<TRef> GetUiElement(const std::string& name)
+        NotOwner<T>         GetRoot()
         {
-            const auto id = std::hash<std::string>{}(name);
+            T* currentRoot = m_self.Get();
+            auto parent = GetParent().Get();
 
-            for (auto& child : m_children)
+            while (parent != nullptr)
             {
-                if (child->GetId() == id)
-                    return child;
+                currentRoot = parent;
+                parent = parent->GetParent().Get();
             }
 
+            return currentRoot;
+        }
+
+        std::optional<NotOwner<T>> GetNodeByName(const std::string& name)
+        {
+            const auto id = NodeId(std::hash<std::string>{}(name));
+            auto result = GetNodeByName(m_self.Get(), id);
+
+            if (result)
+                return NotOwner(result.value());
             return std::nullopt;
         }
 
         void AddChildNode(TRef childNode)
         {
-            const auto newId = childNode->GetId();
-            bool idExists = false;
+            std::vector<NodeId> idVector;
+            idVector.reserve(GetTotalSize(childNode.get()));
+            GetAllIdsInBranch(childNode.get(), idVector);
 
-            if (m_root == nullptr)
+            bool idExists = false;
+            auto rootRef = GetRoot().Get();
+
+            for (const auto id : idVector)
             {
-                if (newId == m_id)
-                    idExists = true;
-                else
+                if (IdExists(rootRef, id))
                 {
-                    for (auto& child : m_children)
-                    {
-                        if (IdExists(newId, child.get()))
-                            idExists = true;
-                    }
-                }
-            }
-            else
-            {
-                if (IdExists(newId, m_root.Get()))
                     idExists = true;
+                    break;
+                }
             }
 
             if (idExists)
             {
+                #ifndef GTEST
                 ULOGE("Element: " << childNode->GetName() << " with ID: " << childNode->GetId() << " is present in: " << m_name);
+                #endif 
                 return;
             }
 
             m_children.push_back(childNode);
             childNode->SetParent(static_cast<T*>(this));
-            childNode->UpdateRoot(m_root.Get());
         }
 
         void PrintTree(const uint32_t depth = 0)
@@ -112,45 +120,73 @@ namespace Ull
     protected:
         TreeNode(const std::string& name) :
             m_name{ name },
-            m_id{ std::hash<std::string>{}(m_name) }
+            m_id{ std::hash<std::string>{}(m_name) },
+            m_self{ static_cast<T*>(this) }
         {}
 
         TreeNode(TreeNode&& source) noexcept :
             m_name{ source.m_name },
             m_id{ source.m_id },
             m_parent{ source.m_parent },
-            m_children{ source.m_children }
+            m_children{ source.m_children },
+            m_self{ source.m_self }
         {}
 
     private:
-        bool IdExists(const size_t id, T* uiElement) const
+        bool IdExists(T* node, const NodeId id) const
         {
-            if (m_id == id)
+            if (node->GetId() == id)
                 return true;
 
-            for (const auto& child : uiElement->GetChildren())
+            for (const auto& child : node->GetChildren())
             {
-                if (IdExists(id, child.get()))
+                if (IdExists(child.get(), id))
                     return true;
             }
 
             return false;
         }
 
-        void SetParent(NotOwner<T> parent) { m_parent = parent; }
-        void UpdateRoot(T* root)
+        std::optional<T*> GetNodeByName(T* node, const NodeId id)
         {
-            m_root = root;
+            if (node->GetId() == id)
+                return node;
 
-            for (auto& child : m_children)
-                child->UpdateRoot(root);
+            for (auto& child : node->GetChildren())
+            {
+                auto result = GetNodeByName(child.get(), id);
+                if (result)
+                    return result;
+            }
+
+            return std::nullopt;
         }
 
-        std::string m_name;
-        std::size_t m_id{ 0 };
+        void GetAllIdsInBranch(T* node, std::vector<NodeId>& idVector)
+        {
+            idVector.emplace_back(node->GetId());
 
+            for (auto& child : node->GetChildren())
+                GetAllIdsInBranch(child.get(), idVector);
+        }
+
+        uint64_t GetTotalSize(T* node, uint64_t currentSize = 0)
+        {
+            currentSize++;
+
+            for (auto& child : node->GetChildren())
+                currentSize += GetTotalSize(child.get(), currentSize);
+
+            return currentSize;
+        }
+
+        void SetParent(NotOwner<T> parent) { m_parent = parent; }
+
+        const std::string m_name;
+        const NodeId m_id;
+
+        const NotOwner<T> m_self;
         NotOwner<T> m_parent{ nullptr };
         std::vector<TRef> m_children;
-        NotOwner<T> m_root{ nullptr };
     };
 }
