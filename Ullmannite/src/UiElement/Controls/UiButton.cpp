@@ -5,12 +5,12 @@
 using namespace Ull;
 
 UiButton::UiButton(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiBasicControl(name, position, size),
+    UiBasicControl(name, position, size, UiControlType::UiButton),
     m_buttonText(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Button")
 {
-    m_buttonText.SetParent(this);
     m_buttonText.SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
     m_buttonText.SetSampleThreshold(1.5f);
+    //m_buttonText.SetSampleThreshold(100.f);
 
     AddChildNode(std::shared_ptr<UiElement>(&m_buttonText));
 }

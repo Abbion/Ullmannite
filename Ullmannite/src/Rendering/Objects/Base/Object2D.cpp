@@ -30,3 +30,11 @@ void Object2D::SetScale(const float scale)
 {
     m_scale = scale;
 }
+
+glm::mat4 Object2D::GetTransform() const
+{
+    auto transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, glm::vec3{ m_position.x, m_position.y, 0.0f });
+    transform = glm::scale(transform, glm::vec3{ m_size.x * m_scale, m_size.y * m_scale, 1.0f });
+    return transform;
+}

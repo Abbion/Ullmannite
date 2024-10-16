@@ -82,8 +82,6 @@ void UiView3D::Init()
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
     root->AddNode(cubeMarch);
 
-
-    m_titleText->SetParent(this);
     m_titleText->CreateResources();
     AddChildNode(m_titleText);
 }

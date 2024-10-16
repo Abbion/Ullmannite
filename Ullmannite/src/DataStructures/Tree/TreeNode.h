@@ -21,7 +21,7 @@ namespace Ull
         #endif
     }
 
-    typedef StrongType<size_t, struct NodeIdStruct, StrongTypeEq> NodeId;
+    typedef StrongType<size_t, struct NodeIdStruct, StrongTypeEq, StrongTypePrint> NodeId;
 
     template<typename T>
     class TreeNode : private NonCopyable<TreeNode<T>>

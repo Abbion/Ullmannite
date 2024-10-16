@@ -29,4 +29,13 @@ namespace Ull
 			return !(lhs == rhs);
 		}
 	};
+
+	template<typename T>
+	class StrongTypePrint
+	{
+		friend std::ostream& operator<<(std::ostream& out, const T& strongType)
+		{
+			return out << strongType.Get();
+		}
+	};
 }

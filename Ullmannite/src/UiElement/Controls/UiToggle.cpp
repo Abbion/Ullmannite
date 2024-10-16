@@ -5,10 +5,9 @@
 using namespace Ull;
 
 UiToggle::UiToggle(std::string name, glm::uvec2 position, glm::uvec2 size) :
-	UiBasicControl(name, position, size),
+	UiBasicControl(name, position, size, UiControlType::UiToggle),
     m_buttonText(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Toggle")
 {
-    m_buttonText.SetParent(this);
     m_buttonText.SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
     m_buttonText.SetSampleThreshold(1.5f);
 

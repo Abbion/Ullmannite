@@ -19,7 +19,7 @@ namespace {
 }
 
 UiText::UiText(const std::string name, const glm::uvec2 position, const glm::uvec2 size, const std::wstring text) :
-	UiBasicControl{ name, position, size },
+	UiBasicControl{ name, position, size, UiControlType::UiText },
 	m_text{ text }
 {
 	m_textAlignmentlMatrix = glm::mat4x4(1.0f);
@@ -127,6 +127,7 @@ void UiText::CreateResources()
 	std::vector<unsigned int> indices(m_text.length() * 6);
 
 	m_cursorPos = glm::vec3(0.0f, static_cast<float>(loadedFontSize) * scale.y, 0.0f);
+	m_displayTextSize = glm::vec2{ m_cursorPos.x, m_cursorPos.y };
 
 	for (unsigned i = 0; i < m_text.length(); ++i)
 	{
@@ -156,23 +157,28 @@ void UiText::CreateResources()
 
 		const auto& character = characters.at(letter);
 
+		//Left down
 		m_cursorPos.x += character.bearing.x * scale.x;
 		m_cursorPos.y += (character.size.y - character.bearing.y) * scale.y;
 		vertices[(i * 4)].vertices = m_cursorPos;
 		vertices[(i * 4)].coords = glm::vec2{ (character.position.x - m_smoothing * enableSmoothing) / 2048.0f, (character.position.y + character.size.y + m_smoothing * enableSmoothing) / 2048.0f };
 
+		//Left Up
 		m_cursorPos.y -= character.size.y * scale.y;
 		vertices[(i * 4) + 1].vertices = m_cursorPos;
 		vertices[(i * 4) + 1].coords = glm::vec2{ (character.position.x - m_smoothing * enableSmoothing) / 2048.0f, (character.position.y - m_smoothing * enableSmoothing) / 2048.0f };
 
+		//Right Up
 		m_cursorPos.x += character.size.x * scale.x;
 		vertices[(i * 4) + 2].vertices = m_cursorPos;
 		vertices[(i * 4) + 2].coords = glm::vec2{ (character.position.x + character.size.x + m_smoothing * enableSmoothing) / 2048.0f, (character.position.y - m_smoothing * enableSmoothing) / 2048.0f };
 
+		//Right Down
 		m_cursorPos.y += character.size.y * scale.y;
 		vertices[(i * 4) + 3].vertices = m_cursorPos;
 		vertices[(i * 4) + 3].coords = glm::vec2{ (character.position.x + character.size.x + m_smoothing * enableSmoothing) / 2048.0f, (character.position.y + character.size.y + m_smoothing * enableSmoothing) / 2048.0f };
 
+		//Left Down of next character
 		m_cursorPos.y -= (character.size.y - character.bearing.y) * scale.y;
 		m_cursorPos.x -= (character.size.x + character.bearing.x) * scale.x;
 		m_cursorPos.x += (character.advance + m_spaceing) * scale.x;
@@ -216,17 +222,7 @@ void UiText::Update()
 void UiText::Render()
 {
 	m_shader->Bind();
-
-
-	//m_perspective[3] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	if (m_text[0] == 61440)
-	{
-		//m_perspective[3].x -= 0.0005f;
-		//m_textAlignmentlMatrix = glm::mat4x4(1.0f);
-		int b = 2;
-	}
-
-	m_shader->SetFloat4x4("modelMatrix", m_perspective * m_textAlignmentlMatrix);
+	m_shader->SetFloat4x4("modelMatrix", m_perspective * m_textAlignmentlMatrix * GetTransform());
 	m_shader->SetFloat("smoothing", m_smoothing);
 	m_shader->SetFloat("threshold", m_threshold);
 	m_shader->SetFloat4("color", m_color);
@@ -272,7 +268,13 @@ void UiText::RealignText()
 		verticalOffset = 0.0f;
 		break;
 	case VerticalAlignment::CENTER:
-		verticalOffset = (size.y / 2.0f) - ((m_cursorPos.y / 2.0f) * size.y);
+	{
+		const auto a = (size.y / 2.0f);
+		const auto b = (m_cursorPos.y / 2.0f);
+		const auto c = b * size.y;
+		const auto d = a - c;
+		verticalOffset = (size.y / 2.0f) - (10.0f);
+	}
 		break;
 	case VerticalAlignment::BOTTOM:
 		verticalOffset = size.y - (m_cursorPos.y * size.y);

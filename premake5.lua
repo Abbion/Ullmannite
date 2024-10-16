@@ -406,8 +406,7 @@ project "Ullmannite"
 
         links
         {
-            "opengl32.lib",
-            "GoogleTest"
+            "opengl32.lib"
         }
 
     filter "system:linux"
@@ -438,6 +437,11 @@ project "Ullmannite"
         includedirs
         {
             "%{prj.name}/tests",
+        }
+
+        links
+        {
+            "GoogleTest"
         }
 
     filter "configurations:Release"

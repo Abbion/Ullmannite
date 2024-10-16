@@ -3,7 +3,7 @@
 
 namespace Ull
 {
-    enum class ControlType {
+    enum class UiControlType {
         UiButton,
         UiText,
         UiToggle
@@ -12,13 +12,10 @@ namespace Ull
     class UiBasicControl : public UiElement
     {
     public:
-        UiBasicControl(std::string name, glm::uvec2 position, glm::uvec2 size);
         virtual ~UiBasicControl() {}
 
         void SetBackgroundColor(const glm::vec4& backgroundColor) { m_backgroundColor = backgroundColor; }
         void SetHoverColor(const glm::vec4& hoverColor) { m_hoverColor = hoverColor; }
-
-        void SetParent(NotOwner<UiElement> parent);
 
         void CreateResources() override;
         void HandleEvent(Event* event) override;
@@ -26,6 +23,10 @@ namespace Ull
         virtual void Render() override;
 
     protected:
+        UiBasicControl(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const UiControlType type);
+
+        const UiControlType m_uiControlType;
+
         void CheckHover();
 
         glm::vec4 m_backgroundColor{ 1.0f, 1.0f, 1.0f, 1.0f };

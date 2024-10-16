@@ -94,7 +94,7 @@ void UiTitleBar::Render()
 
 void UiTitleBar::CreateControls()
 {
-	m_closeButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_closeButton->SetBackgroundColor(glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
 	m_closeButton->SetHoverColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.2f));
 	m_closeButton->CreateResources();
 
@@ -109,9 +109,7 @@ void UiTitleBar::CreateControls()
 
 	AddChildNode(m_closeButton);
 
-	//closeButtonText.GetRoot()->PrintHierarchy();
-
-	m_restoreButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_restoreButton->SetBackgroundColor(glm::vec4(0.0f, 0.5f, 0.0f, 1.0f));
 	m_restoreButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	m_restoreButton->CreateResources();
 
@@ -127,9 +125,9 @@ void UiTitleBar::CreateControls()
 	restoreButtonText.SetFont(FontTag::UI_ICON);
 	restoreButtonText.SetString(std::wstring{ static_cast<wchar_t>(Icon::MAXIMIZE_WINDOW) });
 
-	AddChildNode(m_restoreButton);
+	//AddChildNode(m_restoreButton);
 
-	m_minimizeButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_minimizeButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
 	m_minimizeButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	m_minimizeButton->CreateResources();
 
@@ -142,7 +140,7 @@ void UiTitleBar::CreateControls()
 	minimizeButtonText.SetFont(FontTag::UI_ICON);
 	minimizeButtonText.SetString(std::wstring{ static_cast<wchar_t>(Icon::MINIMIZE_WINDOW)} );
 
-	AddChildNode(m_minimizeButton);
+	//AddChildNode(m_minimizeButton);
 
 	m_titleText->SetFontSize(14);
 	m_titleText->SetSampleThreshold(1.0f);

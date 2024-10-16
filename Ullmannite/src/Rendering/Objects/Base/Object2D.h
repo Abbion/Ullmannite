@@ -16,6 +16,8 @@ namespace Ull
         void SetSize(const glm::vec2 size);
         void SetScale(const float scale);
 
+        virtual glm::mat4 GetTransform() const;
+
     private:
         glm::vec2 m_position{ 0.0f, 0.0f };
         glm::vec2 m_size{ 1.0f, 1.0f };

@@ -16,7 +16,7 @@
 using namespace Ull;
 
 UiGradientEditor::UiGradientEditor(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiElement(name, position, size)
+    UiElement(name, position, size, UiElementType::GradientEditor)
 {
     auto& shaderManager = Renderer::GetInstance().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_GRADIENT_SHADER);
@@ -235,7 +235,7 @@ void UiGradientEditor::RenderGradient()
 }
 
 GradientMarker::GradientMarker(std::string name, glm::uvec2 position, glm::uvec2 size, glm::vec4 color) :
-    UiElement(name, position, size),
+    UiElement(name, position, size, UiElementType::GradientMarker),
     m_color(color),
     m_pointerColor(0.7f, 0.7f, 0.7f, 1.0f)
 {

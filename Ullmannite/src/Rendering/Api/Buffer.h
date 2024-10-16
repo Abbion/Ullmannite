@@ -17,11 +17,9 @@ namespace Ull
          : name(name), dataType(dataType), amount(amount), normalized(normalized) {}
     };
 
-    class VertexBuffer
+    class VertexBuffer : private NonCopyable<VertexBuffer>
     {
         public:
-            NON_COPYABLE(VertexBuffer)
-
             virtual ~VertexBuffer() {}
 
             static VertexBuffer* Create(int size, float* data, GraphicsBufferType type);
@@ -33,11 +31,9 @@ namespace Ull
             VertexBuffer() = default;
     };
 
-    class IndexBuffer
+    class IndexBuffer : private NonCopyable<IndexBuffer>
     {
         public:
-            NON_COPYABLE(IndexBuffer);
-
             virtual ~IndexBuffer() {}
 
             static IndexBuffer* Create(int size, unsigned int* data, GraphicsBufferType type);
@@ -51,11 +47,9 @@ namespace Ull
             IndexBuffer() = default;
     };
 
-    class VertexLayout
+    class VertexLayout : private NonCopyable<VertexLayout>
     {
-        public:
-            NON_COPYABLE(VertexLayout);
-        
+        public:        
             virtual ~VertexLayout() {}
 
             static VertexLayout* Create(std::initializer_list<LayoutElement> initList);
@@ -95,11 +89,9 @@ namespace Ull
         Format m_format{ Format::DEPTH_STENCIL };
     };
 
-    class FrameBuffer
+    class FrameBuffer : private NonCopyable<FrameBuffer>
     {
     public:
-        NON_COPYABLE(FrameBuffer);
-
         virtual ~FrameBuffer() {}
 
         Texture2D* GetColorTarget() const { return m_colorTarget; }
@@ -118,11 +110,9 @@ namespace Ull
         RenderBuffer* m_depthTarget{ nullptr };
     };
 
-    class StorageBuffer
+    class StorageBuffer : private NonCopyable<StorageBuffer>
     {
     public:
-        NON_COPYABLE(StorageBuffer);
-
         virtual ~StorageBuffer() {}
 
         size_t GetSize() { return m_size; }
@@ -140,11 +130,9 @@ namespace Ull
         mutable std::uint8_t m_currentBindIndex{ 0 };
     };
 
-    class AtomicCounterBuffer
+    class AtomicCounterBuffer : private NonCopyable<AtomicCounterBuffer>
     {
     public:
-        NON_COPYABLE(AtomicCounterBuffer);
-
         virtual ~AtomicCounterBuffer() {}
 
         static AtomicCounterBuffer* Create(uint32_t* data, uint16_t size);

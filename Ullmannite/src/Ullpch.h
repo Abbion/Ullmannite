@@ -12,6 +12,7 @@
 
 #include "Exceptions/Exceptions.h"
 #include "Utilities/PointerHelper.h"
+#include "Utilities/NonCopyable.h"
 #include "Logger/Logger.h"
 
 #ifdef PLATFORM_WINDOWS
