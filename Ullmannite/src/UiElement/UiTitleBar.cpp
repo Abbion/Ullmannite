@@ -30,8 +30,11 @@ UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
 
 void UiTitleBar::CreateResources()
 {
-	UiArea::CreateResources();	//TODO: What does it do
+	CreateFrameBuffer();
+
 	const auto size = GetSize();
+	auto areaSizeChangedEvent = std::make_shared<RenderAreaSizeChanged>(EventType::RenderAreaSizeChanged);
+	UiArea::HandleEvent(areaSizeChangedEvent.get());
 
 	const auto buttonWidth = ((float)size.y * 1.5f);
 	m_window->SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(size.x - (3.0f * buttonWidth), size.y));
@@ -125,7 +128,7 @@ void UiTitleBar::CreateControls()
 	restoreButtonText.SetFont(FontTag::UI_ICON);
 	restoreButtonText.SetString(std::wstring{ static_cast<wchar_t>(Icon::MAXIMIZE_WINDOW) });
 
-	//AddChildNode(m_restoreButton);
+	AddChildNode(m_restoreButton);
 
 	m_minimizeButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
 	m_minimizeButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -140,7 +143,7 @@ void UiTitleBar::CreateControls()
 	minimizeButtonText.SetFont(FontTag::UI_ICON);
 	minimizeButtonText.SetString(std::wstring{ static_cast<wchar_t>(Icon::MINIMIZE_WINDOW)} );
 
-	//AddChildNode(m_minimizeButton);
+	AddChildNode(m_minimizeButton);
 
 	m_titleText->SetFontSize(14);
 	m_titleText->SetSampleThreshold(1.0f);

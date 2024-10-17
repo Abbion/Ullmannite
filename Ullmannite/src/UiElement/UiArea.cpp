@@ -33,10 +33,7 @@ void UiArea::CreateResources()
     if (m_layout != nullptr)
         delete m_layout;
 
-    if(m_frameBuffer != nullptr)
-        delete m_frameBuffer;
-
-    m_frameBuffer = FrameBuffer::Create(GetSize(), m_usesDepth);
+    CreateFrameBuffer();
 
     float vertices[] = { 
         -1.0f, -1.0f, 0.0f,
@@ -149,4 +146,12 @@ void UiArea::CheckMouseInArea()
             m_areaUpdated = true;
         m_inArea = false;
     }
+}
+
+void UiArea::CreateFrameBuffer()
+{
+    if (m_frameBuffer != nullptr)
+        delete m_frameBuffer;
+
+    m_frameBuffer = FrameBuffer::Create(GetSize(), m_usesDepth);
 }

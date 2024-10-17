@@ -22,6 +22,7 @@ namespace Ull
     protected:
         void RenderBackground();
         void CheckMouseInArea();
+        void CreateFrameBuffer();
 
         FrameBuffer* m_frameBuffer{ nullptr };
         bool m_areaUpdated{ false };

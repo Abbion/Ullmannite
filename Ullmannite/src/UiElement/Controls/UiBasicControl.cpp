@@ -65,8 +65,7 @@ void UiBasicControl::HandleEvent(Event* event)
     case EventType::WindowResize:
     case EventType::UiScaledDown:
     case EventType::UiScaledUp:
-    case EventType::ParentPositionChanged:
-    case EventType::ParentSizeChanged:
+    case EventType::RenderAreaSizeChanged:
         UpdatePerspective();
     break;
 
@@ -116,16 +115,11 @@ void UiBasicControl::CheckHover()
 
 inline void UiBasicControl::UpdatePerspective()
 {
-    auto parent = GetParent();
+    const auto renderArea = FindUiElementAboveByType(UiElementType::Area);
 
-    UASSERT((parent != nullptr), "No parent assigned!");
-
-    const auto parentSize = static_cast<Object2D*>(parent.Get())->GetSize();
-
-    if (parentSize.x == 45)
+    if (renderArea)
     {
-        m_perspective = glm::ortho(0.0f, 1280.0f, 30.0f, 0.0f);
+        const auto renderAreaSize = renderArea.value()->GetSize();
+        m_perspective = glm::ortho(0.0f, (float)renderAreaSize.x, (float)renderAreaSize.y, 0.0f);
     }
-    else
-        m_perspective = glm::ortho(0.0f, (float)parentSize.x, (float)parentSize.y, 0.0f);
 }

@@ -41,9 +41,7 @@ namespace Ull
         ExaminationThresholdChanged,
         GradientUpdated,
 
-        ParentPositionChanged,
-        ParentSizeChanged,
-        ParentScaleChanged
+        RenderAreaSizeChanged
     };
 
     //==================================================================
@@ -107,7 +105,5 @@ namespace Ull
     typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;
     typedef ValueEvent<CuttingSettings> CuttingSettingsChangedEvent;
 
-    typedef Event ParentPositionChanged;
-    typedef Event ParentSizeChanged;
-    typedef Event ParentScaleChanged;
+    typedef Event RenderAreaSizeChanged;
 };
