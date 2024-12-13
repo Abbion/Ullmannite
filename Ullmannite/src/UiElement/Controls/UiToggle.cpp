@@ -14,6 +14,14 @@ UiToggle::UiToggle(std::string name, glm::uvec2 position, glm::uvec2 size) :
     AddChildNode(m_buttonText);
 }
 
+void UiToggle::SetEnabled(const bool state)
+{
+    if (m_state != state)
+        state == true ? m_onEnabled(*this) : m_onDisabled(*this);
+
+    m_state = state;
+}
+
 void UiToggle::SetSize(const glm::uvec2 size)
 {
     UiBasicControl::SetSize(size);

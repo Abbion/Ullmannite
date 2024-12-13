@@ -32,9 +32,6 @@ namespace Ull
 		NotOwner<UllWindow> m_window{ nullptr };
 
 		bool m_onDragArea{ false };
-		bool m_closePressed{ false };
-		bool m_minimizePressed{ false };
-		bool m_maximizeRestorPressed{ false };
 
 		std::shared_ptr<UiButton> m_closeButton;
 		std::shared_ptr<UiButton> m_minimizeButton;

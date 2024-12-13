@@ -50,7 +50,6 @@ void UiTitleBar::HandleEvent(Event* event)
 	switch (event->GetType())
 	{	
 	case EventType::WindowRestored:
-		m_areaUpdated = true;
 		if (m_restoreButton->IsEnabled())
 			m_restoreButton->SetEnabled(false);
 	break;
@@ -67,26 +66,6 @@ void UiTitleBar::HandleEvent(Event* event)
 
 void UiTitleBar::Update()
 {
-	if (m_minimizePressed)
-	{
-		m_window->Minimize();
-		m_minimizePressed = false;
-	}
-	else if (m_maximizeRestorPressed)
-	{
-		if (m_window->IsMaximized())
-			m_window->Restore();
-		else
-			m_window->Maximize();
-		
-		m_maximizeRestorPressed = false;
-	}
-	else if (m_closePressed)
-	{
-		m_window->Close();
-		m_closePressed = false;
-	}
-
 	UiRenderArea::Update();
 }
 
@@ -97,7 +76,7 @@ void UiTitleBar::Render()
 
 void UiTitleBar::CreateControls()
 {
-	m_closeButton->SetBackgroundColor(glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
+	m_closeButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
 	m_closeButton->SetHoverColor(glm::vec4(1.0f, 0.0f, 0.0f, 0.2f));
 	m_closeButton->CreateResources();
 
@@ -112,16 +91,20 @@ void UiTitleBar::CreateControls()
 
 	AddChildNode(m_closeButton);
 
-	m_restoreButton->SetBackgroundColor(glm::vec4(0.0f, 0.5f, 0.0f, 1.0f));
-	m_restoreButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	m_restoreButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_restoreButton->SetHoverColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.05f));
 	m_restoreButton->CreateResources();
 
 	m_restoreButton->SetOnEnabledFunction([this](UiToggle& buttonElement) {
+		auto restoreButtonText = m_restoreButton->GetTextControl();
+		restoreButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::RESTORE_WINDOW) });
 		m_window->Maximize();
-		});
+	});
 	m_restoreButton->SetOnDisambledFunction([this](UiToggle& buttonElement) {
+		auto restoreButtonText = m_restoreButton->GetTextControl();
+		restoreButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::MAXIMIZE_WINDOW) });
 		m_window->Restore();
-		});
+	});
 
 	auto restoreButtonText = m_restoreButton->GetTextControl();
 	restoreButtonText->SetFontSize(14);
@@ -130,8 +113,8 @@ void UiTitleBar::CreateControls()
 
 	AddChildNode(m_restoreButton);
 
-	m_minimizeButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
-	m_minimizeButton->SetHoverColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	m_minimizeButton->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_minimizeButton->SetHoverColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.05f));
 	m_minimizeButton->CreateResources();
 
 	m_minimizeButton->SetOnClickFunction([this](UiButton& buttonElement) {

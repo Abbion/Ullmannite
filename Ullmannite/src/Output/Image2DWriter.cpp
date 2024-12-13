@@ -101,10 +101,10 @@ void Image2DWriter::SaveToFile(const std::string& fileName, const Format format,
 	{
 	case Image2DWriter::Format::PNG:
 		result = stbi_write_png(fullFileName.c_str(), m_size.x, m_size.y, (int)m_channels, m_pixelData.data(), 0);
-	break;
+		break;
 	case Image2DWriter::Format::BMP:
 		result = stbi_write_bmp(fullFileName.c_str(), m_size.x, m_size.y, (int)m_channels, m_pixelData.data());
-	break;
+		break;
 	case Image2DWriter::Format::TGA:
 		result = stbi_write_tga(fullFileName.c_str(), m_size.x, m_size.y, (int)m_channels, m_pixelData.data());
 		break;
@@ -116,6 +116,9 @@ void Image2DWriter::SaveToFile(const std::string& fileName, const Format format,
 		return;
 		break;
 	}
+
+	if (result == 0)
+		int a = 2;
 
 	UASSERT(result != 0, "Can't save image to file!");
 }
