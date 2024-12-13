@@ -3,7 +3,7 @@
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "UiArea.h"
+#include "UiRenderArea.h"
 
 using namespace Ull;
 
@@ -62,7 +62,7 @@ void UiLayout::Render()
     {
         CreateRenderAreaForUiElements(i);
         m_layout->Bind();
-        static_cast<UiArea*>(GetChildren()[i].get())->BindTargetTexture();
+        static_cast<UiRenderArea*>(GetChildren()[i].get())->BindTargetTexture();
         Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
     }
 }

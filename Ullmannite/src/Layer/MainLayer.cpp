@@ -4,7 +4,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "Rendering/Api/ShaderManager.h"
 #include "Rendering/Api/Renderer.h"
-#include "UiElement/UiArea.h"
+#include "UiElement/UiRenderArea.h"
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>

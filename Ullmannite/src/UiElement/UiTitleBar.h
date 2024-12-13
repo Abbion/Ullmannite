@@ -1,5 +1,5 @@
 #pragma once
-#include "UiArea.h"
+#include "UiRenderArea.h"
 #include "Window/UllWindow.h"
 #include <memory>
 #include "Utilities/PointerHelper.h"
@@ -9,11 +9,11 @@
 
 namespace Ull
 {
-	class UiTitleBar : public UiArea
+	class UiTitleBar : public UiRenderArea
 	{
 	public:
 		UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size);
-		~UiTitleBar() {}
+		virtual ~UiTitleBar() {}
 
 		void SetWindow(const NotOwner<UllWindow>& window) { m_window = window; }
 

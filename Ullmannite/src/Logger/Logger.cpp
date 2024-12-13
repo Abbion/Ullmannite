@@ -2,7 +2,7 @@
 #include "Logger.h"
 #include "Layer/Layer.h"
 #include "UiElement/UiLayout.h"
-#include "UiElement/UiArea.h"
+#include "UiElement/UiRenderArea.h"
 #include "UiElement/UiElement.h"
 
 plog::util::nstring Ull::SimpleTxtFormatterImpl::format(const plog::Record& record)

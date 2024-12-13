@@ -5,11 +5,11 @@
 
 namespace Ull
 {
-    class UiArea : public UiElement
+    class UiRenderArea : public UiElement
     {
     public:
-        UiArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth);
-        ~UiArea();
+        UiRenderArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth);
+        virtual ~UiRenderArea();
 
         void CreateResources() override;
         void SetBackgroundColor(const glm::vec4& color);

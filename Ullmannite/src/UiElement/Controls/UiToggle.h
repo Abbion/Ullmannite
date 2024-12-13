@@ -11,7 +11,7 @@ namespace Ull
         ~UiToggle() {}
 
         bool IsEnabled() const { return m_state; }
-        UiText& GetTextControl() { return m_buttonText; }
+        std::shared_ptr<UiText> GetTextControl() { return m_buttonText; }
 
         void SetEnabled(const bool state) { m_state = state; }
         void SetOnEnabledFunction(std::function<void(UiToggle& toggleElement)> onEnabled) { m_onEnabled = onEnabled; }
@@ -27,7 +27,7 @@ namespace Ull
         bool m_pressed{ false };
         bool m_state{ false };
 
-        UiText m_buttonText;
+        std::shared_ptr<UiText> m_buttonText;
 
         std::function<void(UiToggle& toggleElement)> m_onEnabled;
         std::function<void(UiToggle& toggleElement)> m_onDisabled;

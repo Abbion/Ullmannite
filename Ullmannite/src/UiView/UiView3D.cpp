@@ -41,7 +41,7 @@ namespace {
 }
 
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiArea(name, position, size, true),
+    UiRenderArea(name, position, size, true),
     m_scene("Scene 3D"),
     m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y), L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") }
 {
@@ -63,7 +63,7 @@ void UiView3D::Init()
     auto root = m_scene.GetRootNode();
 
     //Camera
-    auto camera = new Camera("Main camera", &m_scene, UiArea::GetSize());
+    auto camera = new Camera("Main camera", &m_scene, UiRenderArea::GetSize());
     camera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     camera->CalculateProjectionMatrix();
     camera->CalculateViewMatrix();
@@ -97,7 +97,7 @@ void UiView3D:: HandleEvent(Event* event)
         if(cameraNode != nullptr)
         {
             auto camera = static_cast<Camera*>(cameraNode);
-            camera->SetRenderAreaSize(UiArea::GetSize());
+            camera->SetRenderAreaSize(UiRenderArea::GetSize());
         }
     }
     break;

@@ -1,5 +1,5 @@
 #include "Ullpch.h"
-#include "UiArea.h"
+#include "UiRenderArea.h"
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtc/matrix_transform.hpp"
@@ -7,7 +7,7 @@
 
 using namespace Ull;
 
-UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth) :
+UiRenderArea::UiRenderArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth) :
     UiElement(name, position, size, UiElementType::Area),
     m_usesDepth(usesDepth)
 {
@@ -16,13 +16,13 @@ UiArea::UiArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool uses
     CreateResources();
 }
 
-UiArea::~UiArea()
+UiRenderArea::~UiRenderArea()
 {
     if (m_frameBuffer != nullptr)
         delete m_frameBuffer;
 }
 
-void UiArea::CreateResources()
+void UiRenderArea::CreateResources()
 {
     if (m_vertexBuffer != nullptr)
         delete m_vertexBuffer;
@@ -63,18 +63,18 @@ void UiArea::CreateResources()
     m_areaUpdated = true;
 }
 
-void UiArea::BindTargetTexture()
+void UiRenderArea::BindTargetTexture()
 {
     m_frameBuffer->GetColorTarget()->Bind();
 }
 
-void UiArea::SetBackgroundColor(const glm::vec4& color)
+void UiRenderArea::SetBackgroundColor(const glm::vec4& color)
 {
     m_color = color;
     m_areaUpdated = true;
 }
 
-void UiArea::HandleEvent(Event* event)
+void UiRenderArea::HandleEvent(Event* event)
 {
     if (event->IsHandeled())
         return;
@@ -98,12 +98,12 @@ void UiArea::HandleEvent(Event* event)
     UiElement::HandleEvent(event);
 }
 
-void UiArea::Update()
+void UiRenderArea::Update()
 {
     UiElement::Update();
 }
 
-void UiArea::Render()
+void UiRenderArea::Render()
 {
     //if(m_areaUpdated)
     {
@@ -118,7 +118,7 @@ void UiArea::Render()
     }
 }
 
-void UiArea::RenderBackground()
+void UiRenderArea::RenderBackground()
 {
     Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
     Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), GetSize());
@@ -133,7 +133,7 @@ void UiArea::RenderBackground()
     Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }
 
-void UiArea::CheckMouseInArea()
+void UiRenderArea::CheckMouseInArea()
 {
     if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
     {
@@ -148,7 +148,7 @@ void UiArea::CheckMouseInArea()
     }
 }
 
-void UiArea::CreateFrameBuffer()
+void UiRenderArea::CreateFrameBuffer()
 {
     if (m_frameBuffer != nullptr)
         delete m_frameBuffer;

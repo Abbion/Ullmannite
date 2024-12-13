@@ -8,9 +8,8 @@ namespace Ull
     {
     public:
         UiButton(std::string name, glm::uvec2 position, glm::uvec2 size);
-        ~UiButton() {}
 
-        UiText& GetTextControl() { return m_buttonText; }
+        std::shared_ptr<UiText> GetTextControl() { return m_buttonText; }
 
         void SetOnClickFunction(std::function<void(UiButton& buttonElement)> onClick) { m_onClick = onClick; }
 
@@ -21,7 +20,7 @@ namespace Ull
         void Render();
 
     private:
-        UiText m_buttonText;
+        std::shared_ptr<UiText> m_buttonText;
 
         bool m_pressed{ false };
         std::function<void(UiButton& buttonElement)> m_onClick;

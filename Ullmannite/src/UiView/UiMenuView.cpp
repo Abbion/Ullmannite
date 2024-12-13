@@ -16,7 +16,7 @@ namespace
 }
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiArea(name, position, size, false)
+    UiRenderArea(name, position, size, false)
     //m_gradientEditor("GradientEditor", glm::uvec2(size.x * 0.5f, 80), glm::uvec2(size.x * 0.8f, 50))
 {
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));

@@ -16,7 +16,7 @@ namespace
 }
 
 UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
-	UiArea(name, position, size, false),
+	UiRenderArea(name, position, size, false),
 	m_closeButton{ std::make_shared<UiButton>("closeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
 	m_restoreButton{ std::make_shared<UiToggle>("restoreButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
 	m_minimizeButton{ std::make_shared<UiButton>("minimizeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
@@ -34,7 +34,7 @@ void UiTitleBar::CreateResources()
 
 	const auto size = GetSize();
 	auto areaSizeChangedEvent = std::make_shared<RenderAreaSizeChanged>(EventType::RenderAreaSizeChanged);
-	UiArea::HandleEvent(areaSizeChangedEvent.get());
+	UiRenderArea::HandleEvent(areaSizeChangedEvent.get());
 
 	const auto buttonWidth = ((float)size.y * 1.5f);
 	m_window->SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(size.x - (3.0f * buttonWidth), size.y));
@@ -62,7 +62,7 @@ void UiTitleBar::HandleEvent(Event* event)
 
 	}
 
-	UiArea::HandleEvent(event);
+	UiRenderArea::HandleEvent(event);
 }
 
 void UiTitleBar::Update()
@@ -87,12 +87,12 @@ void UiTitleBar::Update()
 		m_closePressed = false;
 	}
 
-	UiArea::Update();
+	UiRenderArea::Update();
 }
 
 void UiTitleBar::Render()
 {
-	UiArea::Render();
+	UiRenderArea::Render();
 }
 
 void UiTitleBar::CreateControls()
@@ -105,10 +105,10 @@ void UiTitleBar::CreateControls()
 		m_window->Close();
 	});
 
-	auto& closeButtonText = m_closeButton->GetTextControl();
-	closeButtonText.SetFontSize(14);
-	closeButtonText.SetFont(FontTag::UI_ICON);
-	closeButtonText.SetString(std::wstring{ static_cast<wchar_t>(Icon::CLOSE)});
+	auto closeButtonText = m_closeButton->GetTextControl();
+	closeButtonText->SetFontSize(14);
+	closeButtonText->SetFont(FontTag::UI_ICON);
+	closeButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::CLOSE)});
 
 	AddChildNode(m_closeButton);
 
@@ -123,10 +123,10 @@ void UiTitleBar::CreateControls()
 		m_window->Restore();
 		});
 
-	auto& restoreButtonText = m_restoreButton->GetTextControl();
-	restoreButtonText.SetFontSize(14);
-	restoreButtonText.SetFont(FontTag::UI_ICON);
-	restoreButtonText.SetString(std::wstring{ static_cast<wchar_t>(Icon::MAXIMIZE_WINDOW) });
+	auto restoreButtonText = m_restoreButton->GetTextControl();
+	restoreButtonText->SetFontSize(14);
+	restoreButtonText->SetFont(FontTag::UI_ICON);
+	restoreButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::MAXIMIZE_WINDOW) });
 
 	AddChildNode(m_restoreButton);
 
@@ -138,10 +138,10 @@ void UiTitleBar::CreateControls()
 		m_window->Minimize();
 	});
 
-	auto& minimizeButtonText = m_minimizeButton->GetTextControl();
-	minimizeButtonText.SetFontSize(14);
-	minimizeButtonText.SetFont(FontTag::UI_ICON);
-	minimizeButtonText.SetString(std::wstring{ static_cast<wchar_t>(Icon::MINIMIZE_WINDOW)} );
+	auto minimizeButtonText = m_minimizeButton->GetTextControl();
+	minimizeButtonText->SetFontSize(14);
+	minimizeButtonText->SetFont(FontTag::UI_ICON);
+	minimizeButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::MINIMIZE_WINDOW)} );
 
 	AddChildNode(m_minimizeButton);
 

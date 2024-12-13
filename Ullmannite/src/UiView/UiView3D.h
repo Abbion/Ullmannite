@@ -1,5 +1,5 @@
 #pragma once
-#include "UiElement/UiArea.h"
+#include "UiElement/UiRenderArea.h"
 #include "Scene/Scene.h"
 #include "Window/UllWindow.h"
 #include "Utilities/PointerHelper.h"
@@ -9,7 +9,7 @@
 
 namespace Ull
 {
-	class UiView3D : public UiArea
+	class UiView3D : public UiRenderArea
 	{
 	public:
 		UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size);

@@ -6,19 +6,19 @@ using namespace Ull;
 
 UiButton::UiButton(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiBasicControl(name, position, size, UiControlType::UiButton),
-    m_buttonText(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Button")
+    m_buttonText{ std::make_shared<UiText>(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Button") }
 {
-    m_buttonText.SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
-    m_buttonText.SetSampleThreshold(1.5f);
+    m_buttonText->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
+    m_buttonText->SetSampleThreshold(1.5f);
     //m_buttonText.SetSampleThreshold(100.f);
 
-    AddChildNode(std::shared_ptr<UiElement>(&m_buttonText));
+    AddChildNode(m_buttonText);
 }
 
 void UiButton::SetSize(const glm::uvec2 size)
 {
     UiBasicControl::SetSize(size);
-    m_buttonText.SetSize(size);
+    m_buttonText->SetSize(size);
 }
 
 void UiButton::HandleEvent(Event* event)

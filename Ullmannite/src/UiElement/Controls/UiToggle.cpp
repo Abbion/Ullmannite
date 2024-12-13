@@ -6,18 +6,18 @@ using namespace Ull;
 
 UiToggle::UiToggle(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiBasicControl(name, position, size, UiControlType::UiToggle),
-    m_buttonText(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Toggle")
+    m_buttonText{ std::make_shared<UiText>(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Toggle") }
 {
-    m_buttonText.SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
-    m_buttonText.SetSampleThreshold(1.5f);
+    m_buttonText->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
+    m_buttonText->SetSampleThreshold(1.5f);
 
-    AddChildNode(std::shared_ptr<UiElement>(&m_buttonText));
+    AddChildNode(m_buttonText);
 }
 
 void UiToggle::SetSize(const glm::uvec2 size)
 {
     UiBasicControl::SetSize(size);
-    m_buttonText.SetSize(size);
+    m_buttonText->SetSize(size);
 }
 
 void UiToggle::HandleEvent(Event* event)

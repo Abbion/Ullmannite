@@ -1,5 +1,5 @@
 #pragma once
-#include "UiElement/UiArea.h"
+#include "UiElement/UiRenderArea.h"
 #include "DataStructures/CuttingSettings.h"
 #include "UiElement/UiGradientEditor.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
@@ -10,7 +10,7 @@ namespace Ull
 {
     struct FileInfo;
 
-    class UiMenuView : public UiArea
+    class UiMenuView : public UiRenderArea
     {
     public:
         UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size);
