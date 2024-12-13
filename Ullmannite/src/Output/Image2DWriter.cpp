@@ -94,7 +94,7 @@ void Image2DWriter::AddImageData(glm::uvec2 position, glm::uvec2 size, const std
 
 void Image2DWriter::SaveToFile(const std::string& fileName, const Format format, const std::optional<const std::string> outputPath)
 {
-	std::string fullFileName = (outputPath.has_value() ? outputPath.value() : "") + fileName + FormatToStringConverter(format);
+	std::string fullFileName = (outputPath.has_value() ? outputPath.value() : "") + fileName + "Out" + FormatToStringConverter(format);
 	int result = 0;
 
 	switch (format)
