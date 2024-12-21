@@ -6,13 +6,21 @@ namespace Ull
     enum class UiControlType {
         UiButton,
         UiText,
-        UiToggle
+        UiToggle,
+        UiSpace
+    };
+
+    enum class UiControlFunctionality : uint64_t {
+        Hover = 1 << 1
     };
 
     class UiBasicControl : public UiElement
     {
     public:
         virtual ~UiBasicControl() {}
+
+        void SetFunctionality(UiControlFunctionality functionality, State state);
+        bool IsFunctionalitySet(UiControlFunctionality functionality);
 
         void SetBackgroundColor(const glm::vec4& backgroundColor) { m_backgroundColor = backgroundColor; }
         void SetHoverColor(const glm::vec4& hoverColor) { m_hoverColor = hoverColor; }
@@ -37,5 +45,8 @@ namespace Ull
 
     private:
         inline void UpdatePerspective();
+
+        using Functionality = uint64_t;
+        Functionality m_functionality{ ULLONG_MAX };
     };
 }

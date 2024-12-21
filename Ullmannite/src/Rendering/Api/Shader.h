@@ -34,10 +34,12 @@ namespace Ull
 
         virtual void SetInt(std::string uniformName, int value) const = 0;
         virtual void SetUint(std::string uniformName, unsigned int value) const = 0;
-        virtual void SetInt3(std::string uniformName, glm::ivec3 value) const = 0;
         virtual void SetInt2(std::string uniformName, glm::ivec2 value) const = 0;
+        virtual void SetInt3(std::string uniformName, glm::ivec3 value) const = 0;
+        virtual void SetUint2(std::string uniformName, glm::uvec2 value) const = 0;
         virtual void SetUint3(std::string uniformName, glm::uvec3 value) const = 0;
         virtual void SetFloat(std::string uniformName, float value) const = 0;
+        virtual void SetFloat2(std::string uniformName, glm::vec2 value) const = 0;
         virtual void SetFloat4(std::string uniformName, glm::vec4 value) const = 0;
         virtual void SetFloat3(std::string uniformName, glm::vec3 value) const = 0;
         virtual void SetFloat4x4(std::string uniformName, glm::mat4x4 value) const = 0;

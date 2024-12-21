@@ -85,7 +85,8 @@ void UiTitleBar::CreateControls()
 	});
 
 	auto closeButtonText = m_closeButton->GetTextControl();
-	closeButtonText->SetFontSize(14);
+	closeButtonText->SetFontSize(15);
+	closeButtonText->SetSampleThreshold(-1);
 	closeButtonText->SetFont(FontTag::UI_ICON);
 	closeButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::CLOSE)});
 
@@ -95,19 +96,20 @@ void UiTitleBar::CreateControls()
 	m_restoreButton->SetHoverColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.05f));
 	m_restoreButton->CreateResources();
 
-	m_restoreButton->SetOnEnabledFunction([this](UiToggle& buttonElement) {
-		auto restoreButtonText = m_restoreButton->GetTextControl();
+	m_restoreButton->SetOnEnabledFunction([this](UiToggle& toggleElement) {
+		auto restoreButtonText = toggleElement.GetTextControl();
 		restoreButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::RESTORE_WINDOW) });
 		m_window->Maximize();
 	});
-	m_restoreButton->SetOnDisambledFunction([this](UiToggle& buttonElement) {
-		auto restoreButtonText = m_restoreButton->GetTextControl();
+	m_restoreButton->SetOnDisambledFunction([this](UiToggle& toggleElement) {
+		auto restoreButtonText = toggleElement.GetTextControl();
 		restoreButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::MAXIMIZE_WINDOW) });
 		m_window->Restore();
 	});
 
 	auto restoreButtonText = m_restoreButton->GetTextControl();
-	restoreButtonText->SetFontSize(14);
+	restoreButtonText->SetFontSize(15);
+	restoreButtonText->SetSampleThreshold(-1);
 	restoreButtonText->SetFont(FontTag::UI_ICON);
 	restoreButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::MAXIMIZE_WINDOW) });
 
@@ -122,7 +124,9 @@ void UiTitleBar::CreateControls()
 	});
 
 	auto minimizeButtonText = m_minimizeButton->GetTextControl();
-	minimizeButtonText->SetFontSize(14);
+	minimizeButtonText->SetFontSize(15);
+	minimizeButtonText->SetSampleThreshold(-1);
+	minimizeButtonText->SetPosition(glm::vec2(0, 3));
 	minimizeButtonText->SetFont(FontTag::UI_ICON);
 	minimizeButtonText->SetString(std::wstring{ static_cast<wchar_t>(Icon::MINIMIZE_WINDOW)} );
 

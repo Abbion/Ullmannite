@@ -3,6 +3,7 @@
 #include "Core/PlatformDependantFreeFunctions.h"
 #include "Logger/Logger.h"
 #include "Event/EventAggregator.h"
+#include "Resources/Fonts/IconCodes.h"
 #include <limits>
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -13,27 +14,23 @@ using namespace Ull;
 namespace
 {
     constexpr int maxUint16 = (1 << 16) - 1;
+    constexpr unsigned TOOL_BAR_SIZE = 6;
+    constexpr unsigned TOOL_TAB_ICON_SIZE = 24;
 }
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiRenderArea(name, position, size, false)
-    //m_gradientEditor("GradientEditor", glm::uvec2(size.x * 0.5f, 80), glm::uvec2(size.x * 0.8f, 50))
 {
     SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     
-    m_transferFunction.AddPoint(TransferPoint{glm::vec3(1.0f, 1.0f, 1.0f), 0});
-    m_transferFunction.AddPoint(TransferPoint{glm::vec3(1.0f, 0.0f, 1.0f), 100});
-    m_transferFunction.AddPoint(TransferPoint{glm::vec3(0.0f, 0.0f, 0.0f), 200});
-    m_transferFunction.GenerateTransferFunction();
+    CreateControls();
 
-    //m_gradientEditor.SetViewSize(size);
-    //m_gradientEditor.SetViewPos(position);
-    //m_gradientEditor.SetTransferFunction(&m_transferFunction);
-    //m_gradientEditor.CreateResources();
+    m_cubeMarchTresholds.x = 0;
+    m_cubeMarchTresholds.y = maxUint16;
 
-    Init();   
+    m_cuttingSettings.cuttingPositions = glm::vec3(100.0f, 100.0f, 100.0f);
+    m_cuttingSettings.invertedAxis = { false, false, false };
 }
-
 
 void UiMenuView::HandleEvent(Event* event)
 {
@@ -53,25 +50,19 @@ void UiMenuView::HandleEvent(Event* event)
         }
     case EventType::WindowResize:
     {
-        //m_gradientEditor.SetViewSize(m_size);
-        //m_gradientEditor.SetViewPos(m_position);
-        //m_gradientEditor.CreateResources();
     }
     break;
 
     break;
     }
 
-    //if(m_renderTransferEditor)
-      //  m_gradientEditor.HandleEvent(event);
+	UiRenderArea::HandleEvent(event);
 }
 
 void UiMenuView::Update()
 {
-    m_areaUpdated = true;
-
-    //if(m_renderTransferEditor)
-      //  m_gradientEditor.Update();
+    //m_areaUpdated = true;
+	UiRenderArea::Update();
 }
 
 void UiMenuView::Render()
@@ -80,8 +71,6 @@ void UiMenuView::Render()
     {
         m_frameBuffer->Bind();
         RenderBackground();
-        //if(m_renderTransferEditor)
-          //  m_gradientEditor.Render();
         m_frameBuffer->Unbind();
 
         m_areaUpdated = false;
@@ -90,344 +79,152 @@ void UiMenuView::Render()
 	RenderUI();
 }
 
-void UiMenuView::Init()
-{
-    m_cubeMarchTresholds.x = 0;
-    m_cubeMarchTresholds.y = maxUint16;
-
-    m_cuttingSettings.cuttingPositions = glm::vec3(100.0f, 100.0f, 100.0f);
-    m_cuttingSettings.invertedAxis = { false, false, false };
-}
-
 void UiMenuView::RenderUI()
 {
-    /*
-    ImGui::SetNextWindowSize(ImVec2((float)m_size.x, (float)m_size.y));
-	ImGui::SetNextWindowPos(ImVec2((float)m_position.x, (float)m_position.y));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-	ImGui::Begin("MenuViewImGui", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
-	ImGui::PopStyleVar();
-
-    ImGui::PushStyleColor(ImGuiCol_Tab, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-    ImGui::PushStyleColor(ImGuiCol_TabHovered, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_TabActive, ImVec4(0.0, 0.0, 0.0, 1.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 0.f);
-
-    ImGuiStyle& style = ImGui::GetStyle();
-    auto orignalFramePadding = style.FramePadding;
-    auto orignalInterSpacing = style.ItemInnerSpacing;
-
-    style.FramePadding = ImVec2(12.0f, 12.0f);
-    style.ItemInnerSpacing = ImVec2(0.0f, orignalInterSpacing.y);
-
-    ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
-    if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
-    {
-        ImGui::PopStyleColor();
-        ImGui::PushStyleColor(ImGuiCol_TabActive, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
-
-        style.FramePadding = ImVec2(12, 12);
-
-        m_renderTransferEditor = false;
-
-        if (ImGui::BeginTabItem(ICON_LOAD))
-        {
-            RenderLoadTab();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(ICON_CUT_PLANE))
-        {
-            RenderCutSettings();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(ICON_TRANSFER))
-        {
-            RenderTransferFunctionSettings();
-            ImGui::EndTabItem();
-            m_renderTransferEditor = true;
-        }
-        if (ImGui::BeginTabItem(ICON_SETTINGS_1))
-        {
-            RenderDataSettings();
-            ImGui::EndTabItem();
-        }
-
-        style.FramePadding = orignalFramePadding;
-        style.ItemInnerSpacing = orignalInterSpacing;
-        ImGui::EndTabBar();
-    }
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
-
-    ImGui::End();
-    */
+	UiRenderArea::Render();
 }
 
-void UiMenuView::RenderLoadTab()
+void UiMenuView::CreateControls()
 {
-    /*
-    //Load file button
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+    auto toogleIsEnabledManageTabs = [this](UiToggle& toggleElement) {
+        toggleElement.SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+        toggleElement.SetHoverColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-
-    if (ImGui::Button("Load file", ImVec2((float)m_size.x - 40.0f, 32.0f)))
-    {
-        m_filePath = CreateFileOpenDialog(FileExtentions::DAT | FileExtentions::DICOM);
-
-        if (m_filePath.has_value())
+        for (auto& [_, toolTab] : m_toolTabs)
         {
-            std::string path(m_filePath.value().begin(), m_filePath.value().end());
-            EventAggregator::Publish(std::make_shared<DataLoadEvent>(EventType::FileLoaded, path));
+            if (toolTab->GetId() == toggleElement.GetId())
+                continue;
+
+            toolTab->SetEnabled(false);
         }
-        m_firstDataLoaded = true;
-    }
+    };
 
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
+    auto toogleIsDisabledManageTabs = [this](UiToggle& toggleElement) {
+        toggleElement.SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+        toggleElement.SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 
-    //Text under button
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    if (m_filePath.has_value())
-    {
-        std::wstring pathW = m_filePath.value();
-        std::string path(pathW.begin(), pathW.end());
-        
-        auto pos = pathW.find_last_of(L"\\");
-        if (pos != std::string::npos)
+        auto isAnyTabEnabled = false;
+        for (auto& [_, toolTab] : m_toolTabs) 
         {
-            std::wstring filenameW = pathW.substr(pos + 1, pathW.size());
-            std::string filename(filenameW.begin(), filenameW.end());
-            std::string fileText;
-
-            fileText = "File loaded: " + filename;
-
-            ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-            auto startClipRect = ImVec2(ImGui::GetCursorPosX(), ImGui::GetCursorPosY());
-            auto endClipRect = ImVec2(startClipRect.x + m_size.x - 40.0f, (float)m_size.y);
-
-            ImGui::PushClipRect(startClipRect, endClipRect, false);
-            ImGui::TextColored(ImVec4(0.38f, 0.94f, 0.47f, 1.0f), fileText.c_str());
-
-            //Tool-tip
-            if (ImGui::IsItemHovered())
-            {
-                auto& style = ImGui::GetStyle();
-                auto originalWindowPadding = style.WindowPadding;
-                style.WindowPadding = ImVec2(3.0f, 3.0f);
-
-                ImGui::PushStyleVar(ImGuiStyleVar_PopupBorderSize, 2.0f);
-                ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-
-                ImGui::SetTooltip(fileText.c_str());
-
-                ImGui::PopStyleColor();
-                ImGui::PopStyleVar();
-
-                style.WindowPadding = originalWindowPadding;
-            }
-            ImGui::PopClipRect();
+            if(toolTab->IsEnabled() == true)
+                isAnyTabEnabled = true;
         }
-        else
-            ULOGE("File was recognized but not loaded");
-    }
-    else
-    {
-        if(m_firstDataLoaded)
-            ImGui::TextColored(ImVec4(0.86f, 0.2f, 0.31f, 1.0f), "No file loaded.");
-    }
-    */
+
+        if (!isAnyTabEnabled)
+            toggleElement.SetEnabled(true);
+    };
+
+    auto loadTab = std::make_shared<UiToggle>("menuLoadTab", glm::uvec2(0, 0), glm::uvec2(43, 45));
+    loadTab->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+    loadTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    loadTab->CreateResources();
+
+    loadTab->SetOnEnabledFunction(toogleIsEnabledManageTabs);
+    loadTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
+
+    loadTab->SetEnabled(true);
+    loadTab->Update();
+
+    auto& loadTabText = loadTab->GetTextControl();
+	loadTabText->SetFontSize(TOOL_TAB_ICON_SIZE);
+	loadTabText->SetFont(FontTag::UI_ICON);
+    loadTabText->SetSampleThreshold(-2);
+    loadTabText->SetEdgeSmoothing(5);
+	loadTabText->SetString(std::wstring{ static_cast<wchar_t>(Icon::LOAD_FILE) });
+
+    AddChildNode(loadTab);
+    m_toolTabs.insert(std::pair(ToolTypes::Load, std::move(loadTab)));
+
+    auto cutTab = std::make_shared<UiToggle>("menuCutTab", glm::uvec2(0, 0), glm::uvec2(0, 0)); 
+    cutTab->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+    cutTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    cutTab->CreateResources();
+
+    cutTab->SetOnEnabledFunction(toogleIsEnabledManageTabs);
+    cutTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
+
+    cutTab->Update();
+
+    auto& cutTabText = cutTab->GetTextControl();
+	cutTabText->SetFontSize(TOOL_TAB_ICON_SIZE);
+	cutTabText->SetFont(FontTag::UI_ICON);
+    cutTabText->SetSampleThreshold(-2);
+    cutTabText->SetEdgeSmoothing(5);
+	cutTabText->SetString(std::wstring{ static_cast<wchar_t>(Icon::CUTING_SETTINGS) });
+
+    AddChildNode(cutTab);
+    m_toolTabs.insert(std::pair(ToolTypes::Cut, std::move(cutTab)));
+
+    auto transferTab = std::make_shared<UiToggle>("transferCutTab", glm::uvec2(0, 0), glm::uvec2(0, 0)); 
+    transferTab->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+    transferTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    transferTab->CreateResources();
+
+    transferTab->SetOnEnabledFunction(toogleIsEnabledManageTabs);
+    transferTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
+
+    transferTab->Update();
+
+    auto& transferTabText = transferTab->GetTextControl();
+	transferTabText->SetFontSize(TOOL_TAB_ICON_SIZE + 2);
+	transferTabText->SetFont(FontTag::UI_ICON);
+    transferTabText->SetSampleThreshold(-2);
+    transferTabText->SetEdgeSmoothing(5);
+	transferTabText->SetString(std::wstring{ static_cast<wchar_t>(Icon::TRANSFER_FUNCTION) });
+
+    AddChildNode(transferTab);
+    m_toolTabs.insert(std::pair(ToolTypes::Transfer, std::move(transferTab)));
+
+    auto settingsTab = std::make_shared<UiToggle>("settingsCutTab", glm::uvec2(0, 0), glm::uvec2(0, 0)); 
+    settingsTab->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+    settingsTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    settingsTab->CreateResources();
+
+    settingsTab->SetOnEnabledFunction(toogleIsEnabledManageTabs);
+    settingsTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
+
+    settingsTab->Update();
+
+    auto& settingsTabText = settingsTab->GetTextControl();
+	settingsTabText->SetFontSize(TOOL_TAB_ICON_SIZE);
+	settingsTabText->SetFont(FontTag::UI_ICON);
+    settingsTabText->SetSampleThreshold(-2);
+    settingsTabText->SetEdgeSmoothing(8);
+	settingsTabText->SetString(std::wstring{ static_cast<wchar_t>(Icon::VOLUME_SETTINGS) });
+
+    AddChildNode(settingsTab);
+    m_toolTabs.insert(std::pair(ToolTypes::Settings, std::move(settingsTab)));
+
+    m_toolTabsLine = std::make_shared<UiSpace>("toolTabUnderline", glm::uvec2(0, 0), glm::uvec2(0, 0));
+    m_toolTabsLine->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    m_toolTabsLine->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
+    m_toolTabsLine->CreateResources();
+    AddChildNode(m_toolTabsLine);
+
+    ResizeControls();
 }
 
-void UiMenuView::RenderDataSettings()
+void UiMenuView::ResizeControls()
 {
-    /*
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+    const auto renderAreaSize = GetSize();
+    const auto tabWidth = renderAreaSize.x / TOOL_BAR_SIZE;
+    const auto tabHeight = 40;
 
-    ImGui::Text("Examination thresholds:");
+    auto loadTab = m_toolTabs[ToolTypes::Load];
+    loadTab->SetSize(glm::vec2(tabWidth, tabHeight));
 
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+    auto cutTab = m_toolTabs[ToolTypes::Cut];
+    cutTab->SetPosition(glm::vec2(tabWidth, 0.0f));
+    cutTab->SetSize(glm::vec2(tabWidth, tabHeight));
 
-    auto& style = ImGui::GetStyle();
-    auto orignaItemlInnerSpacing = style.ItemInnerSpacing;
-    auto orginalFramePadding = style.FramePadding;
+    auto transferTab = m_toolTabs[ToolTypes::Transfer];
+    transferTab->SetPosition(glm::vec2(tabWidth * 2.0f, 0.0f));
+    transferTab->SetSize(glm::vec2(tabWidth, tabHeight));
 
-    style.ItemInnerSpacing.x = 10.0f;
-    style.FramePadding = ImVec2(5.0f, 5.0f);
+    auto settingsTab = m_toolTabs[ToolTypes::Settings];
+    settingsTab->SetPosition(glm::vec2(tabWidth * 3.0f, 0.0f));
+    settingsTab->SetSize(glm::vec2(tabWidth, tabHeight));
 
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-
-    auto originalThresholds = m_cubeMarchTresholds;
-    ImGui::DragIntRange2("##Thresholds", &m_cubeMarchTresholds.x, &m_cubeMarchTresholds.y, 1, 1, maxUint16, "Min: %d", "Max: %d");
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-
-    style.ItemInnerSpacing = orignaItemlInnerSpacing;
-    style.FramePadding = orginalFramePadding;
-
-    if (m_cubeMarchTresholds != originalThresholds && m_cubeMarchTresholds.x <= m_cubeMarchTresholds.y)
-    {
-        EventAggregator::Publish(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, glm::uvec2(m_cubeMarchTresholds.x, m_cubeMarchTresholds.y)));
-    }
-    */
-}
-
-void UiMenuView::RenderCutSettings()
-{
-    /*
-    auto& style = ImGui::GetStyle();
-
-    auto orginalFramePadding = style.FramePadding;
-    style.FramePadding = ImVec2(0.0f, 4.0f);
-
-    auto orginalCuttingSettings = m_cuttingSettings;
-
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 12);
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(10.0f, 0.0f));
-
-    //Start
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::Text("Cutting settings:");
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
-
-    //Cut X
-    ImGui::Text("Cut X:");
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::Checkbox("Invert##X", &m_cuttingSettings.invertedAxis[0]);
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.86f, 0.2f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.95f, 0.31f, 0.43f, 1.0f));
-
-    ImGui::SliderFloat("##CutX", &m_cuttingSettings.cuttingPositions.x, 0, 100, "%.2f %", ImGuiSliderFlags_None);
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
-
-    //Cut Y
-    ImGui::Text("Cut Y:");
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::Checkbox("Invert##Y", &m_cuttingSettings.invertedAxis[1]);
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.32f, 0.75f, 0.02f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.49f, 1.0f, 0.12f, 1.0f));
-
-    ImGui::SliderFloat("##CutY", &m_cuttingSettings.cuttingPositions.y, 0, 100, "%.2f %", ImGuiSliderFlags_None);
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
-
-    //Cut Z
-    ImGui::Text("Cut Z:");
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::Checkbox("Invert##Z", &m_cuttingSettings.invertedAxis[2]);
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.02f, 0.51f, 0.95f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.02f, 0.69f, 0.95f, 1.0f));
-
-    ImGui::SliderFloat("##CutZ", &m_cuttingSettings.cuttingPositions.z, 0, 100, "%.2f", ImGuiSliderFlags_None);
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-
-    //End
-    style.FramePadding = orginalFramePadding;
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-
-    ImGui::PopStyleVar();
-    ImGui::PopStyleVar();
-
-    if(orginalCuttingSettings != m_cuttingSettings)
-        EventAggregator::Publish(std::make_shared<CuttingSettingsChangedEvent>(EventType::CuttingSettingsChanged, m_cuttingSettings));
-        */
-}
-
-void UiMenuView::RenderTransferFunctionSettings()
-{
-    /*
-    auto& style = ImGui::GetStyle();
-    
-    auto orginalFramePadding = style.FramePadding;
-    style.FramePadding = ImVec2(0.0f, 4.0f);
-
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.251f, 0.251f, 0.251f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 12);
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(10.0f, 0.0f));
-
-    //Start
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-
-    ImGui::Text("Transfer settings:");
-
-    ImGui::SetCursorPosX(20);
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 12);
-
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-
-    ImGui::PopStyleVar();
-    ImGui::PopStyleVar();
-
-    style.FramePadding = orginalFramePadding;
-    */
+    m_toolTabsLine->SetPosition(glm::vec2(0.0f, tabHeight));
+    m_toolTabsLine->SetSize(glm::vec2(renderAreaSize.x, 1.0f));
 }

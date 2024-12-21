@@ -22,6 +22,12 @@ namespace Ull
             RIGHT
         };
 
+        struct Alignment
+        {
+            HorizontalAlignment horizontal;
+            VerticalAlignment vertical;
+        };
+
     public:
         UiText(const std::string name, const glm::uvec2 position, const glm::uvec2 size, const std::wstring text);
 
@@ -32,6 +38,7 @@ namespace Ull
         float GetLeading() const                { return m_leading; }
         float GetEdgeSmoothing() const          { return m_smoothing; }
         float GetSampleThreshold() const        { return m_threshold; }
+        Alignment GetAlignment() const          { return { m_horizontalAlignment, m_verticalAlignment }; }
         glm::uvec2 GetTextSize();
 
         void SetSize(const glm::uvec2 size);
@@ -58,6 +65,7 @@ namespace Ull
         std::wstring        m_text;
         glm::vec3           m_cursorPos{ 0.0f, 0.0f, 0.0f };
         glm::vec2           m_displayTextSize{ 0.0f, 0.0f };
+        glm::vec2           m_displayTextCornderOffset{ 0.0f, 0.0f };
 
         FontTag             m_fontTag{ FontTag::UI_FONT };
         glm::vec4           m_color{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -65,6 +73,7 @@ namespace Ull
         unsigned int        m_fontSize{ 20u };
         float               m_spaceing{ 10.0f };
         float               m_leading{ 1.25f };
+
         HorizontalAlignment m_horizontalAlignment{ HorizontalAlignment::LEFT };
         VerticalAlignment   m_verticalAlignment{ VerticalAlignment::TOP };
 

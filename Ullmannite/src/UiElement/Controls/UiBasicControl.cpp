@@ -14,6 +14,19 @@ UiBasicControl::UiBasicControl(const std::string& name, const glm::uvec2 positio
     m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
 }
 
+void UiBasicControl::SetFunctionality(UiControlFunctionality functionality, State state)
+{
+    if (state == State::Enable)
+        m_functionality |= static_cast<Functionality>(functionality);
+    else
+        m_functionality &= (~static_cast<Functionality>(functionality));
+}
+
+bool UiBasicControl::IsFunctionalitySet(UiControlFunctionality functionality)
+{
+    return m_functionality & static_cast<Functionality>(functionality);
+}
+
 void UiBasicControl::CreateResources()
 {
     if (m_vertexBuffer != nullptr)
@@ -59,7 +72,8 @@ void UiBasicControl::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::MouseMove:
-        CheckHover();
+        if (m_functionality & static_cast<Functionality>(UiControlFunctionality::Hover))
+            CheckHover();
     break;
 
     case EventType::WindowResize:
@@ -103,7 +117,22 @@ void UiBasicControl::Render()
 
 void UiBasicControl::CheckHover()
 {
-    if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
+    // The reander area creates a frame buffer. Every object in a render area is relative to that area.
+    // If the object has the position 0,0 on screen this object will be offeted by the render area.
+    // We have to calculate the offset and subtract it from the cursor position.
+
+    const auto mousePosition = Mouse::GetInstance().GetMousePosition();
+    glm::ivec2 renderAreaOffset = { 0, 0 };
+
+    auto parent = GetParent();
+    while (parent != nullptr)
+    {
+        if (parent->GetType() == UiElementType::RenderArea)
+            renderAreaOffset += parent->GetPosition();
+        parent = parent->GetParent();
+    }
+    
+    if (PointInStaticRect<glm::ivec2>(mousePosition - renderAreaOffset, GetPosition(), GetSize()))
     {
         m_hover = true;
     }
@@ -115,7 +144,7 @@ void UiBasicControl::CheckHover()
 
 inline void UiBasicControl::UpdatePerspective()
 {
-    const auto renderArea = FindUiElementAboveByType(UiElementType::Area);
+    const auto renderArea = FindUiElementAboveByType(UiElementType::RenderArea);
 
     if (renderArea)
     {

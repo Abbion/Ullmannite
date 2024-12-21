@@ -10,8 +10,7 @@ using namespace Ull;
 
 namespace 
 {
-	constexpr unsigned int TextureDimensions = 2048u;
-	constexpr unsigned int GroupSize = TextureDimensions / 16u;
+	constexpr unsigned int GroupSize = Ull::FontTextureDimensions / 16u;
 	constexpr unsigned int FontRoundingThreshold = 64;
 	constexpr uint16_t max16ui = static_cast<uint16_t>((1L << 16) - 1);
 
@@ -47,15 +46,15 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 		return gliphInfo_A.size.y > gliphInfo_B.size.y;
 	});
 
-	glm::uvec2 cursor{ 0u, 0u };
+	glm::ivec2 cursor{ 0, 0 };
 	unsigned maxLineHeight = 0;
 
 	Texture2D* outerSdf = Texture2D::Create();
 	outerSdf->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 	outerSdf->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP);
-	outerSdf->SetStorage(glm::uvec2(TextureDimensions, TextureDimensions), InternalDataFormat::R_16UI);
+	outerSdf->SetStorage(glm::uvec2(FontTextureDimensions, FontTextureDimensions), InternalDataFormat::R_16UI);
 
-	outerSdf->ClearSubData(glm::uvec2(0.0f, 0.0f), glm::uvec2(TextureDimensions, TextureDimensions), PixelDataFormat::R_I, GraphicsDataType::UINT, &max16ui);
+	outerSdf->ClearSubData(glm::uvec2(0.0f, 0.0f), glm::uvec2(FontTextureDimensions, FontTextureDimensions), PixelDataFormat::R_I, GraphicsDataType::UINT, &max16ui);
 
 	for (auto& gliphInfo : gliphInfoVec)
 	{
@@ -68,12 +67,12 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 		const auto& glyphSize = gliphInfo.size;
 		const auto sizeWithOffset = glyphSize + (2 * sdfOffset);
 
-		if (cursor.x + sizeWithOffset.x > TextureDimensions)
+		if (cursor.x + sizeWithOffset.x > FontTextureDimensions)
 		{
 			cursor.x = 0u;
 			cursor.y += maxLineHeight;
 
-			if (cursor.y > TextureDimensions)
+			if (cursor.y > FontTextureDimensions)
 			{
 				ULOGE("Font texture is too small!");
 				return;
@@ -94,9 +93,9 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 		for (auto& value : bitmapBuffer)
 			value = value > 0 ? 0 : max16ui;
 
-		outerSdf->SetSubData(cursor + sdfOffset, glyphSize, PixelDataFormat::R_I, GraphicsDataType::USHORT, bitmapBuffer.data());
+		outerSdf->SetSubData(cursor + static_cast<int>(sdfOffset), glyphSize, PixelDataFormat::R_I, GraphicsDataType::USHORT, bitmapBuffer.data());
 
-		Character character{ cursor + sdfOffset, glyphSize, glm::uvec2{ face->glyph->bitmap_left, face->glyph->bitmap_top }, (face->glyph->advance.x >> 6) };
+		Character character{ cursor + static_cast<int>(sdfOffset), glyphSize, glm::ivec2{ face->glyph->bitmap_left, face->glyph->bitmap_top }, (face->glyph->advance.x >> 6) };
 		m_characters.insert(std::pair<wchar_t, Character>((wchar_t)gliphInfo.id, std::move(character)));
 
 		cursor.x += sizeWithOffset.x;
@@ -107,7 +106,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	Texture2D* innerSdf = Texture2D::Create();
 	innerSdf->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 	innerSdf->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP);
-	innerSdf->SetStorage(glm::uvec2(TextureDimensions, TextureDimensions), InternalDataFormat::R_16UI);
+	innerSdf->SetStorage(glm::uvec2(FontTextureDimensions, FontTextureDimensions), InternalDataFormat::R_16UI);
 
 	auto& shaderManager = Renderer::GetInstance().GetShaderManager();
 	std::shared_ptr<Shader> shader{ nullptr };
@@ -137,7 +136,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	
 	shader->Bind();
 	shader->SetInt2("offset", glm::ivec2(0, 1));
-	shader->SetUint("textureSize", TextureDimensions);
+	shader->SetUint("textureSize", FontTextureDimensions);
 
 	outerSdf->BindImage(InternalDataFormat::R_16UI, ReadWriteRights::READ_AND_WRITE, 0);
 
@@ -187,15 +186,15 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	m_gliphTexture = Texture2D::Create();
 	m_gliphTexture->SetSampling(Sampling::LINEAR, Sampling::LINEAR);
 	m_gliphTexture->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP);
-	m_gliphTexture->SetStorage(glm::uvec2(TextureDimensions, TextureDimensions), InternalDataFormat::R_32F);
+	m_gliphTexture->SetStorage(glm::uvec2(FontTextureDimensions, FontTextureDimensions), InternalDataFormat::R_32F);
 	m_gliphTexture->BindImage(InternalDataFormat::R_32F, ReadWriteRights::WRITE, 2);
 
 	Renderer::GetInstance().DispatchComputeShader(GroupSize, GroupSize, 1);
 	Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 
 	FrameBuffer* frameBuffer = FrameBuffer::Create(m_gliphTexture);
-	std::vector<float> sdfImage(TextureDimensions * TextureDimensions);
-	frameBuffer->GetPixels(glm::uvec2(0, 0), glm::uvec2(TextureDimensions, TextureDimensions), PixelDataFormat::R, GraphicsDataType::FLOAT, sdfImage.data());
+	std::vector<float> sdfImage(FontTextureDimensions* FontTextureDimensions);
+	frameBuffer->GetPixels(glm::uvec2(0, 0), glm::uvec2(FontTextureDimensions, FontTextureDimensions), PixelDataFormat::R, GraphicsDataType::FLOAT, sdfImage.data());
 	
 	auto startName = fontPath.find_last_of('/');
 	if (startName == std::string::npos)
@@ -204,8 +203,8 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	const auto endName = fontPath.find_last_of('.');
 	const auto fontName = fontPath.substr(startName + 1u, endName - startName - 1u) + "SDF";
 
-	Image2DWriter imageWriter(glm::uvec2(TextureDimensions, TextureDimensions), Image2DWriter::Channels::MONO);
-	imageWriter.AddImageData(glm::uvec2(0, 0), glm::uvec2(TextureDimensions, TextureDimensions), sdfImage, 256.0f);
+	Image2DWriter imageWriter(glm::uvec2(FontTextureDimensions, FontTextureDimensions), Image2DWriter::Channels::MONO);
+	imageWriter.AddImageData(glm::uvec2(0, 0), glm::uvec2(FontTextureDimensions, FontTextureDimensions), sdfImage, 256.0f);
 	imageWriter.SaveToFile(fontName);
 
 	//CHECK IF I HAVE TO DELETE frameBuffer and other stuff or the destructor deletes it

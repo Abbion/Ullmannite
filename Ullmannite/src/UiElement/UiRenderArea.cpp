@@ -8,7 +8,7 @@
 using namespace Ull;
 
 UiRenderArea::UiRenderArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth) :
-    UiElement(name, position, size, UiElementType::Area),
+    UiElement(name, position, size, UiElementType::RenderArea),
     m_usesDepth(usesDepth)
 {
     auto& shaderManager = Renderer::GetInstance().GetShaderManager();

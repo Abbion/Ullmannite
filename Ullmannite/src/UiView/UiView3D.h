@@ -6,6 +6,7 @@
 #include "Rendering/Objects/TransferFunctionRenderer.h"
 #include <memory>
 #include "UiElement/Controls/UiText.h"
+#include "UiElement/Controls/UiButton.h"
 
 namespace Ull
 {
@@ -29,5 +30,6 @@ namespace Ull
 		NotOwner<TransferFunctionRenderer> m_transferFunction{ nullptr };
 
 		std::shared_ptr<UiText> m_titleText;
+		std::shared_ptr<UiButton> m_titleButton;
 	};
 }

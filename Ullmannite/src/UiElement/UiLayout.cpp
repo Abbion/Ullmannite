@@ -32,9 +32,7 @@ void UiLayout::HandleEvent(Event* event)
         return;
 
     for (const auto& uiElement : GetChildren())
-    {
         uiElement->HandleEvent(event);
-    }
 }
 
 void UiLayout::Update()

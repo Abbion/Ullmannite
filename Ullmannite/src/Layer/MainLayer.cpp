@@ -91,7 +91,7 @@ void MainLayer::CreateLayout()
     m_layout->AddChildNode(m_menuView);
 
     m_3DView = std::make_shared<UiView3D>("view3DElement", glm::vec2((260.f + initScale) + 1.f, (30.f * initScale) + 1.f), glm::vec2(initSize.x - (260.f * initScale) - 1.f, initSize.y - (30.f * initScale) - 1.f));
-    m_3DView->SetTransferFunction(m_menuView->GetTransferFunctionRenderer());
+    //m_3DView->SetTransferFunction(m_menuView->GetTransferFunctionRenderer());
     m_layout->AddChildNode(m_3DView);
 }
 

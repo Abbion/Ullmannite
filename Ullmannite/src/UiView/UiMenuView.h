@@ -1,7 +1,8 @@
 #pragma once
 #include "UiElement/UiRenderArea.h"
+#include "UiElement/Controls/UiToggle.h"
+#include "UiElement/Controls/UiSpace.h"
 #include "DataStructures/CuttingSettings.h"
-#include "UiElement/UiGradientEditor.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
 #include <array>
 #include <optional>
@@ -19,9 +20,18 @@ namespace Ull
 		void Update() override;
 		void Render() override;
 
-         TransferFunctionRenderer* GetTransferFunctionRenderer() { return &m_transferFunction; }
+    private:
+        enum class ToolTypes {
+            Load,
+            Cut,
+            Transfer,
+            Settings
+        };
 
     private:
+		void CreateControls();
+		void ResizeControls();
+
 		void Init();
         void RenderUI();
         void RenderLoadTab();
@@ -29,15 +39,14 @@ namespace Ull
         void RenderTransferFunctionSettings();
         void RenderDataSettings();
 
-        std::optional<std::wstring > m_filePath;
+        std::optional<std::wstring> m_filePath;
         bool m_firstDataLoaded{ false };
         bool m_newDataLoaded{ false };
         bool m_renderTransferEditor{ false };
 
         glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
         CuttingSettings m_cuttingSettings;
-        
-        //UiGradientEditor m_gradientEditor;
-        TransferFunctionRenderer m_transferFunction;
+        std::unordered_map<ToolTypes, std::shared_ptr<UiToggle>> m_toolTabs;
+        std::shared_ptr<UiSpace> m_toolTabsLine;
     };
 }

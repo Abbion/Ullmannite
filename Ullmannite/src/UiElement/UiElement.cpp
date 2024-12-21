@@ -26,17 +26,44 @@ std::optional<NotOwner<UiElement>> UiElement::FindUiElementAboveByType(const UiE
 	return std::nullopt;
 }
 
-glm::mat4 UiElement::GetTransform() const
+glm::vec2 UiElement::GetGlobalPosition() const 
 {
 	auto parent = GetParent();
 	auto position = GetPosition();
-	const auto size = GetSize();
 
 	while (parent != nullptr)
 	{
 		position += parent->GetPosition();
 		parent = parent->GetParent();
 	}
+
+	return position;
+}
+
+glm::vec2 UiElement::GetRenderAreaPosition() const 
+{
+	auto parent = GetParent();
+	auto position = GetPosition();
+
+	while (parent != nullptr)
+	{
+		if(parent->GetType() != UiElementType::RenderArea)
+		{
+			position += parent->GetPosition();
+			return position;
+		}
+
+		parent = parent->GetParent();
+	}
+
+	return position;
+}
+
+glm::mat4 UiElement::GetTransform() const
+{
+	auto parent = GetParent();
+	auto position = GetRenderAreaPosition();
+	auto size = GetSize();
 
 	auto transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, glm::vec3{ position.x, position.y, 0.0f });

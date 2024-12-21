@@ -9,7 +9,7 @@ namespace Ull
     enum class UiElementType
     {
         Control,
-        Area,
+        RenderArea,
         Layout,
         GradientEditor,
         GradientMarker
@@ -19,7 +19,10 @@ namespace Ull
     {
     public:
         std::optional<NotOwner<UiElement>> FindUiElementAboveByType(const UiElementType type);
+        const UiElementType GetType() const { return m_uiElementType; }
 
+        virtual glm::vec2 GetGlobalPosition() const override final;
+        virtual glm::vec2 GetRenderAreaPosition() const override final;
         virtual glm::mat4 GetTransform() const override final;
 
         virtual void HandleEvent(Event* event);

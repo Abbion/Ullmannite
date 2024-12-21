@@ -8,9 +8,11 @@ namespace Ull
         Object2D(const glm::vec2 position, const glm::vec2 size);
         Object2D(Object2D&& source) noexcept;
 
-        glm::vec2 GetPosition() const       { return m_position; }
-        glm::vec2 GetSize() const           { return m_size; }
-        float GetScale() const              { return m_scale; }
+        glm::vec2 GetPosition() const                   { return m_position; }
+        glm::vec2 GetSize() const                       { return m_size; }
+        float GetScale() const                          { return m_scale; }
+        virtual glm::vec2 GetGlobalPosition() const     { return m_position; }
+        virtual glm::vec2 GetRenderAreaPosition() const { return m_position; }
 
         void SetPosition(const glm::vec2 position);
         void SetSize(const glm::vec2 size);

@@ -11,9 +11,12 @@
 using namespace Ull;
 
 namespace {
+	constexpr auto AdvanceCharacter = L'i';
+	constexpr auto F_FontTextureDimensions = static_cast<float>(Ull::FontTextureDimensions);
+
 	struct GpuLetterData
 	{
-		glm::vec3 vertices;
+		glm::vec3 position;
 		glm::vec2 coords;
 	};
 }
@@ -115,9 +118,15 @@ void UiText::CreateResources()
 	auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
 	const auto characters = fontManager.GetFont(m_fontTag)->GenerateDictionary(m_text);
 	const auto loadedFontSize = fontManager.GetFont(m_fontTag)->GetLoadedHeight();
-	const auto spaceWidth = fontManager.GetFont(m_fontTag)->GetCharacter(L'i').advance;
+	const auto spaceWidth = fontManager.GetFont(m_fontTag)->GetCharacter(AdvanceCharacter).advance;
 
 	const auto size = GetSize();
+
+	if (size.x == 0 || size.y == 0)
+		return;
+
+	if (m_text[0] == wchar_t(61448))
+		int a = 2;
 
 	const glm::vec2 scale{ static_cast<float>(m_fontSize) / static_cast<float>(size.x) / static_cast<float>(loadedFontSize),
 					 static_cast<float>(m_fontSize) / static_cast<float>(size.y) / static_cast<float>(loadedFontSize) };
@@ -127,7 +136,10 @@ void UiText::CreateResources()
 	std::vector<unsigned int> indices(m_text.length() * 6);
 
 	m_cursorPos = glm::vec3(0.0f, static_cast<float>(loadedFontSize) * scale.y, 0.0f);
-	m_displayTextSize = glm::vec2{ m_cursorPos.x, m_cursorPos.y };
+	m_displayTextSize = glm::vec2{ 0.0f, 0.0f };
+
+	auto displayTextSizeMin = glm::vec2{ 0.0f, 0.0f };
+	auto displayTextSizeMax = glm::vec2{ 0.0f, 0.0f };
 
 	for (unsigned i = 0; i < m_text.length(); ++i)
 	{
@@ -160,23 +172,27 @@ void UiText::CreateResources()
 		//Left down
 		m_cursorPos.x += character.bearing.x * scale.x;
 		m_cursorPos.y += (character.size.y - character.bearing.y) * scale.y;
-		vertices[(i * 4)].vertices = m_cursorPos;
-		vertices[(i * 4)].coords = glm::vec2{ (character.position.x - m_smoothing * enableSmoothing) / 2048.0f, (character.position.y + character.size.y + m_smoothing * enableSmoothing) / 2048.0f };
+		vertices[(i * 4)].position = m_cursorPos;
+		vertices[(i * 4)].coords = glm::vec2{ (character.position.x - m_smoothing * enableSmoothing) / F_FontTextureDimensions,
+											  (character.position.y + character.size.y + m_smoothing * enableSmoothing) / F_FontTextureDimensions };
 
 		//Left Up
 		m_cursorPos.y -= character.size.y * scale.y;
-		vertices[(i * 4) + 1].vertices = m_cursorPos;
-		vertices[(i * 4) + 1].coords = glm::vec2{ (character.position.x - m_smoothing * enableSmoothing) / 2048.0f, (character.position.y - m_smoothing * enableSmoothing) / 2048.0f };
+		vertices[(i * 4) + 1].position = m_cursorPos;
+		vertices[(i * 4) + 1].coords = glm::vec2{ (character.position.x - m_smoothing * enableSmoothing) / F_FontTextureDimensions,
+												  (character.position.y - m_smoothing * enableSmoothing) / F_FontTextureDimensions };
 
 		//Right Up
 		m_cursorPos.x += character.size.x * scale.x;
-		vertices[(i * 4) + 2].vertices = m_cursorPos;
-		vertices[(i * 4) + 2].coords = glm::vec2{ (character.position.x + character.size.x + m_smoothing * enableSmoothing) / 2048.0f, (character.position.y - m_smoothing * enableSmoothing) / 2048.0f };
+		vertices[(i * 4) + 2].position = m_cursorPos;
+		vertices[(i * 4) + 2].coords = glm::vec2{ (character.position.x + character.size.x + m_smoothing * enableSmoothing) / F_FontTextureDimensions,
+												  (character.position.y - m_smoothing * enableSmoothing) / F_FontTextureDimensions };
 
 		//Right Down
 		m_cursorPos.y += character.size.y * scale.y;
-		vertices[(i * 4) + 3].vertices = m_cursorPos;
-		vertices[(i * 4) + 3].coords = glm::vec2{ (character.position.x + character.size.x + m_smoothing * enableSmoothing) / 2048.0f, (character.position.y + character.size.y + m_smoothing * enableSmoothing) / 2048.0f };
+		vertices[(i * 4) + 3].position = m_cursorPos;
+		vertices[(i * 4) + 3].coords = glm::vec2{ (character.position.x + character.size.x + m_smoothing * enableSmoothing) / F_FontTextureDimensions,
+												  (character.position.y + character.size.y + m_smoothing * enableSmoothing) / F_FontTextureDimensions };
 
 		//Left Down of next character
 		m_cursorPos.y -= (character.size.y - character.bearing.y) * scale.y;
@@ -191,6 +207,25 @@ void UiText::CreateResources()
 		indices[(i * 6) + 4] = (i * 4) + 3;
 		indices[(i * 6) + 5] = (i * 4);
 	}
+
+	auto topLeftCornerOfTextDisplayArea = vertices[0].position;
+	auto bottomRightCornderOfTextDisplayArea = vertices[0].position;
+
+	for (auto& vertex : vertices)
+	{
+		topLeftCornerOfTextDisplayArea.x = min(topLeftCornerOfTextDisplayArea.x, vertex.position.x);
+		topLeftCornerOfTextDisplayArea.y = min(topLeftCornerOfTextDisplayArea.y, vertex.position.y);
+
+		bottomRightCornderOfTextDisplayArea.x = max(bottomRightCornderOfTextDisplayArea.x, vertex.position.x);
+		bottomRightCornderOfTextDisplayArea.y = max(bottomRightCornderOfTextDisplayArea.y, vertex.position.y);
+	}
+
+	const auto displayArea = bottomRightCornderOfTextDisplayArea - topLeftCornerOfTextDisplayArea;
+	m_displayTextSize = glm::vec2{ displayArea.x / scale.x, displayArea.y / scale.y };
+	m_displayTextSize = glm::vec2{ (m_displayTextSize.x / loadedFontSize) * m_fontSize, (m_displayTextSize.y / loadedFontSize) * m_fontSize };
+
+	m_displayTextCornderOffset = glm::vec2{ topLeftCornerOfTextDisplayArea.x / scale.x, topLeftCornerOfTextDisplayArea.y / scale.y };
+	m_displayTextCornderOffset = glm::vec2{ (m_displayTextCornderOffset.x / loadedFontSize) * m_fontSize, (m_displayTextCornderOffset.y / loadedFontSize) * m_fontSize };
 
 	m_layout = VertexLayout::Create({
 		LayoutElement("Position", GraphicsDataType::FLOAT, 3),
@@ -227,6 +262,26 @@ void UiText::Render()
 	m_shader->SetFloat("threshold", m_threshold);
 	m_shader->SetFloat4("color", m_color);
 
+	auto parent = GetParent();
+	auto position = GetPosition();
+	const auto size = GetSize();
+
+	while (parent != nullptr)
+	{
+		if(parent->GetType() != UiElementType::RenderArea)
+			position += parent->GetPosition();
+		else
+		{
+			position.y = parent->GetSize().y - position.y;
+			break;
+		}
+			
+		parent = parent->GetParent();
+	}
+
+	m_shader->SetFloat2("renderAreaPosition", position);
+	m_shader->SetFloat2("renderAreaSize", GetSize());
+
 	auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
 	const auto texture = fontManager.GetFont(m_fontTag)->GetTexture();
 	texture->Bind();
@@ -252,32 +307,26 @@ void UiText::RealignText()
 	switch (m_horizontalAlignment)
 	{
 	case HorizontalAlignment::LEFT:
-		horizontalOffset = 0.0f;
+		horizontalOffset = -m_displayTextCornderOffset.x;
 		break;
 	case HorizontalAlignment::CENTER:
-		horizontalOffset = (size.x / 2.0f) - ((m_cursorPos.x / 2.0f) * size.x);
+		horizontalOffset = (size.x / 2.0f) - (m_displayTextSize.x / 2.0f) - m_displayTextCornderOffset.x;
 		break;
 	case HorizontalAlignment::RIGHT:
-		horizontalOffset = size.x - (m_cursorPos.x * size.x);
+		horizontalOffset = size.x - m_displayTextSize.x -m_displayTextCornderOffset.x;
 		break;
 	}
 
 	switch (m_verticalAlignment)
 	{
 	case VerticalAlignment::TOP:
-		verticalOffset = 0.0f;
+		verticalOffset = -m_displayTextCornderOffset.y;
 		break;
 	case VerticalAlignment::CENTER:
-	{
-		const auto a = (size.y / 2.0f);
-		const auto b = (m_cursorPos.y / 2.0f);
-		const auto c = b * size.y;
-		const auto d = a - c;
-		verticalOffset = (size.y / 2.0f) - (10.0f);
-	}
+		verticalOffset = (size.y / 2.0f) - (m_displayTextSize.y / 2.0f) - m_displayTextCornderOffset.y;
 		break;
 	case VerticalAlignment::BOTTOM:
-		verticalOffset = size.y - (m_cursorPos.y * size.y);
+		verticalOffset = size.y - m_displayTextSize.y - m_displayTextCornderOffset.y;
 		break;
 	}
 

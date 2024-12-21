@@ -43,9 +43,13 @@ namespace {
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiRenderArea(name, position, size, true),
     m_scene("Scene 3D"),
-    m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y), L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") }
+    m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y), L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") },
+    m_titleButton{ std::make_shared<UiButton>("testButtonView3d", glm::uvec2(100, 100), glm::uvec2(100, 100))}
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
+
+    std::wstring aa = L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite";
+    m_titleButton->GetTextControl()->SetString(aa);
 
     Init();
 }
@@ -82,8 +86,10 @@ void UiView3D::Init()
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
     root->AddNode(cubeMarch);
 
-    m_titleText->CreateResources();
-    AddChildNode(m_titleText);
+    //m_titleText->CreateResources();
+    m_titleButton->CreateResources();
+    //AddChildNode(m_titleText);
+    AddChildNode(m_titleButton);
 }
 
 void UiView3D:: HandleEvent(Event* event)
@@ -139,6 +145,7 @@ void UiView3D:: HandleEvent(Event* event)
     }
 
     m_scene.HandleEvent(event);
+    UiRenderArea::HandleEvent(event);
 }
 
 void UiView3D::Update()
@@ -150,6 +157,8 @@ void UiView3D::Update()
         m_areaUpdated = true;
         m_scene.SetUpdated(false);
     }
+
+    UiRenderArea::Update();
 }
 
 void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
@@ -162,17 +171,34 @@ void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
         camera->SetWindow(m_window);
     }
 }
+
 #include <imgui.h>
 void UiView3D::Render()
 {
-    ImGui::Text("Text settings");
+    ImGui::Text("BoxSettings");
 
-    auto fontSize = static_cast<int>(m_titleText->GetFontSize());
-    auto spaceing = m_titleText->GetSpaceing();
-    auto leading = m_titleText->GetLeading();
-    auto smoothing = m_titleText->GetEdgeSmoothing();
-    auto threshold = m_titleText->GetSampleThreshold();
-    auto color = m_titleText->GetColor();
+    m_titleButton->SetBackgroundColor(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
+
+    auto boxPosition = m_titleButton->GetPosition();
+    auto boxSize = m_titleButton->GetSize();
+
+    ImGui::SliderFloat2("box position", (float*)&boxPosition, -100.0f, 1500.0f);
+    ImGui::SliderFloat2("box size", (float*)&boxSize, 1.0f, 1000.0f);
+
+    m_titleButton->SetPosition(boxPosition);
+    m_titleButton->SetSize(boxSize);
+
+    auto textControll = m_titleButton->GetTextControl();
+
+    auto fontSize = static_cast<int>(textControll->GetFontSize());
+    auto spaceing = textControll->GetSpaceing();
+    auto leading = textControll->GetLeading();
+    auto smoothing = textControll->GetEdgeSmoothing();
+    auto threshold = textControll->GetSampleThreshold();
+    auto color = textControll->GetColor();
+    auto aligment = textControll->GetAlignment();
+
+    ImGui::Text("Text settings");
 
     ImGui::SliderInt("fontSize", &fontSize, 1, 256);
     ImGui::SliderFloat("spaceing", &spaceing, -10.0f, 100.0f);
@@ -181,22 +207,53 @@ void UiView3D::Render()
     ImGui::SliderFloat("threshold", &threshold, -10.0f, 50.0f);
     ImGui::SliderFloat4("color", (float*)&color, 0.0f, 1.0f);
 
-    m_titleText->SetFontSize(static_cast<unsigned>(fontSize));
-    m_titleText->SetSpaceing(spaceing);
-    m_titleText->SetLeading(leading);
-    m_titleText->SetEdgeSmoothing(smoothing);
-    m_titleText->SetSampleThreshold(threshold);
-    m_titleText->SetColor(color);
-    m_titleText->CreateResources();
+    const char* horizontalAligmentList[] = { "Left", "Center", "Right" };
+    static int current_h_aligment = 1;
+    ImGui::ListBox("horizontal aligment", &current_h_aligment, horizontalAligmentList, 3);
+
+    if (current_h_aligment == 0)
+        textControll->SetAlignment(UiText::HorizontalAlignment::LEFT, aligment.vertical);
+
+    if (current_h_aligment == 1)
+        textControll->SetAlignment(UiText::HorizontalAlignment::CENTER, aligment.vertical);
+
+    if (current_h_aligment == 2)
+        textControll->SetAlignment(UiText::HorizontalAlignment::RIGHT, aligment.vertical);
+
+    aligment = textControll->GetAlignment();
+
+    const char* verticalAligmentList[] = { "Top", "Center", "Bottom" };
+    static int current_v_aligment = 1;
+    ImGui::ListBox("vertical aligment", &current_v_aligment, verticalAligmentList, 3);
+
+    if (current_v_aligment == 0)
+        textControll->SetAlignment(aligment.horizontal, UiText::VerticalAlignment::TOP);
+
+    if (current_v_aligment == 1)
+        textControll->SetAlignment(aligment.horizontal, UiText::VerticalAlignment::CENTER);
+
+    if (current_v_aligment == 2)
+        textControll->SetAlignment(aligment.horizontal, UiText::VerticalAlignment::BOTTOM);
+
+    textControll->SetFontSize(static_cast<unsigned>(fontSize));
+    textControll->SetSpaceing(spaceing);
+    textControll->SetLeading(leading);
+    textControll->SetEdgeSmoothing(smoothing);
+    textControll->SetSampleThreshold(threshold);
+    textControll->SetColor(color);
+    textControll->CreateResources();
+    textControll->SetBackgroundColor(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
+    textControll->Update();
 
     m_areaUpdated = true;
 
-    if(m_areaUpdated)
+    //if(m_areaUpdated)
     {
         m_frameBuffer->Bind();
 
 		RenderBackground();
 
+        UiRenderArea::Render();
 
         Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
         Renderer::GetInstance().Clear(Renderer::ClearBits::DEPTH);
