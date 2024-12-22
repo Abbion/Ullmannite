@@ -4,7 +4,7 @@
 
 using namespace Ull;
 
-UiToggle::UiToggle(std::string name, glm::uvec2 position, glm::uvec2 size) :
+UiToggle::UiToggle(std::string name, glm::vec2 position, glm::vec2 size) :
 	UiBasicControl(name, position, size, UiControlType::UiToggle),
     m_buttonText{ std::make_shared<UiText>(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Toggle") }
 {

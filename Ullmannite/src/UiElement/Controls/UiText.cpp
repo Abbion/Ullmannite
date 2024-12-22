@@ -21,7 +21,7 @@ namespace {
 	};
 }
 
-UiText::UiText(const std::string name, const glm::uvec2 position, const glm::uvec2 size, const std::wstring text) :
+UiText::UiText(const std::string name, const glm::vec2 position, const glm::vec2 size, const std::wstring text) :
 	UiBasicControl{ name, position, size, UiControlType::UiText },
 	m_text{ text }
 {

@@ -195,7 +195,7 @@ void UiMenuView::CreateControls()
     AddChildNode(settingsTab);
     m_toolTabs.insert(std::pair(ToolTypes::Settings, std::move(settingsTab)));
 
-    m_toolTabsLine = std::make_shared<UiSpace>("toolTabUnderline", glm::uvec2(0, 0), glm::uvec2(0, 0));
+    m_toolTabsLine = std::make_shared<UiSpace>("toolTabUnderline", glm::vec2(0, 0), glm::vec2(0, 0));
     m_toolTabsLine->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     m_toolTabsLine->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
     m_toolTabsLine->CreateResources();

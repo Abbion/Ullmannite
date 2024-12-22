@@ -31,7 +31,7 @@ namespace Ull
         virtual void Render() override;
 
     protected:
-        UiBasicControl(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const UiControlType type);
+        UiBasicControl(const std::string& name, const glm::vec2 position, const glm::vec2 size, const UiControlType type);
 
         const UiControlType m_uiControlType;
 

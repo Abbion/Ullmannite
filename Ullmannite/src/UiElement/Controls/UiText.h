@@ -29,7 +29,7 @@ namespace Ull
         };
 
     public:
-        UiText(const std::string name, const glm::uvec2 position, const glm::uvec2 size, const std::wstring text);
+        UiText(const std::string name, const glm::vec2 position, const glm::vec2 size, const std::wstring text);
 
         const std::wstring& GetString() const   { return m_text; }
         glm::vec4 GetColor() const              { return m_color; }

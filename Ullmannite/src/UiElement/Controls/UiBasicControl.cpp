@@ -7,7 +7,7 @@
 
 using namespace Ull;
 
-UiBasicControl::UiBasicControl(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const UiControlType type) :
+UiBasicControl::UiBasicControl(const std::string& name, const glm::vec2 position, const glm::vec2 size, const UiControlType type) :
     UiElement(name, position, size, UiElementType::Control),
     m_uiControlType{ type }
 {

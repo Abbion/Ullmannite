@@ -7,7 +7,7 @@ namespace Ull
     class UiSpace : public UiBasicControl
     {
     public:
-        UiSpace(const std::string name, const glm::uvec2 position, const glm::uvec2 size);
+        UiSpace(const std::string name, const glm::vec2 position, const glm::vec2 size);
 
     };
 }
