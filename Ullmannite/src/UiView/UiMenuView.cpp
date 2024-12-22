@@ -86,7 +86,7 @@ void UiMenuView::RenderUI()
 
 void UiMenuView::CreateControls()
 {
-    auto toogleIsEnabledManageTabs = [this](UiToggle& toggleElement) {
+    static auto toogleIsEnabledManageTabs = [this](UiToggle& toggleElement) {
         toggleElement.SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
         toggleElement.SetHoverColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 
@@ -99,7 +99,7 @@ void UiMenuView::CreateControls()
         }
     };
 
-    auto toogleIsDisabledManageTabs = [this](UiToggle& toggleElement) {
+    static auto toogleIsDisabledManageTabs = [this](UiToggle& toggleElement) {
         toggleElement.SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
         toggleElement.SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 
@@ -140,7 +140,10 @@ void UiMenuView::CreateControls()
     cutTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     cutTab->CreateResources();
 
-    cutTab->SetOnEnabledFunction(toogleIsEnabledManageTabs);
+    cutTab->SetOnEnabledFunction([this](UiToggle& toggleElement){
+        m_loadFileButton->SetVisibility(false);
+        toogleIsEnabledManageTabs(toggleElement);
+    });
     cutTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
 
     cutTab->Update();
@@ -201,6 +204,20 @@ void UiMenuView::CreateControls()
     m_toolTabsLine->CreateResources();
     AddChildNode(m_toolTabsLine);
 
+    // Load panel
+    m_loadFileButton = std::make_shared<UiButton>("menuLoadButton", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_loadFileButton->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0));
+    m_loadFileButton->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
+    m_loadFileButton->CreateResources();
+
+    auto& loadButtonTextControl = m_loadFileButton->GetTextControl();
+    loadButtonTextControl->SetFontSize(14);
+    loadButtonTextControl->SetString(std::wstring(L"Load file"));
+    loadButtonTextControl->SetEdgeSmoothing(3.5f);
+    loadButtonTextControl->SetSampleThreshold(1.0f);
+    loadButtonTextControl->SetSmoothingExceptance({ L'i', L'l' });
+
+    AddChildNode(m_loadFileButton);
     ResizeControls();
 }
 
@@ -227,4 +244,8 @@ void UiMenuView::ResizeControls()
 
     m_toolTabsLine->SetPosition(glm::vec2(0.0f, tabHeight));
     m_toolTabsLine->SetSize(glm::vec2(renderAreaSize.x, 1.0f));
+
+    // Load panel
+    m_loadFileButton->SetPosition(glm::vec2((renderAreaSize.x / 2.0f) - (renderAreaSize.x * 0.4f), tabHeight * 1.5f));
+    m_loadFileButton->SetSize(glm::vec2(0.8f * renderAreaSize.x, 30));
 }

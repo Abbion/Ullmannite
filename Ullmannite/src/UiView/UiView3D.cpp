@@ -44,13 +44,16 @@ namespace {
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiRenderArea(name, position, size, true),
     m_scene("Scene 3D"),
-    m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y), L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") },
+    m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y),
+     L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") },
     m_titleButton{ std::make_shared<UiButton>("testButtonView3d", glm::uvec2(100, 100), glm::uvec2(100, 100))}
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
 
-    std::wstring aa = L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite";
+    //std::wstring aa = L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite";
+    std::wstring aa = L"Load file";
     m_titleButton->GetTextControl()->SetString(aa);
+    m_titleButton->GetTextControl()->SetSmoothingExceptance({ L'i', L'l' });
 
     Init();
 }

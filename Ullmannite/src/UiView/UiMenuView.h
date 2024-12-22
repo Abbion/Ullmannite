@@ -1,7 +1,6 @@
 #pragma once
 #include "UiElement/UiRenderArea.h"
-#include "UiElement/Controls/UiToggle.h"
-#include "UiElement/Controls/UiSpace.h"
+#include "UiElement/Controls/AllControls.h"
 #include "DataStructures/CuttingSettings.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
 #include <array>
@@ -15,6 +14,7 @@ namespace Ull
     {
     public:
         UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size);
+        virtual ~UiMenuView() { }
 
 		void HandleEvent(Event* event) override;
 		void Update() override;
@@ -48,5 +48,8 @@ namespace Ull
         CuttingSettings m_cuttingSettings;
         std::unordered_map<ToolTypes, std::shared_ptr<UiToggle>> m_toolTabs;
         std::shared_ptr<UiSpace> m_toolTabsLine;
+        
+        //Load controls
+        std::shared_ptr<UiButton> m_loadFileButton;
     };
 }
