@@ -2,6 +2,8 @@
 #include "Window/UllWindow.h"
 #include "Event/EventQueue.h"
 #include "Layer/LayerManager.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 #include <memory>
 
 namespace Ull
@@ -15,10 +17,16 @@ namespace Ull
 		void Run();
 		bool FailedToInitialize() const { return m_initFailed; }
 
+		static Keyboard& GetKeyboard() { return m_keyboard; }
+		static Mouse& GetMouse() { return m_mouse; }
+
 	private:
 		UllWindow m_window;
 		EventQueue m_eventQueue;
 		LayerManager m_layerManager;
+
+		inline static Keyboard m_keyboard;
+		inline static Mouse m_mouse;
 
 		bool m_initFailed{ false };
 

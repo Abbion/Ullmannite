@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "UiBasicControl.h"
+#include "Application/Application.h"
 #include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
 #include "glm/gtc/matrix_transform.hpp"
@@ -121,7 +122,7 @@ void UiBasicControl::CheckHover()
     // If the object has the position 0,0 on screen this object will be offeted by the render area.
     // We have to calculate the offset and subtract it from the cursor position.
 
-    const auto mousePosition = Mouse::GetInstance().GetMousePosition();
+    const auto mousePosition = Application::GetMouse().GetMousePosition();
     glm::ivec2 renderAreaOffset = { 0, 0 };
 
     auto parent = GetParent();

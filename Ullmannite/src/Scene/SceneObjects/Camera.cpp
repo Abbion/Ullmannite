@@ -1,8 +1,8 @@
 #include "Ullpch.h"
 #include "Camera.h"
+#include "Application/Application.h"
 #include "Rendering/Objects/DirectionalLight.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 #include "Scene/Scene.h"
 #include <algorithm>
@@ -32,7 +32,7 @@ void Camera::HandleEvent(Event* event)
 	{
 		auto key = static_cast<KeyDownEvent*>(event)->GetVal();
 
-		if(Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
+		if(Application::GetKeyboard().IsKeyPressed(Keyboard::Key::L_CONTROL))
 		{
 			if(key == Keyboard::Key::F)
 			{
@@ -76,7 +76,7 @@ void Camera::HandleEvent(Event* event)
 		}
 		else if( m_cameraType == CameraType::LOCKED)
 		{
-			if(Mouse::GetInstance().IsButtonPressed(Mouse::Button::RIGHT))
+			if(Application::GetMouse().IsButtonPressed(Mouse::Button::RIGHT))
 			{
 				CalculatePitchAndYaw(cameraRotationSensitivityScale);
 				UpdateVectors();
@@ -85,9 +85,9 @@ void Camera::HandleEvent(Event* event)
 
 				m_scene->SetUpdated(true);
 			}
-			else if(Mouse::GetInstance().IsButtonPressed(Mouse::Button::MIDDLE))
+			else if(Application::GetMouse().IsButtonPressed(Mouse::Button::MIDDLE))
 			{
-				auto mouseDelta = Mouse::GetInstance().GetMousePositionDelta();
+				auto mouseDelta = Application::GetMouse().GetMousePositionDelta();
 				auto xSens = mouseDelta.x * m_sensitivity * cameraPanSensitivityScale;
 				auto ySens = mouseDelta.y * m_sensitivity * cameraPanSensitivityScale;
 
@@ -114,22 +114,22 @@ void Camera::Update()
 {
 	 if(m_cameraType == CameraType::FREE && m_window->IsCursorLocked())
 	{
-		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::W))
+		if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::W))
 		{
 			m_position += m_front * m_speed;
 			m_scene->SetUpdated(true);
 		}
-		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::S))
+		if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::S))
 		{
 			m_position -= m_front * m_speed;
 			m_scene->SetUpdated(true);
 		}
-		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::A))
+		if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::A))
 		{
 			m_position -= m_right * m_speed;
 			m_scene->SetUpdated(true);
 		}
-		if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::D))
+		if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::D))
 		{
 			m_position += m_right * m_speed;
 			m_scene->SetUpdated(true);
@@ -185,7 +185,7 @@ void Camera::UpdateVectors()
 
 void Camera::CalculatePitchAndYaw(float sensitivityScale)
 {
-	auto mouseDelta = Mouse::GetInstance().GetMousePositionDelta();
+	auto mouseDelta = Application::GetMouse().GetMousePositionDelta();
 
 	m_yaw += mouseDelta.x * m_sensitivity * sensitivityScale;
 	m_pitch -= mouseDelta.y * m_sensitivity * sensitivityScale;

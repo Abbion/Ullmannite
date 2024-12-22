@@ -87,20 +87,14 @@ namespace Ull
 
         ~Keyboard();
 
-        static Keyboard& GetInstance();
         bool IsKeyPressed(Key key) const;
 
-    protected:
+    private:
         Keyboard();
-        
-        static Keyboard m_keyboardInstance;
-
-    private:
-        std::map<Key, bool> m_keyMap;
-
-    private:
         void UpdateKeyMap(const KeyState keyState);
         void InitKeyMap();
+
+        std::map<Key, bool> m_keyMap;
 
         friend class Application;
     };

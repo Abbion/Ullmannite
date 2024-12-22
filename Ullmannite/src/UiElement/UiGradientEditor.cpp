@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "UIGradientEditor.h"
+#include <Application/Application.h>
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtx/transform.hpp"
@@ -115,7 +116,7 @@ void UiGradientEditor::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::MouseDoubleUp:
-        auto mousePos = Mouse::GetInstance().GetMousePosition();
+        auto mousePos = Application::GetMouse().GetMousePosition();
         const auto position = GetPosition();
         const auto size = GetSize();
 
@@ -311,7 +312,7 @@ void GradientMarker::HandleEvent(Event* event)
 
         if (mouseEvent->GetVal() == Mouse::Button::LEFT)
         {
-            auto mousePos = Mouse::GetInstance().GetMousePosition();
+            auto mousePos = Application::GetMouse().GetMousePosition();
             if (PointInMarker(mousePos))
             {
                 if(!m_openColorMenu)
@@ -337,7 +338,7 @@ void GradientMarker::HandleEvent(Event* event)
         }
         else if (mouseEvent->GetVal() == Mouse::Button::RIGHT)
         {
-            auto mousePos = Mouse::GetInstance().GetMousePosition();
+            auto mousePos = Application::GetMouse().GetMousePosition();
 
             if (PointInMarker(mousePos))
             {

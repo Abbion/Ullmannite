@@ -4,13 +4,6 @@
 
 using namespace Ull;
 
-Mouse Mouse::m_mouseInstance;
-
-Mouse& Mouse::GetInstance()
-{
-    return m_mouseInstance;
-}
-
 Mouse::Mouse() : m_mousePosition(0, 0), m_scroll(0)
 {
     InitButtonMap();

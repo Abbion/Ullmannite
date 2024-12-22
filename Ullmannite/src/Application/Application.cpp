@@ -7,7 +7,6 @@
 
 #include "Logger/Logger.h"
 #include "Event/Event.h"
-#include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
 #include "Rendering/Api/Renderer.h"
@@ -48,7 +47,7 @@ void Application::Run()
 {    
     while (m_window.IsOpen())
     {        
-        if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::ESCAPE))
+        if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window.Close();
         }
@@ -183,7 +182,7 @@ void Application::HandleEvents()
             break;
 
         case EventType::MouseMove:
-            Mouse::GetInstance().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
+            GetMouse().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::MouseScroll:
@@ -198,9 +197,9 @@ void Application::HandleEvents()
          m_layerManager.HandleEvent(currentEvent.get());
     }
 
-    Keyboard::GetInstance().UpdateKeyMap(keyState);
-    Mouse::GetInstance().UpdateButtonMap(buttonState);
-    Mouse::GetInstance().UpdateScroll(scroll);
+    GetKeyboard().UpdateKeyMap(keyState);
+    GetMouse().UpdateButtonMap(buttonState);
+    GetMouse().UpdateScroll(scroll);
 }
 
 void Application::WindowResizeHandler(const glm::uvec2& size)

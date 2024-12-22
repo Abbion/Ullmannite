@@ -25,20 +25,12 @@ namespace Ull
 
     public:
         NON_COPYABLE(Mouse);
-
         ~Mouse();
-
-        static Mouse& GetInstance();
         
         bool IsButtonPressed(Button button) const;
         glm::ivec2 GetMousePosition() const { return m_mousePosition; }
         glm::ivec2 GetMousePositionDelta() const { return m_mousePositionDelta; }
         int GetScrollDelta() const { return m_scroll; }
-
-    protected:
-        Mouse();
-
-        static Mouse m_mouseInstance;
 
     private:
         std::map<Button, bool> m_buttonMap;
@@ -47,6 +39,7 @@ namespace Ull
         int m_scroll;
 
     private:
+        Mouse();
         void UpdatePosition(const glm::ivec2& position); 
         void UpdateScroll(int scroll) { m_scroll = scroll; }
         void UpdateButtonMap(const ButtonState buttonState);

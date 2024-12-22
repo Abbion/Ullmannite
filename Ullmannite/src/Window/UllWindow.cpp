@@ -1,6 +1,6 @@
 #include "Ullpch.h"
 #include "UllWindow.h"
-#include "Input/Keyboard.h"
+#include "Application/Application.h"
 #include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Event/Event.h"
@@ -139,7 +139,7 @@ void UllWindow::HandleEvent(Event* event)
     case EventType::KeyDown:
         if (static_cast<KeyDownEvent*>(event)->GetVal() == Keyboard::Key::F)
         {
-            if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
+            if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::L_CONTROL))
                 SwitchHiddenCursor();
         }
     break;

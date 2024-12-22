@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "UiView3D.h"
+#include "Application/Application.h"
 #include "UiMenuView.h"
 #include "Rendering/Objects/Cube.h"
 #include "Rendering/Objects/MarchCubeRenderer.h"
@@ -113,7 +114,7 @@ void UiView3D:: HandleEvent(Event* event)
     case EventType::MouseUp:
     case EventType::MouseScroll:
     {
-        if(!PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()) && !m_window->IsCursorLocked())
+        if(!PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()) && !m_window->IsCursorLocked())
             return;
     }
     break;

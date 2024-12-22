@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "UiRenderArea.h"
+#include "Application/Application.h"
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtc/matrix_transform.hpp"
@@ -135,7 +136,7 @@ void UiRenderArea::RenderBackground()
 
 void UiRenderArea::CheckMouseInArea()
 {
-    if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
+    if (PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()))
     {
         m_areaUpdated = true;
         m_inArea = true;
