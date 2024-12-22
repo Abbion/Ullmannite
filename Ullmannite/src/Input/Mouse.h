@@ -33,17 +33,16 @@ namespace Ull
         int GetScrollDelta() const { return m_scroll; }
 
     private:
-        std::map<Button, bool> m_buttonMap;
-        glm::ivec2 m_mousePosition{ 0, 0 };
-        glm::ivec2 m_mousePositionDelta{ 0, 0 };
-        int m_scroll;
-
-    private:
         Mouse();
         void UpdatePosition(const glm::ivec2& position); 
         void UpdateScroll(int scroll) { m_scroll = scroll; }
         void UpdateButtonMap(const ButtonState buttonState);
         void InitButtonMap();
+
+        std::map<Button, bool> m_buttonMap;
+        glm::ivec2 m_mousePosition{ 0, 0 };
+        glm::ivec2 m_mousePositionDelta{ 0, 0 };
+        int m_scroll;
 
         friend class Application;
     };
