@@ -51,7 +51,7 @@ UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
 
     //std::wstring aa = L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite";
-    std::wstring aa = L"Load file";
+    std::wstring aa = L"File loaded";
     m_titleButton->GetTextControl()->SetString(aa);
     m_titleButton->GetTextControl()->SetSmoothingExceptance({ L'i', L'l' });
 

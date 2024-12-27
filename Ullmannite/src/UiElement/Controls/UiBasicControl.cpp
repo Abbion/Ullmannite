@@ -23,9 +23,20 @@ void UiBasicControl::SetFunctionality(UiControlFunctionality functionality, Stat
         m_functionality &= (~static_cast<Functionality>(functionality));
 }
 
-bool UiBasicControl::IsFunctionalitySet(UiControlFunctionality functionality)
+bool UiBasicControl::IsFunctionalitySet(UiControlFunctionality functionality) const
 {
     return m_functionality & static_cast<Functionality>(functionality);
+}
+
+bool UiBasicControl::IsHover() const
+{
+    if (!IsFunctionalitySet(UiControlFunctionality::Hover))
+    {
+        ULOGE("Hover for " << GetName() << " is disabled but ::IsHover() was called");
+        return false;
+    }
+
+    return m_hover;
 }
 
 void UiBasicControl::CreateResources()
@@ -128,8 +139,7 @@ void UiBasicControl::CheckHover()
     auto parent = GetParent();
     while (parent != nullptr)
     {
-        if (parent->GetType() == UiElementType::RenderArea)
-            renderAreaOffset += parent->GetPosition();
+        renderAreaOffset += parent->GetPosition();
         parent = parent->GetParent();
     }
     

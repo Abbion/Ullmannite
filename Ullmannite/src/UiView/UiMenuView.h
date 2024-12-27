@@ -51,5 +51,19 @@ namespace Ull
         
         //Load controls
         std::shared_ptr<UiButton> m_loadFileButton;
+        std::shared_ptr<UiText> m_loadFileText;
+
+        //Cut controls
+        std::shared_ptr<UiText>     m_cutSettingsText;
+        std::shared_ptr<UiText>     m_cutSettingsCutxText;
+        std::shared_ptr<UiToggle>   m_cutSettingsCutxInvertToggle;
+        std::shared_ptr<UiText>     m_cutSettingsCutxInvertText;
+        std::shared_ptr<UiSlider>   m_cutSettingsCutxSlider;
+
+
+        std::shared_ptr<UiText> m_cutSettingsCutyText;
+        std::shared_ptr<UiText> m_cutSettingsCutyInvertText;
+        std::shared_ptr<UiText> m_cutSettingsCutzText;
+        std::shared_ptr<UiText> m_cutSettingsCutzInvertText;
     };
 }

@@ -65,6 +65,9 @@ void UiToggle::Update()
 
 void UiToggle::Render()
 {
+    if (!IsVisible())
+        return;
+
     Renderer::GetInstance().SetBlending(true);
     UiBasicControl::Render();
     Renderer::GetInstance().SetBlending(false);

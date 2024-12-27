@@ -3,3 +3,4 @@
 #include "UiSpace.h"
 #include "UiText.h"
 #include "UiToggle.h"
+#include "UiSlider.h"

@@ -7,7 +7,8 @@ namespace Ull
         UiButton,
         UiText,
         UiToggle,
-        UiSpace
+        UiSpace,
+        UiSlider
     };
 
     enum class UiControlFunctionality : uint64_t {
@@ -20,7 +21,8 @@ namespace Ull
         virtual ~UiBasicControl() {}
 
         void SetFunctionality(UiControlFunctionality functionality, State state);
-        bool IsFunctionalitySet(UiControlFunctionality functionality);
+        bool IsFunctionalitySet(UiControlFunctionality functionality) const;
+        bool IsHover() const;
 
         void SetBackgroundColor(const glm::vec4& backgroundColor) { m_backgroundColor = backgroundColor; }
         void SetHoverColor(const glm::vec4& hoverColor) { m_hoverColor = hoverColor; }
@@ -41,6 +43,7 @@ namespace Ull
         glm::vec4 m_hoverColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 
         bool m_hover{ false };
+
         glm::mat4 m_perspective;
 
     private:

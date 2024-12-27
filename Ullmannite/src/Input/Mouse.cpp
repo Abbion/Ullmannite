@@ -21,7 +21,7 @@ bool Mouse::IsButtonPressed(Button button) const
 
 void Mouse::UpdateButtonMap(const ButtonState buttonState)
 {
-    if(buttonState.button == Button::NONE)
+    if(buttonState.button != Button::NONE)
         m_buttonMap[buttonState.button] = buttonState.state;
 }
 

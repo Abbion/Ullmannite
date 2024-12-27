@@ -125,9 +125,6 @@ void UiText::CreateResources()
 	if (size.x == 0 || size.y == 0)
 		return;
 
-	if (m_text[0] == wchar_t(61448))
-		int a = 2;
-
 	const glm::vec2 scale{ static_cast<float>(m_fontSize) / static_cast<float>(size.x) / static_cast<float>(loadedFontSize),
 					 static_cast<float>(m_fontSize) / static_cast<float>(size.y) / static_cast<float>(loadedFontSize) };
 
@@ -256,6 +253,9 @@ void UiText::Update()
 
 void UiText::Render()
 {
+	if (!IsVisible())
+		return;
+
 	m_shader->Bind();
 	m_shader->SetFloat4x4("modelMatrix", m_perspective * m_textAlignmentlMatrix * GetTransform());
 	m_shader->SetFloat("smoothing", m_smoothing);

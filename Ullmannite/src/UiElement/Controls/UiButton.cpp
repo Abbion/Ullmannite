@@ -10,7 +10,6 @@ UiButton::UiButton(std::string name, glm::vec2 position, glm::vec2 size) :
 {
     m_buttonText->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
     m_buttonText->SetSampleThreshold(1.5f);
-    //m_buttonText.SetSampleThreshold(100.f);
 
     AddChildNode(m_buttonText);
 }
@@ -55,6 +54,9 @@ void UiButton::Update()
 
 void UiButton::Render()
 {
+    if (!IsVisible())
+        return;
+
     Renderer::GetInstance().SetBlending(true);
     UiBasicControl::Render();
     Renderer::GetInstance().SetBlending(false);
