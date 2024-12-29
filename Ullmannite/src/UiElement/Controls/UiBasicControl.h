@@ -24,6 +24,9 @@ namespace Ull
         bool IsFunctionalitySet(UiControlFunctionality functionality) const;
         bool IsHover() const;
 
+        glm::vec4 GetBackgroundColor() const { return m_backgroundColor; }
+        glm::vec4 GetHoverColor() const { return m_hoverColor; }
+
         void SetBackgroundColor(const glm::vec4& backgroundColor) { m_backgroundColor = backgroundColor; }
         void SetHoverColor(const glm::vec4& hoverColor) { m_hoverColor = hoverColor; }
 

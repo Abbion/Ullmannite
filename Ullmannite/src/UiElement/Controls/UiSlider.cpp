@@ -13,8 +13,8 @@ UiSlider::UiSlider(std::string name, glm::vec2 position, glm::vec2 size) :
     m_sliderText->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
     m_sliderText->SetSampleThreshold(1.5f);
 
-    AddChildNode(m_sliderText);
     AddChildNode(m_sliderHandle);
+    AddChildNode(m_sliderText);
 }
 
 void UiSlider::SetValue(const float value)
@@ -68,21 +68,32 @@ void UiSlider::CreateResources()
 
 void UiSlider::HandleEvent(Event* event)
 {
+    switch (event->GetType())
+    {
+    case EventType::MouseDown:
+        if (!m_handleActive && m_sliderHandle->IsHover())
+        {
+            m_handleActive = true;
+            m_handleGrabPosition = m_sliderHandle->GetGlobalPosition() - glm::vec2(Application::GetMouse().GetMousePosition());
+            m_sliderBackgroundColorState = m_sliderHandle->GetBackgroundColor();
+            m_sliderHandle->SetBackgroundColor(m_sliderHandle->GetHoverColor());
+        }
+        break;
+
+    case EventType::MouseUp:
+        if (m_handleActive)
+        {
+            m_handleActive = false;
+            m_sliderHandle->SetBackgroundColor(m_sliderBackgroundColorState);
+        }
+    break;
+    }
+
     UiBasicControl::HandleEvent(event);
 }
 
 void UiSlider::Update()
 {
-    if (!m_handleActive && m_sliderHandle->IsHover() && Application::GetMouse().IsButtonPressed(Mouse::Button::LEFT))
-    {
-        m_handleActive = true;
-        m_handleGrabPosition = m_sliderHandle->GetGlobalPosition() - glm::vec2(Application::GetMouse().GetMousePosition());
-    }
-    else if (m_handleActive && !Application::GetMouse().IsButtonPressed(Mouse::Button::LEFT))
-    {
-        m_handleActive = false;
-    }
-
     if (m_handleActive)
     {
         const auto mousePosition = Application::GetMouse().GetMousePosition();

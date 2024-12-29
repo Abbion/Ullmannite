@@ -87,101 +87,8 @@ void UiMenuView::RenderUI()
 
 void UiMenuView::CreateControls()
 {
-    // Load panel
-    m_loadFileButton = std::make_shared<UiButton>("menuLoadFileButton", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
-    m_loadFileButton->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0));
-    m_loadFileButton->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
-    m_loadFileButton->CreateResources();
-    m_loadFileButton->SetOnClickFunction([this](UiButton& buttonElement) {
-        m_loadFileText->SetString(std::wstring(L"File loaded: Test"));
-        m_loadFileText->SetVisibility(true);
-    });
-
-    AddChildNode(m_loadFileButton);
-
-    auto& loadButtonTextControl = m_loadFileButton->GetTextControl();
-    loadButtonTextControl->SetFontSize(MENU_TEXT_SIZE);
-    loadButtonTextControl->SetString(std::wstring(L"Load file"));
-    loadButtonTextControl->SetEdgeSmoothing(3.5f);
-    loadButtonTextControl->SetSampleThreshold(1.0f);
-    loadButtonTextControl->SetSmoothingExceptance({ L'i', L'l' });
-
-    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"File loaded:"));
-    m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
-    m_loadFileText->SetFontSize(MENU_TEXT_SIZE);
-    m_loadFileText->SetEdgeSmoothing(3.5f);
-    m_loadFileText->SetSampleThreshold(1.5f);
-    m_loadFileText->SetSmoothingExceptance({ L'i', L'l' });
-    m_loadFileText->SetVisibility(false);
-    m_loadFileText->CreateResources();
-
-    AddChildNode(m_loadFileText);
-
-    // Cut panel
-    m_cutSettingsText = std::make_shared<UiText>("menuCutSettingsText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cutting Settings"));
-    m_cutSettingsText->SetFontSize(MENU_TEXT_SIZE);
-    m_cutSettingsText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsText->SetSampleThreshold(1.5f);
-    m_cutSettingsText->SetSmoothingExceptance({ L'i', L'l' });
-    m_cutSettingsText->SetVisibility(false);
-    m_cutSettingsText->CreateResources();
-
-    AddChildNode(m_cutSettingsText);
-
-    m_cutSettingsCutxText = std::make_shared<UiText>("menuCutSettingsCutxText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cut X"));    
-    m_cutSettingsCutxText->SetFontSize(MENU_TEXT_SIZE);
-    m_cutSettingsCutxText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutxText->SetSampleThreshold(1.5f);
-    m_cutSettingsCutxText->SetVisibility(false);
-    m_cutSettingsCutxText->CreateResources();
-
-    AddChildNode(m_cutSettingsCutxText);
-
-    m_cutSettingsCutxInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutxInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
-    m_cutSettingsCutxInvertToggle->SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-    m_cutSettingsCutxInvertToggle->SetHoverColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
-    m_cutSettingsCutxInvertToggle->SetVisibility(false);
-    m_cutSettingsCutxInvertToggle->CreateResources();
-
-    m_cutSettingsCutxInvertToggle->SetOnEnabledFunction([this](UiToggle& toggleElement) {
-        auto cutSettingsCutxInvertToggleText = toggleElement.GetTextControl();
-        cutSettingsCutxInvertToggleText->SetString(std::wstring{ static_cast<wchar_t>(Icon::CLOSE) });
-    });
-
-    m_cutSettingsCutxInvertToggle->SetOnDisambledFunction([this](UiToggle& toggleElement){
-        auto cutSettingsCutxInvertToggleText = toggleElement.GetTextControl();
-        cutSettingsCutxInvertToggleText->SetString(std::wstring{ L" " });
-    });
-
-    auto cutSettingsCutxInvertToggleText = m_cutSettingsCutxInvertToggle->GetTextControl();
-    cutSettingsCutxInvertToggleText->SetFont(FontTag::UI_ICON);
-    cutSettingsCutxInvertToggleText->SetFontSize(14);
-    cutSettingsCutxInvertToggleText->SetString(std::wstring{ L" " });
-
-    AddChildNode(m_cutSettingsCutxInvertToggle);
-
-    m_cutSettingsCutxInvertText = std::make_shared<UiText>("menuCutSettingsCutxInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Invert"));
-    m_cutSettingsCutxInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
-    m_cutSettingsCutxInvertText->SetFontSize(MENU_TEXT_SIZE);
-    m_cutSettingsCutxInvertText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutxInvertText->SetSampleThreshold(1.5f);
-    m_cutSettingsCutxInvertText->SetVisibility(false);
-    m_cutSettingsCutxInvertText->CreateResources();
-
-    AddChildNode(m_cutSettingsCutxInvertText);
-
-    m_cutSettingsCutxSlider = std::make_shared<UiSlider>("menuSettingsCutxSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
-    m_cutSettingsCutxSlider->SetBackgroundColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-    m_cutSettingsCutxSlider->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
-    m_cutSettingsCutxSlider->SetMin(0.0f);
-    m_cutSettingsCutxSlider->SetMax(100.0f);
-    m_cutSettingsCutxSlider->SetValue(0.0f);
-    m_cutSettingsCutxSlider->CreateResources();
-
-    auto cutSettingsCutxSliderHandle = m_cutSettingsCutxSlider->GetSliderHandle();
-    cutSettingsCutxSliderHandle->SetBackgroundColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-    
-    AddChildNode(m_cutSettingsCutxSlider);
+    CreateLoadPanel();
+    CreateCutPanel();
 
     // Tool tabs
     static auto toogleIsEnabledManageTabs = [this](UiToggle& toggleElement) {
@@ -225,6 +132,16 @@ void UiMenuView::CreateControls()
         m_cutSettingsCutxText->SetVisibility(false);
         m_cutSettingsCutxInvertToggle->SetVisibility(false);
         m_cutSettingsCutxInvertText->SetVisibility(false);
+        m_cutSettingsCutxSlider->SetVisibility(false);
+        m_cutSettingsCutyText->SetVisibility(false);
+        m_cutSettingsCutyInvertToggle->SetVisibility(false);
+        m_cutSettingsCutyInvertText->SetVisibility(false);
+        m_cutSettingsCutySlider->SetVisibility(false); 
+        m_cutSettingsCutzText->SetVisibility(false);
+        m_cutSettingsCutzInvertToggle->SetVisibility(false);
+        m_cutSettingsCutzInvertText->SetVisibility(false);
+        m_cutSettingsCutzSlider->SetVisibility(false);
+        
         toogleIsEnabledManageTabs(toggleElement);
        });
 
@@ -256,6 +173,16 @@ void UiMenuView::CreateControls()
         m_cutSettingsCutxText->SetVisibility(true);
         m_cutSettingsCutxInvertToggle->SetVisibility(true);
         m_cutSettingsCutxInvertText->SetVisibility(true);
+        m_cutSettingsCutxSlider->SetVisibility(true);
+        m_cutSettingsCutyText->SetVisibility(true);
+        m_cutSettingsCutyInvertToggle->SetVisibility(true);
+        m_cutSettingsCutyInvertText->SetVisibility(true);
+        m_cutSettingsCutySlider->SetVisibility(true);
+        m_cutSettingsCutzText->SetVisibility(true);
+        m_cutSettingsCutzInvertToggle->SetVisibility(true);
+        m_cutSettingsCutzInvertText->SetVisibility(true);
+        m_cutSettingsCutzSlider->SetVisibility(true);
+
         toogleIsEnabledManageTabs(toggleElement);
     });
     cutTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
@@ -321,52 +248,324 @@ void UiMenuView::CreateControls()
     ResizeControls();
 }
 
+void UiMenuView::CreateLoadPanel()
+{
+    m_loadFileButton = std::make_shared<UiButton>("menuLoadFileButton", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_loadFileButton->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0));
+    m_loadFileButton->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
+    m_loadFileButton->CreateResources();
+    m_loadFileButton->SetOnClickFunction([this](UiButton& buttonElement) {
+        m_loadFileText->SetString(std::wstring(L"File loaded: Test"));
+        m_loadFileText->SetVisibility(true);
+    });
+
+    auto& loadButtonTextControl = m_loadFileButton->GetTextControl();
+    loadButtonTextControl->SetFontSize(MENU_TEXT_SIZE);
+    loadButtonTextControl->SetString(std::wstring(L"Load file"));
+    loadButtonTextControl->SetEdgeSmoothing(3.5f);
+    loadButtonTextControl->SetSampleThreshold(1.0f);
+    loadButtonTextControl->SetSmoothingExceptance({ L'i', L'l' });
+
+    AddChildNode(m_loadFileButton);
+
+    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"File loaded:"));
+    m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
+    m_loadFileText->SetFontSize(MENU_TEXT_SIZE);
+    m_loadFileText->SetEdgeSmoothing(3.5f);
+    m_loadFileText->SetSampleThreshold(1.5f);
+    m_loadFileText->SetSmoothingExceptance({ L'i', L'l' });
+    m_loadFileText->SetVisibility(false);
+    m_loadFileText->CreateResources();
+
+    AddChildNode(m_loadFileText);
+}
+
+void UiMenuView::CreateCutPanel()
+{
+    m_cutSettingsText = std::make_shared<UiText>("menuCutSettingsText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cutting Settings"));
+    m_cutSettingsText->SetFontSize(MENU_TEXT_SIZE);
+    m_cutSettingsText->SetEdgeSmoothing(3.5f);
+    m_cutSettingsText->SetSampleThreshold(1.5f);
+    m_cutSettingsText->SetSmoothingExceptance({ L'i', L'l' });
+    m_cutSettingsText->SetVisibility(false);
+    m_cutSettingsText->CreateResources();
+
+    AddChildNode(m_cutSettingsText);
+
+    m_cutSettingsCutxText = std::make_shared<UiText>("menuCutSettingsCutxText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cut X"));    
+    m_cutSettingsCutxText->SetFontSize(MENU_TEXT_SIZE);
+    m_cutSettingsCutxText->SetEdgeSmoothing(3.5f);
+    m_cutSettingsCutxText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutxText->SetVisibility(false);
+    m_cutSettingsCutxText->CreateResources();
+
+    AddChildNode(m_cutSettingsCutxText);
+
+    m_cutSettingsCutxInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutxInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_cutSettingsCutxInvertToggle->SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+    m_cutSettingsCutxInvertToggle->SetHoverColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    m_cutSettingsCutxInvertToggle->SetVisibility(false);
+    m_cutSettingsCutxInvertToggle->CreateResources();
+
+    m_cutSettingsCutxInvertToggle->SetOnEnabledFunction([this](UiToggle& toggleElement) {
+        auto cutSettingsCutxInvertToggleText = toggleElement.GetTextControl();
+        cutSettingsCutxInvertToggleText->SetString(std::wstring{ static_cast<wchar_t>(Icon::CLOSE) });
+    });
+
+    m_cutSettingsCutxInvertToggle->SetOnDisambledFunction([this](UiToggle& toggleElement){
+        auto cutSettingsCutxInvertToggleText = toggleElement.GetTextControl();
+        cutSettingsCutxInvertToggleText->SetString(std::wstring{ L" " });
+    });
+
+    auto cutSettingsCutxInvertToggleText = m_cutSettingsCutxInvertToggle->GetTextControl();
+    cutSettingsCutxInvertToggleText->SetFont(FontTag::UI_ICON);
+    cutSettingsCutxInvertToggleText->SetFontSize(14);
+    cutSettingsCutxInvertToggleText->SetString(std::wstring{ L" " });
+
+    AddChildNode(m_cutSettingsCutxInvertToggle);
+
+    m_cutSettingsCutxInvertText = std::make_shared<UiText>("menuCutSettingsCutxInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Invert"));
+    m_cutSettingsCutxInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
+    m_cutSettingsCutxInvertText->SetFontSize(MENU_TEXT_SIZE);
+    m_cutSettingsCutxInvertText->SetEdgeSmoothing(3.5f);
+    m_cutSettingsCutxInvertText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutxInvertText->SetVisibility(false);
+    m_cutSettingsCutxInvertText->CreateResources();
+
+    AddChildNode(m_cutSettingsCutxInvertText);
+
+    m_cutSettingsCutxSlider = std::make_shared<UiSlider>("menuSettingsCutxSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
+    m_cutSettingsCutxSlider->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    m_cutSettingsCutxSlider->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
+    m_cutSettingsCutxSlider->SetMin(0.0f);
+    m_cutSettingsCutxSlider->SetMax(100.0f);
+    m_cutSettingsCutxSlider->SetValue(0.0f);
+    m_cutSettingsCutxSlider->SetVisibility(false);
+    m_cutSettingsCutxSlider->CreateResources();
+
+    auto cutSettingsCutxSliderHandle = m_cutSettingsCutxSlider->GetSliderHandle();
+    cutSettingsCutxSliderHandle->SetBackgroundColor(glm::vec4(0.94f, 0.164f, 0.314f, 1.0f));
+    cutSettingsCutxSliderHandle->SetHoverColor(glm::vec4(1.0f, 0.3f, 0.5f, 1.0f));
+
+    auto cutSettingsCutxSliderText = m_cutSettingsCutxSlider->GetTextControl();
+    cutSettingsCutxSliderText->SetFontSize(14);
+    
+    AddChildNode(m_cutSettingsCutxSlider);
+
+    m_cutSettingsCutyText = std::make_shared<UiText>("menuCutSettingsCutyText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cut Y"));    
+    m_cutSettingsCutyText->SetFontSize(MENU_TEXT_SIZE);
+    m_cutSettingsCutyText->SetEdgeSmoothing(3.5f);
+    m_cutSettingsCutyText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutyText->SetVisibility(false);
+    m_cutSettingsCutyText->CreateResources();
+
+    AddChildNode(m_cutSettingsCutyText);
+
+    m_cutSettingsCutyInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutyInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_cutSettingsCutyInvertToggle->SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+    m_cutSettingsCutyInvertToggle->SetHoverColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    m_cutSettingsCutyInvertToggle->SetVisibility(false);
+    m_cutSettingsCutyInvertToggle->CreateResources();
+
+    m_cutSettingsCutyInvertToggle->SetOnEnabledFunction([this](UiToggle& toggleElement) {
+        auto cutSettingsCutyInvertToggleText = toggleElement.GetTextControl();
+        cutSettingsCutyInvertToggleText->SetString(std::wstring{ static_cast<wchar_t>(Icon::CLOSE) });
+    });
+
+    m_cutSettingsCutyInvertToggle->SetOnDisambledFunction([this](UiToggle& toggleElement){
+        auto cutSettingsCutyInvertToggleText = toggleElement.GetTextControl();
+        cutSettingsCutyInvertToggleText->SetString(std::wstring{ L" " });
+    });
+
+    auto cutSettingsCutyInvertToggleText = m_cutSettingsCutyInvertToggle->GetTextControl();
+    cutSettingsCutyInvertToggleText->SetFont(FontTag::UI_ICON);
+    cutSettingsCutyInvertToggleText->SetFontSize(14);
+    cutSettingsCutyInvertToggleText->SetString(std::wstring{ L" " });
+
+    AddChildNode(m_cutSettingsCutyInvertToggle);
+
+    m_cutSettingsCutyInvertText = std::make_shared<UiText>("menuCutSettingsCutyInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Invert"));
+    m_cutSettingsCutyInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
+    m_cutSettingsCutyInvertText->SetFontSize(MENU_TEXT_SIZE);
+    m_cutSettingsCutyInvertText->SetEdgeSmoothing(3.5f);
+    m_cutSettingsCutyInvertText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutyInvertText->SetVisibility(false);
+    m_cutSettingsCutyInvertText->CreateResources();
+
+    AddChildNode(m_cutSettingsCutyInvertText);
+
+    m_cutSettingsCutySlider = std::make_shared<UiSlider>("menuSettingsCutySlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
+    m_cutSettingsCutySlider->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    m_cutSettingsCutySlider->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
+    m_cutSettingsCutySlider->SetMin(0.0f);
+    m_cutSettingsCutySlider->SetMax(100.0f);
+    m_cutSettingsCutySlider->SetValue(0.0f);
+    m_cutSettingsCutySlider->SetVisibility(false);
+    m_cutSettingsCutySlider->CreateResources();
+
+    auto cutSettingsCutySliderHandle = m_cutSettingsCutySlider->GetSliderHandle();
+    cutSettingsCutySliderHandle->SetBackgroundColor(glm::vec4(0.29f, 0.77f, 0.0f, 1.0f));
+    cutSettingsCutySliderHandle->SetHoverColor(glm::vec4(0.5f, 0.9f, 0.1f, 1.0f));
+
+    auto cutSettingsCutySliderText = m_cutSettingsCutySlider->GetTextControl();
+    cutSettingsCutySliderText->SetFontSize(14);
+    
+    AddChildNode(m_cutSettingsCutySlider);
+
+    m_cutSettingsCutzText = std::make_shared<UiText>("menuCutSettingsCutzText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cut Z"));    
+    m_cutSettingsCutzText->SetFontSize(MENU_TEXT_SIZE);
+    m_cutSettingsCutzText->SetEdgeSmoothing(3.5f);
+    m_cutSettingsCutzText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutzText->SetVisibility(false);
+    m_cutSettingsCutzText->CreateResources();
+
+    AddChildNode(m_cutSettingsCutzText);
+
+    m_cutSettingsCutzInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutzInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_cutSettingsCutzInvertToggle->SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+    m_cutSettingsCutzInvertToggle->SetHoverColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+    m_cutSettingsCutzInvertToggle->SetVisibility(false);
+    m_cutSettingsCutzInvertToggle->CreateResources();
+
+    m_cutSettingsCutzInvertToggle->SetOnEnabledFunction([this](UiToggle& toggleElement) {
+        auto cutSettingsCutzInvertToggleText = toggleElement.GetTextControl();
+        cutSettingsCutzInvertToggleText->SetString(std::wstring{ static_cast<wchar_t>(Icon::CLOSE) });
+    });
+
+    m_cutSettingsCutzInvertToggle->SetOnDisambledFunction([this](UiToggle& toggleElement){
+        auto cutSettingsCutzInvertToggleText = toggleElement.GetTextControl();
+        cutSettingsCutzInvertToggleText->SetString(std::wstring{ L" " });
+    });
+
+    auto cutSettingsCutzInvertToggleText = m_cutSettingsCutzInvertToggle->GetTextControl();
+    cutSettingsCutzInvertToggleText->SetFont(FontTag::UI_ICON);
+    cutSettingsCutzInvertToggleText->SetFontSize(14);
+    cutSettingsCutzInvertToggleText->SetString(std::wstring{ L" " });
+
+    AddChildNode(m_cutSettingsCutzInvertToggle);
+
+    m_cutSettingsCutzInvertText = std::make_shared<UiText>("menuCutSettingsCutzInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Invert"));
+    m_cutSettingsCutzInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
+    m_cutSettingsCutzInvertText->SetFontSize(MENU_TEXT_SIZE);
+    m_cutSettingsCutzInvertText->SetEdgeSmoothing(3.5f);
+    m_cutSettingsCutzInvertText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutzInvertText->SetVisibility(false);
+    m_cutSettingsCutzInvertText->CreateResources();
+
+    AddChildNode(m_cutSettingsCutzInvertText);
+
+    m_cutSettingsCutzSlider = std::make_shared<UiSlider>("menuSettingsCutzSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
+    m_cutSettingsCutzSlider->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    m_cutSettingsCutzSlider->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
+    m_cutSettingsCutzSlider->SetMin(0.0f);
+    m_cutSettingsCutzSlider->SetMax(100.0f);
+    m_cutSettingsCutzSlider->SetValue(0.0f);
+    m_cutSettingsCutzSlider->SetVisibility(false);
+    m_cutSettingsCutzSlider->CreateResources();
+
+    auto cutSettingsCutzSliderHandle = m_cutSettingsCutzSlider->GetSliderHandle();
+    cutSettingsCutzSliderHandle->SetBackgroundColor(glm::vec4(0.02f, 0.5f, 0.98f, 1.0f));
+    cutSettingsCutzSliderHandle->SetHoverColor(glm::vec4(0.1f, 0.6f, 1.0f, 1.0f));
+
+    auto cutSettingsCutzSliderText = m_cutSettingsCutzSlider->GetTextControl();
+    cutSettingsCutzSliderText->SetFontSize(14);
+    
+    AddChildNode(m_cutSettingsCutzSlider);
+}
+
 void UiMenuView::ResizeControls()
 {
     const auto renderAreaSize = GetSize();
     const auto tabWidth = renderAreaSize.x / TOOL_BAR_SIZE;
     const auto tabHeight = 40;
+    auto uiCursor = glm::vec2(0.0f, 0.0f);
 
     auto loadTab = m_toolTabs[ToolTypes::Load];
+    loadTab->SetPosition(uiCursor);
     loadTab->SetSize(glm::vec2(tabWidth, tabHeight));
+    uiCursor += glm::vec2(tabWidth, 0.0f);
 
     auto cutTab = m_toolTabs[ToolTypes::Cut];
-    cutTab->SetPosition(glm::vec2(tabWidth, 0.0f));
+    cutTab->SetPosition(uiCursor);
     cutTab->SetSize(glm::vec2(tabWidth, tabHeight));
+    uiCursor += glm::vec2(tabWidth, 0.0f);
 
     auto transferTab = m_toolTabs[ToolTypes::Transfer];
-    transferTab->SetPosition(glm::vec2(tabWidth * 2.0f, 0.0f));
+    transferTab->SetPosition(uiCursor);
     transferTab->SetSize(glm::vec2(tabWidth, tabHeight));
+    uiCursor += glm::vec2(tabWidth, 0.0f);
 
     auto settingsTab = m_toolTabs[ToolTypes::Settings];
-    settingsTab->SetPosition(glm::vec2(tabWidth * 3.0f, 0.0f));
+    settingsTab->SetPosition(uiCursor);
     settingsTab->SetSize(glm::vec2(tabWidth, tabHeight));
+    uiCursor = glm::vec2(0.0f, tabHeight);
 
-    m_toolTabsLine->SetPosition(glm::vec2(0.0f, tabHeight));
+    m_toolTabsLine->SetPosition(uiCursor);
     m_toolTabsLine->SetSize(glm::vec2(renderAreaSize.x, 1.0f));
 
     // Load panel
-    m_loadFileButton->SetPosition(glm::vec2((renderAreaSize.x / 2.0f) - (renderAreaSize.x * 0.4f), tabHeight * 1.25f));
+    uiCursor = glm::vec2((renderAreaSize.x * 0.5f) - (renderAreaSize.x * 0.4f), tabHeight * 1.5f);
+    m_loadFileButton->SetPosition(uiCursor);
     m_loadFileButton->SetSize(glm::vec2(0.8f * renderAreaSize.x, 30));
 
-    m_loadFileText->SetPosition(m_loadFileButton->GetPosition() + glm::vec2(0.5f, tabHeight));
+    uiCursor += glm::vec2(0.5f, tabHeight);
+    m_loadFileText->SetPosition(uiCursor);
     m_loadFileText->SetSize(m_loadFileButton->GetSize());
 
-    // Cut panel
-    m_cutSettingsText->SetPosition(glm::vec2((renderAreaSize.x / 2.0f) - (renderAreaSize.x * 0.4f), tabHeight * 1.25f));
+    // Cut panel 
+    uiCursor = glm::vec2((renderAreaSize.x * 0.5f) - (renderAreaSize.x * 0.4f), tabHeight * 1.5f);
+    m_cutSettingsText->SetPosition(uiCursor);
     m_cutSettingsText->SetSize(glm::vec2(0.8f * renderAreaSize.x, 30));
 
-    m_cutSettingsCutxText->SetPosition(glm::vec2((renderAreaSize.x / 2.0f) - (renderAreaSize.x * 0.4f), tabHeight * 2.0f));
+    uiCursor += glm::vec2(0.5f, tabHeight * 0.75f);
+    m_cutSettingsCutxText->SetPosition(uiCursor);
     m_cutSettingsCutxText->SetSize(glm::vec2(0.8f * renderAreaSize.x, 30));
 
-    m_cutSettingsCutxInvertToggle->SetPosition(m_cutSettingsCutxText->GetPosition() + glm::vec2(0.0f, tabHeight / 1.5f));
-    m_cutSettingsCutxInvertToggle->SetSize(glm::vec2(25.0f, 25.0f));
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
+    m_cutSettingsCutxInvertToggle->SetPosition(uiCursor);
+    m_cutSettingsCutxInvertToggle->SetSize(glm::vec2(20.0f, 20.0f));
 
-    m_cutSettingsCutxInvertText->SetPosition(m_cutSettingsCutxInvertToggle->GetPosition() +
-                                             glm::vec2(m_cutSettingsCutxInvertToggle->GetSize().x + 10.f, 0.0f));
+    uiCursor += glm::vec2(m_cutSettingsCutxInvertToggle->GetSize().x + 9.5f, 0.0f);
+    m_cutSettingsCutxInvertText->SetPosition(uiCursor);
     m_cutSettingsCutxInvertText->SetSize(glm::vec2(renderAreaSize.x / 2.0f, m_cutSettingsCutxInvertToggle->GetSize().y));
 
-    auto uiCursor = m_cutSettingsCutxInvertToggle->GetPosition() + glm::vec2(0.0f, tabHeight / 1.5f);
+    uiCursor -= glm::vec2(m_cutSettingsCutxInvertToggle->GetSize().x + 9.5f, 0.0f);
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
     m_cutSettingsCutxSlider->SetPosition(uiCursor);
-    m_cutSettingsCutxSlider->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 30));
+    m_cutSettingsCutxSlider->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 20));
+
+    uiCursor += glm::vec2(0.5f, tabHeight * 0.75f);
+    m_cutSettingsCutyText->SetPosition(uiCursor);
+    m_cutSettingsCutyText->SetSize(glm::vec2(0.8f * renderAreaSize.x, 30));
+
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
+    m_cutSettingsCutyInvertToggle->SetPosition(uiCursor);
+    m_cutSettingsCutyInvertToggle->SetSize(glm::vec2(20.0f, 20.0f));
+
+    uiCursor += glm::vec2(m_cutSettingsCutyInvertToggle->GetSize().x + 9.0f, 0.0f);
+    m_cutSettingsCutyInvertText->SetPosition(uiCursor);
+    m_cutSettingsCutyInvertText->SetSize(glm::vec2(renderAreaSize.x / 2.0f, m_cutSettingsCutyInvertToggle->GetSize().y));
+
+    uiCursor -= glm::vec2(m_cutSettingsCutxInvertToggle->GetSize().x + 9.0f, 0.0f);
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
+    m_cutSettingsCutySlider->SetPosition(uiCursor);
+    m_cutSettingsCutySlider->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 20));
+
+
+    uiCursor += glm::vec2(0.5f, tabHeight * 0.75f);
+    m_cutSettingsCutzText->SetPosition(uiCursor);
+    m_cutSettingsCutzText->SetSize(glm::vec2(0.8f * renderAreaSize.x, 30));
+
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
+    m_cutSettingsCutzInvertToggle->SetPosition(uiCursor);
+    m_cutSettingsCutzInvertToggle->SetSize(glm::vec2(20.0f, 20.0f));
+
+    uiCursor += glm::vec2(m_cutSettingsCutzInvertToggle->GetSize().x + 9.5f, 0.0f);
+    m_cutSettingsCutzInvertText->SetPosition(uiCursor);
+    m_cutSettingsCutzInvertText->SetSize(glm::vec2(renderAreaSize.x / 2.0f, m_cutSettingsCutzInvertToggle->GetSize().y));
+
+    uiCursor -= glm::vec2(m_cutSettingsCutzInvertToggle->GetSize().x + 9.0f, 0.0f);
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
+    m_cutSettingsCutzSlider->SetPosition(uiCursor);
+    m_cutSettingsCutzSlider->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 20));
 }

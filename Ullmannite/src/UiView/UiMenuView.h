@@ -30,7 +30,11 @@ namespace Ull
 
     private:
 		void CreateControls();
+        void CreateLoadPanel();
+        void CreateCutPanel();
+
 		void ResizeControls();
+
 
 		void Init();
         void RenderUI();
@@ -55,15 +59,20 @@ namespace Ull
 
         //Cut controls
         std::shared_ptr<UiText>     m_cutSettingsText;
+
         std::shared_ptr<UiText>     m_cutSettingsCutxText;
         std::shared_ptr<UiToggle>   m_cutSettingsCutxInvertToggle;
         std::shared_ptr<UiText>     m_cutSettingsCutxInvertText;
         std::shared_ptr<UiSlider>   m_cutSettingsCutxSlider;
 
+        std::shared_ptr<UiText>     m_cutSettingsCutyText;
+        std::shared_ptr<UiToggle>   m_cutSettingsCutyInvertToggle;
+        std::shared_ptr<UiText>     m_cutSettingsCutyInvertText;
+        std::shared_ptr<UiSlider>   m_cutSettingsCutySlider;
 
-        std::shared_ptr<UiText> m_cutSettingsCutyText;
-        std::shared_ptr<UiText> m_cutSettingsCutyInvertText;
-        std::shared_ptr<UiText> m_cutSettingsCutzText;
-        std::shared_ptr<UiText> m_cutSettingsCutzInvertText;
+        std::shared_ptr<UiText>     m_cutSettingsCutzText;
+        std::shared_ptr<UiToggle>   m_cutSettingsCutzInvertToggle;
+        std::shared_ptr<UiText>     m_cutSettingsCutzInvertText;
+        std::shared_ptr<UiSlider>   m_cutSettingsCutzSlider;
     };
 }

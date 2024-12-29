@@ -88,6 +88,7 @@ void MainLayer::CreateLayout()
     m_layout->AddChildNode(m_titleBar);
 
     m_menuView = std::make_shared<UiMenuView>("menuElement", glm::vec2(0.f, (30.f * initScale) + 1), glm::vec2(260.f, initSize.y - (30.f * initScale) - 1.f));
+    m_menuView->PrintTree();
     m_layout->AddChildNode(m_menuView);
 
     m_3DView = std::make_shared<UiView3D>("view3DElement", glm::vec2((260.f + initScale) + 1.f, (30.f * initScale) + 1.f), glm::vec2(initSize.x - (260.f * initScale) - 1.f, initSize.y - (30.f * initScale) - 1.f));

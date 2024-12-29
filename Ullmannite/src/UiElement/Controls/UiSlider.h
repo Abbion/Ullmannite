@@ -35,6 +35,8 @@ namespace Ull
         std::shared_ptr<UiSpace> m_sliderHandle;
         std::shared_ptr<UiText> m_sliderText;
 
+        glm::vec4 m_sliderBackgroundColorState;
+
         bool m_handleActive{ false };
         glm::vec2 m_handleGrabPosition{ 0.0f, 0.0f };
         float m_sliderValue{ 0.0f };
