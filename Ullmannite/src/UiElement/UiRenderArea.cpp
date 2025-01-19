@@ -7,7 +7,7 @@
 
 using namespace Ull;
 
-UiRenderArea::UiRenderArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth) :
+UiRenderArea::UiRenderArea(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth) :
     UiElement(name, position, size, UiElementType::RenderArea),
     m_usesDepth(usesDepth)
 {

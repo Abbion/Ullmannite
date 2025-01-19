@@ -12,7 +12,7 @@ namespace Ull
     class MainLayer : public Layer
     {
     public:
-        MainLayer(glm::uvec2 size);
+        MainLayer(const glm::uvec2 size);
 
         void SetWindow(const NotOwner<UllWindow>& window);
 

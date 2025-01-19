@@ -14,7 +14,7 @@ namespace Ull
 	class GradientMarker : public UiElement
 	{
 	public:
-		GradientMarker(std::string name, glm::uvec2 position, glm::uvec2 size, glm::vec4 color);
+		GradientMarker(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const glm::vec4 color);
 		GradientMarker(GradientMarker&& source);
 		~GradientMarker();
 
@@ -60,7 +60,7 @@ namespace Ull
 	class UiGradientEditor : public UiElement
 	{
 	public:
-		UiGradientEditor(std::string name, glm::uvec2 position, glm::uvec2 size);
+		UiGradientEditor(const std::string& name, const glm::uvec2 position, const glm::uvec2 size);
 
 		void CreateResources() override;
 

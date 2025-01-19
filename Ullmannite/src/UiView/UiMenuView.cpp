@@ -160,7 +160,7 @@ void UiMenuView::CreateControls()
     AddChildNode(loadTab);
     m_toolTabs.insert(std::pair(ToolTypes::Load, std::move(loadTab)));
 
-    auto cutTab = std::make_shared<UiToggle>("menuCutTab", glm::uvec2(0, 0), glm::uvec2(0, 0)); 
+    auto cutTab = std::make_shared<UiToggle>("menuCutTab", glm::uvec2(0, 0), glm::uvec2(1, 1)); 
     cutTab->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     cutTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     cutTab->CreateResources();
@@ -199,7 +199,7 @@ void UiMenuView::CreateControls()
     AddChildNode(cutTab);
     m_toolTabs.insert(std::pair(ToolTypes::Cut, std::move(cutTab)));
 
-    auto transferTab = std::make_shared<UiToggle>("transferCutTab", glm::uvec2(0, 0), glm::uvec2(0, 0)); 
+    auto transferTab = std::make_shared<UiToggle>("transferCutTab", glm::uvec2(0, 0), glm::uvec2(1, 1)); 
     transferTab->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     transferTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     transferTab->CreateResources();
@@ -238,7 +238,7 @@ void UiMenuView::CreateControls()
     AddChildNode(transferTab);
     m_toolTabs.insert(std::pair(ToolTypes::Transfer, std::move(transferTab)));
 
-    auto settingsTab = std::make_shared<UiToggle>("settingsCutTab", glm::uvec2(0, 0), glm::uvec2(0, 0)); 
+    auto settingsTab = std::make_shared<UiToggle>("settingsCutTab", glm::uvec2(0, 0), glm::uvec2(1, 1)); 
     settingsTab->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
     settingsTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     settingsTab->CreateResources();
@@ -258,7 +258,7 @@ void UiMenuView::CreateControls()
     AddChildNode(settingsTab);
     m_toolTabs.insert(std::pair(ToolTypes::Settings, std::move(settingsTab)));
 
-    m_toolTabsLine = std::make_shared<UiSpace>("toolTabUnderline", glm::vec2(0, 0), glm::vec2(0, 0));
+    m_toolTabsLine = std::make_shared<UiSpace>("toolTabUnderline", glm::vec2(0, 0), glm::vec2(1, 1));
     m_toolTabsLine->SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     m_toolTabsLine->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
     m_toolTabsLine->CreateResources();
@@ -269,7 +269,7 @@ void UiMenuView::CreateControls()
 
 void UiMenuView::CreateLoadPanel()
 {
-    m_loadFileButton = std::make_shared<UiButton>("menuLoadFileButton", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_loadFileButton = std::make_shared<UiButton>("menuLoadFileButton", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
     m_loadFileButton->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0));
     m_loadFileButton->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
     m_loadFileButton->CreateResources();
@@ -287,7 +287,7 @@ void UiMenuView::CreateLoadPanel()
 
     AddChildNode(m_loadFileButton);
 
-    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"File loaded:"));
+    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"File loaded:"));
     m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
     m_loadFileText->SetFontSize(MENU_TEXT_SIZE);
     m_loadFileText->SetEdgeSmoothing(3.5f);
@@ -301,7 +301,7 @@ void UiMenuView::CreateLoadPanel()
 
 void UiMenuView::CreateCutPanel()
 {
-    m_cutSettingsText = std::make_shared<UiText>("menuCutSettingsText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cutting Settings"));
+    m_cutSettingsText = std::make_shared<UiText>("menuCutSettingsText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cutting Settings"));
     m_cutSettingsText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsText->SetEdgeSmoothing(3.5f);
     m_cutSettingsText->SetSampleThreshold(1.5f);
@@ -311,7 +311,7 @@ void UiMenuView::CreateCutPanel()
 
     AddChildNode(m_cutSettingsText);
 
-    m_cutSettingsCutxText = std::make_shared<UiText>("menuCutSettingsCutxText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cut X"));    
+    m_cutSettingsCutxText = std::make_shared<UiText>("menuCutSettingsCutxText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cut X"));    
     m_cutSettingsCutxText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutxText->SetEdgeSmoothing(3.5f);
     m_cutSettingsCutxText->SetSampleThreshold(1.5f);
@@ -320,7 +320,7 @@ void UiMenuView::CreateCutPanel()
 
     AddChildNode(m_cutSettingsCutxText);
 
-    m_cutSettingsCutxInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutxInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_cutSettingsCutxInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutxInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
     m_cutSettingsCutxInvertToggle->SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
     m_cutSettingsCutxInvertToggle->SetHoverColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
     m_cutSettingsCutxInvertToggle->SetVisibility(false);
@@ -343,7 +343,7 @@ void UiMenuView::CreateCutPanel()
 
     AddChildNode(m_cutSettingsCutxInvertToggle);
 
-    m_cutSettingsCutxInvertText = std::make_shared<UiText>("menuCutSettingsCutxInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Invert"));
+    m_cutSettingsCutxInvertText = std::make_shared<UiText>("menuCutSettingsCutxInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Invert"));
     m_cutSettingsCutxInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
     m_cutSettingsCutxInvertText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutxInvertText->SetEdgeSmoothing(3.5f);
@@ -371,7 +371,7 @@ void UiMenuView::CreateCutPanel()
     
     AddChildNode(m_cutSettingsCutxSlider);
 
-    m_cutSettingsCutyText = std::make_shared<UiText>("menuCutSettingsCutyText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cut Y"));    
+    m_cutSettingsCutyText = std::make_shared<UiText>("menuCutSettingsCutyText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cut Y"));    
     m_cutSettingsCutyText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutyText->SetEdgeSmoothing(3.5f);
     m_cutSettingsCutyText->SetSampleThreshold(1.5f);
@@ -380,7 +380,7 @@ void UiMenuView::CreateCutPanel()
 
     AddChildNode(m_cutSettingsCutyText);
 
-    m_cutSettingsCutyInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutyInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_cutSettingsCutyInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutyInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
     m_cutSettingsCutyInvertToggle->SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
     m_cutSettingsCutyInvertToggle->SetHoverColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
     m_cutSettingsCutyInvertToggle->SetVisibility(false);
@@ -403,7 +403,7 @@ void UiMenuView::CreateCutPanel()
 
     AddChildNode(m_cutSettingsCutyInvertToggle);
 
-    m_cutSettingsCutyInvertText = std::make_shared<UiText>("menuCutSettingsCutyInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Invert"));
+    m_cutSettingsCutyInvertText = std::make_shared<UiText>("menuCutSettingsCutyInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Invert"));
     m_cutSettingsCutyInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
     m_cutSettingsCutyInvertText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutyInvertText->SetEdgeSmoothing(3.5f);
@@ -431,7 +431,7 @@ void UiMenuView::CreateCutPanel()
     
     AddChildNode(m_cutSettingsCutySlider);
 
-    m_cutSettingsCutzText = std::make_shared<UiText>("menuCutSettingsCutzText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Cut Z"));    
+    m_cutSettingsCutzText = std::make_shared<UiText>("menuCutSettingsCutzText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cut Z"));    
     m_cutSettingsCutzText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutzText->SetEdgeSmoothing(3.5f);
     m_cutSettingsCutzText->SetSampleThreshold(1.5f);
@@ -440,7 +440,7 @@ void UiMenuView::CreateCutPanel()
 
     AddChildNode(m_cutSettingsCutzText);
 
-    m_cutSettingsCutzInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutzInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    m_cutSettingsCutzInvertToggle = std::make_shared<UiToggle>("menuCutSettingsCutzInvertToggle", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
     m_cutSettingsCutzInvertToggle->SetBackgroundColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
     m_cutSettingsCutzInvertToggle->SetHoverColor(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
     m_cutSettingsCutzInvertToggle->SetVisibility(false);
@@ -463,7 +463,7 @@ void UiMenuView::CreateCutPanel()
 
     AddChildNode(m_cutSettingsCutzInvertToggle);
 
-    m_cutSettingsCutzInvertText = std::make_shared<UiText>("menuCutSettingsCutzInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), std::wstring(L"Invert"));
+    m_cutSettingsCutzInvertText = std::make_shared<UiText>("menuCutSettingsCutzInvertText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Invert"));
     m_cutSettingsCutzInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
     m_cutSettingsCutzInvertText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutzInvertText->SetEdgeSmoothing(3.5f);

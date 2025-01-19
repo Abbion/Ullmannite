@@ -6,7 +6,7 @@ namespace Ull
 	class UiLayout : public UiElement
 	{
 	public:
-		UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size);
+		UiLayout(const std::string& name, const glm::uvec2 position, const glm::uvec2 size);
 		~UiLayout();
 
 		void CreateResources() override;

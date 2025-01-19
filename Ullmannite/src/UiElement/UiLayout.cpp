@@ -6,7 +6,7 @@
 
 using namespace Ull;
 
-UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
+UiLayout::UiLayout(const std::string& name, const glm::uvec2 position, const glm::uvec2 size) :
 	UiElement(name, position, size, UiElementType::Layout)
 {
     auto& shaderManager = Application::GetRenderer().GetShaderManager();

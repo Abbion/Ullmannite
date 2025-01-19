@@ -23,7 +23,7 @@ namespace Ull
         unsigned int m_focusedElement { 0 };
     
     protected:
-        Layer(const std::string& name, const glm::uvec2& size);     //Constructor
+        Layer(const std::string& name, const glm::uvec2& size);
 
     private:
         std::string m_name;

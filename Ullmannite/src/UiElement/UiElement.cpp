@@ -1,6 +1,12 @@
 #include "Ullpch.h"
 #include "UiElement.h"
 #include <glm/ext/matrix_transform.hpp>
+#include <limits.h>
+
+namespace
+{
+	constexpr auto EPSILON = std::numeric_limits<float>::epsilon();
+}
 
 using namespace Ull;
 
@@ -9,6 +15,8 @@ UiElement::UiElement(const std::string& name, const glm::vec2 position, const gl
 	Object2D{ position, size },
 	m_uiElementType{ type }
 {
+	if (size.x < EPSILON || size.y < EPSILON)
+		ULOGE("UiElement error: " << name << " size cannot be 0. size x: " << size.x << " size.y: " << size.y);
 }
 
 std::optional<NotOwner<UiElement>> UiElement::FindUiElementAboveByType(const UiElementType type)

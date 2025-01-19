@@ -12,7 +12,7 @@
 
 using namespace Ull;
 
-MainLayer::MainLayer(glm::uvec2 size) : Layer("main", size)
+MainLayer::MainLayer(const glm::uvec2 size) : Layer("main", size)
 {
     CreateLayout();
 }

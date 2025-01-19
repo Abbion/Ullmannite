@@ -15,7 +15,7 @@ namespace
 	constexpr float buttonWidth = 45.f;
 }
 
-UiTitleBar::UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size) :
+UiTitleBar::UiTitleBar(const std::string& name, const glm::uvec2 position, const glm::uvec2 size) :
 	UiRenderArea(name, position, size, false),
 	m_closeButton{ std::make_shared<UiButton>("closeWindowButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },
 	m_restoreButton{ std::make_shared<UiToggle>("restoreButton", glm::uvec2(0, 0), glm::uvec2(size.y, size.y)) },

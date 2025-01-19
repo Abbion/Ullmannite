@@ -12,7 +12,7 @@ namespace Ull
 	class UiTitleBar : public UiRenderArea
 	{
 	public:
-		UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size);
+		UiTitleBar(const std::string& name, const glm::uvec2 position, const glm::uvec2 size);
 		virtual ~UiTitleBar() {}
 
 		void SetWindow(const NotOwner<UllWindow>& window) { m_window = window; }
