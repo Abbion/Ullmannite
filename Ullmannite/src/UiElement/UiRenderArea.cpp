@@ -1,7 +1,6 @@
 #include "Ullpch.h"
 #include "UiRenderArea.h"
 #include "Application/Application.h"
-#include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Utilities/CollisionCheckers.h"
@@ -12,7 +11,7 @@ UiRenderArea::UiRenderArea(std::string name, glm::uvec2 position, glm::uvec2 siz
     UiElement(name, position, size, UiElementType::RenderArea),
     m_usesDepth(usesDepth)
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
     CreateResources();
 }
@@ -121,8 +120,8 @@ void UiRenderArea::Render()
 
 void UiRenderArea::RenderBackground()
 {
-    Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
-    Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), GetSize());
+    Application::GetRenderer().Clear(Renderer::ClearBits::COLOR);
+    Application::GetRenderer().SetViewPort(glm::ivec2(0, 0), GetSize());
 
     m_shader->Bind();
 
@@ -131,7 +130,7 @@ void UiRenderArea::RenderBackground()
 
     m_layout->Bind();
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }
 
 void UiRenderArea::CheckMouseInArea()

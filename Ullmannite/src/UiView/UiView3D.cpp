@@ -6,7 +6,6 @@
 #include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
 #include "Scene/SceneObjects/Camera.h"
-#include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
 #include <string>
 
@@ -271,14 +270,14 @@ void UiView3D::Render()
 
         UiRenderArea::Render();
 
-        Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
-        Renderer::GetInstance().Clear(Renderer::ClearBits::DEPTH);
+        Application::GetRenderer().SetDepth(Renderer::State::ENABLE);
+        Application::GetRenderer().Clear(Renderer::ClearBits::DEPTH);
 
-        //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::BACK);
-        //Renderer::GetInstance().SetFaceWinding(Renderer::FaceWinding::COUNTER_CLOCKWISE);
+        //Application::GetRenderer().SetFaceCulling(Renderer::FaceCulling::BACK);
+        //Application::GetRenderer().SetFaceWinding(Renderer::FaceWinding::COUNTER_CLOCKWISE);
         m_scene.Render();
-        //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::NONE);
-        //Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
+        //Application::GetRenderer().SetFaceCulling(Renderer::FaceCulling::NONE);
+        //Application::GetRenderer().SetDepth(Renderer::State::DISABLE);
 
 		m_frameBuffer->Unbind();
 

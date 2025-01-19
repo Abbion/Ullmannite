@@ -1,8 +1,8 @@
 #include "Ullpch.h"
 #include "UiText.h"
+#include "Application/Application.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Resources/ResourceManager.h"
-#include "Rendering/Api/Renderer.h"
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -27,7 +27,7 @@ UiText::UiText(const std::string name, const glm::vec2 position, const glm::vec2
 {
 	m_textAlignmentlMatrix = glm::mat4x4(1.0f);
 
-	auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+	auto& shaderManager = Application::GetRenderer().GetShaderManager();
 	m_shader = shaderManager.GetShader(ShaderTag::SDF_TEXT);
 }
 
@@ -288,9 +288,9 @@ void UiText::Render()
 
 	m_layout->Bind();
 
-	Renderer::GetInstance().SetBlending(true);
-	Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
-	Renderer::GetInstance().SetBlending(false);
+	Application::GetRenderer().SetBlending(true);
+	Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+	Application::GetRenderer().SetBlending(false);
 }
 
 void UiText::UpdateDisplayTextSize()

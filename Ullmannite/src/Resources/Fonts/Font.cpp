@@ -2,7 +2,7 @@
 #include "Font.h"
 #include "Rendering/Api/Texture.h"
 #include "Output/Image2DWriter.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 #include <set>
 #include <algorithm>
 
@@ -108,7 +108,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	innerSdf->SetWrap(WrapMode::CLAMP, WrapMode::CLAMP);
 	innerSdf->SetStorage(glm::uvec2(FontTextureDimensions, FontTextureDimensions), InternalDataFormat::R_16UI);
 
-	auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+	auto& shaderManager = Application::GetRenderer().GetShaderManager();
 	std::shared_ptr<Shader> shader{ nullptr };
 	shader = shaderManager.GetShader(ShaderTag::INVERSE_2D_BIT_MAP);
 
@@ -118,8 +118,8 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	outerSdf->BindImage(InternalDataFormat::R_16UI, ReadWriteRights::READ, 0);
 	innerSdf->BindImage(InternalDataFormat::R_16UI, ReadWriteRights::WRITE, 1);
 
-	Renderer::GetInstance().DispatchComputeShader(GroupSize, GroupSize, 1);
-	Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+	Application::GetRenderer().DispatchComputeShader(GroupSize, GroupSize, 1);
+	Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 
 	const auto maxWidthOfGliphsItr = std::max_element(gliphInfoVec.begin(), gliphInfoVec.end(), [](const PreGliphLoadInfo& gliphInfo_A, const PreGliphLoadInfo& gliphInfo_B) {
 		return gliphInfo_A.size.x < gliphInfo_B.size.x;
@@ -143,16 +143,16 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	for (unsigned i = 0u; i < maxHeightOfGliphs; i++)
 	{
 		shader->SetUint("beta", (i * 2) + 1);
-		Renderer::GetInstance().DispatchComputeShader(GroupSize, GroupSize, 1);
-		Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+		Application::GetRenderer().DispatchComputeShader(GroupSize, GroupSize, 1);
+		Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 	}
 	
 	shader->SetInt2("offset", glm::ivec2(1, 0));
 	for (unsigned i = 0u; i < maxWidthOfGliphs; i++)
 	{
 		shader->SetUint("beta", (i * 2) + 1);
-		Renderer::GetInstance().DispatchComputeShader(GroupSize, GroupSize, 1);
-		Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+		Application::GetRenderer().DispatchComputeShader(GroupSize, GroupSize, 1);
+		Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 	}
 
 	outerSdf->Unbind();
@@ -163,16 +163,16 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	for (unsigned i = 0u; i < maxHeightOfGliphs / 2u; i++)
 	{
 		shader->SetUint("beta", (i * 2) + 1);
-		Renderer::GetInstance().DispatchComputeShader(GroupSize, GroupSize, 1);
-		Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+		Application::GetRenderer().DispatchComputeShader(GroupSize, GroupSize, 1);
+		Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 	}
 	
 	shader->SetInt2("offset", glm::ivec2(1, 0));
 	for (unsigned i = 0u; i < maxWidthOfGliphs / 2u; i++)
 	{
 		shader->SetUint("beta", (i * 2) + 1);
-		Renderer::GetInstance().DispatchComputeShader(GroupSize, GroupSize, 1);
-		Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+		Application::GetRenderer().DispatchComputeShader(GroupSize, GroupSize, 1);
+		Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 	}
 	
 	innerSdf->Unbind();
@@ -189,8 +189,8 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	m_gliphTexture->SetStorage(glm::uvec2(FontTextureDimensions, FontTextureDimensions), InternalDataFormat::R_32F);
 	m_gliphTexture->BindImage(InternalDataFormat::R_32F, ReadWriteRights::WRITE, 2);
 
-	Renderer::GetInstance().DispatchComputeShader(GroupSize, GroupSize, 1);
-	Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+	Application::GetRenderer().DispatchComputeShader(GroupSize, GroupSize, 1);
+	Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 
 	FrameBuffer* frameBuffer = FrameBuffer::Create(m_gliphTexture);
 	std::vector<float> sdfImage(FontTextureDimensions* FontTextureDimensions);

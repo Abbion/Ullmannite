@@ -1,6 +1,7 @@
 #include "Ullpch.h"
 #include "UiButton.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
+
 
 using namespace Ull;
 
@@ -57,7 +58,7 @@ void UiButton::Render()
     if (!IsVisible())
         return;
 
-    Renderer::GetInstance().SetBlending(true);
+    Application::GetRenderer().SetBlending(true);
     UiBasicControl::Render();
-    Renderer::GetInstance().SetBlending(false);
+    Application::GetRenderer().SetBlending(false);
 }

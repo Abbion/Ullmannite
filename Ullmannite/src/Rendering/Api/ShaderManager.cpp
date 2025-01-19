@@ -1,8 +1,8 @@
 #include "Ullpch.h"
 #include "ShaderManager.h"
 #include "Logger/Logger.h"
-#include "Renderer.h"
 #include "OpenGL/ShaderOpenGL.h"
+#include "Application/Application.h"
 
 using namespace Ull;
 
@@ -29,7 +29,7 @@ void ShaderManager::LoadShader(const ShaderTag tag, const std::string vertexShad
 		return;
 	}
 
-	switch (Renderer::GetInstance().GetApi())
+	switch (Application::GetRenderer().GetApi())
 	{
 	case Renderer::API::OPEN_GL:
 		m_shaderMap.insert(std::make_pair<const ShaderTag, std::shared_ptr<Shader>>(
@@ -52,7 +52,7 @@ void ShaderManager::LoadShader(const ShaderTag tag, const std::string computeSha
 		return;
 	}
 
-	switch (Renderer::GetInstance().GetApi())
+	switch (Application::GetRenderer().GetApi())
 	{
 	case Renderer::API::OPEN_GL:
 		m_shaderMap.insert(std::make_pair<const ShaderTag, std::shared_ptr<Shader>>(

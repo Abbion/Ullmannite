@@ -4,7 +4,6 @@
 #include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Event/Event.h"
-#include "Rendering/Api/Renderer.h"
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -47,7 +46,7 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
     if (size.y < MIN_WINDOW_HEIGHT)
         size.y = MIN_WINDOW_HEIGHT;
 
-    if (Renderer::GetInstance().GetApi() == Renderer::API::OPEN_GL)
+    if (Application::GetRenderer().GetApi() == Renderer::API::OPEN_GL)
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);

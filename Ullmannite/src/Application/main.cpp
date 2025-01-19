@@ -13,7 +13,6 @@ int main()
 
 #else
 #include "Application.h"
-#include "Rendering/Api/Renderer.h"
 #include "Resources/ResourceManager.h"
 
 int main() 
@@ -25,7 +24,6 @@ int main()
 
 	delete app;
 
-	Ull::Renderer::GetInstance().Terminate();
 	Ull::ResourceManager::GetInstance().Terminate();
 
 	return 0;

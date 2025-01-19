@@ -1,6 +1,6 @@
 #include "Ullpch.h"
 #include "Cube.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "Rendering/Objects/DirectionalLight.h"
 
@@ -9,7 +9,7 @@ using namespace Ull;
 Cube::Cube(const std::string& name, NotOwner<Scene> scene) :
 	Node3D(name, scene)
 {
-	auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+	auto& shaderManager = Application::GetRenderer().GetShaderManager();
 	m_shader = shaderManager.GetShader(ShaderTag::MARKER);
 	CreateResources();
 }
@@ -94,5 +94,5 @@ void Cube::Render()
 
 	m_layout->Bind();
 
-	Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+	Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }

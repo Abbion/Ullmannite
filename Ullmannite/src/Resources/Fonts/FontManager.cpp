@@ -1,7 +1,7 @@
 #include "Ullpch.h"
 #include "FontManager.h"
 #include "Logger/Logger.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 
 using namespace Ull;
 
@@ -41,7 +41,7 @@ void FontManager::InitLoader()
 	UASSERT(FT_Init_FreeType(&m_fontLibrary) == FT_Err_Ok, "Couldin't init font library");
 	m_libraryIsAlive = true;
 
-	Renderer::GetInstance().SetPixelUnpackWidth(1);
+	Application::GetRenderer().SetPixelUnpackWidth(1);
 }
 
 void FontManager::ReleaseLoader()
@@ -49,7 +49,7 @@ void FontManager::ReleaseLoader()
 	UASSERT(FT_Done_FreeType(m_fontLibrary) == FT_Err_Ok, "Couldin't release font library");
 	m_libraryIsAlive = false;
 
-	Renderer::GetInstance().SetPixelUnpackWidth(4);
+	Application::GetRenderer().SetPixelUnpackWidth(4);
 }
 
 std::unique_ptr<Font>& FontManager::GetFont(const FontTag fontTag)

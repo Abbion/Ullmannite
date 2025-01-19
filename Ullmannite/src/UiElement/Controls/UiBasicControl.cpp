@@ -1,7 +1,6 @@
 #include "Ullpch.h"
 #include "UiBasicControl.h"
 #include "Application/Application.h"
-#include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -11,7 +10,7 @@ UiBasicControl::UiBasicControl(const std::string& name, const glm::vec2 position
     UiElement(name, position, size, UiElementType::Control),
     m_uiControlType{ type }
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
 }
 
@@ -122,7 +121,7 @@ void UiBasicControl::Render()
 
     m_layout->Bind();
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 
     UiElement::Render();
 }

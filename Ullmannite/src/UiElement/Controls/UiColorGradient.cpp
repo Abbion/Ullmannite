@@ -1,6 +1,6 @@
 #include "Ullpch.h"
 #include "UiColorGradient.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 
 using namespace Ull;
 
@@ -28,7 +28,7 @@ void UiColorGradient::ClearColorData()
 
 void UiColorGradient::CreateResources()
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
 
     if (m_gradientColors.size() < 2)
     {   
@@ -124,7 +124,7 @@ void UiColorGradient::Render()
 
     m_layout->Bind();
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 
     UiElement::Render();
 }

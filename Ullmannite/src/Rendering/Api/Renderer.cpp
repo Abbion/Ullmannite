@@ -46,15 +46,8 @@ namespace {
     }
 }
 
-Renderer Renderer::m_rendererInstance;
-
 Renderer::~Renderer()
 {
-}
-
-Renderer& Renderer::GetInstance()
-{
-    return m_rendererInstance;
 }
 
 void Renderer::SetApi(API api)

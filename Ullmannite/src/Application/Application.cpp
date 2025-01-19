@@ -9,7 +9,7 @@
 #include "Event/Event.h"
 #include "Input/Mouse.h"
 
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 #include "Rendering/Api/ShaderManager.h"
 
 #include "Layer/Layer.h"
@@ -40,6 +40,8 @@ Application::Application()
 
 Application::~Application()
 {
+    m_layerManager.DropAllLayers();
+    GetRenderer().Terminate();
     ULOGD("Application terminated");
 }
 
@@ -67,7 +69,8 @@ void Application::Run()
 
 void Application::InitApplciation()
 {
-    Ull::Renderer::GetInstance().SetApi(Ull::Renderer::API::OPEN_GL);
+    auto& renderer = GetRenderer();
+    renderer.SetApi(Ull::Renderer::API::OPEN_GL);
 
     //Window
     if (glfwInit() == -1)
@@ -80,8 +83,8 @@ void Application::InitApplciation()
     //Renderer
     glfwMakeContextCurrent(m_window.GetWindowContext());
 
-    Renderer::GetInstance().Init();
-    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window.GetSize());
+    renderer.Init();
+    renderer.SetViewPort(glm::uvec2(0, 0), m_window.GetSize());
 
     //ImGui
     const char* glsl_version = "#version 140";
@@ -100,7 +103,7 @@ void Application::InitApplciation()
     const auto state2 = ImGui_ImplOpenGL3_Init(glsl_version);
 
     //Load Shaders
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = renderer.GetShaderManager();
 
     shaderManager.LoadShader(ShaderTag::UI_BASIC_COLOR, "UiBasicVS", "UiBasicColorPS");
     shaderManager.LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
@@ -204,7 +207,7 @@ void Application::HandleEvents()
 
 void Application::WindowResizeHandler(const glm::uvec2& size)
 {
-    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), size);
+    GetRenderer().SetViewPort(glm::uvec2(0, 0), size);
 }
 
 void Application::WindowRefreshFunction()

@@ -15,6 +15,7 @@ namespace Ull
 
         void PushLayer(std::shared_ptr<Layer> newLayer);
         void PopLayer();
+        void DropAllLayers();
 
         std::shared_ptr<Layer> GetTopLayer();
         std::deque<std::shared_ptr<Layer>>& GetAllLayers() { return m_layers; }

@@ -56,8 +56,6 @@ namespace Ull
         
         ~Renderer();
 
-        static Renderer& GetInstance();
-
         inline API GetApi() { return m_api; }
         void SetApi(API api);
         void Init();
@@ -95,6 +93,8 @@ namespace Ull
         bool m_apiLocked{ false };
 
         ShaderManager m_shaderManager;
+
+        friend class Application;
     };
 
     inline Renderer::ClearBits operator|(Renderer::ClearBits flagA, Renderer::ClearBits flagB)

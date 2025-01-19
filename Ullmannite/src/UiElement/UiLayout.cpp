@@ -1,16 +1,15 @@
 #include "Ullpch.h"
 #include "UiLayout.h"
-#include "Rendering/Api/Renderer.h"
-#include "Rendering/Api/ShaderManager.h"
-#include "glm/gtc/matrix_transform.hpp"
+#include "Application/Application.h"
 #include "UiRenderArea.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 using namespace Ull;
 
 UiLayout::UiLayout(std::string name, glm::uvec2 position, glm::uvec2 size) :
 	UiElement(name, position, size, UiElementType::Layout)
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
 	m_shader = shaderManager.GetShader(ShaderTag::FRAME_DISPLAY_SHADER);
 	CreateResources();
 }
@@ -44,12 +43,12 @@ void UiLayout::Render()
 {
     const auto size = GetSize();
 
-    Renderer::GetInstance().SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
-    Renderer::GetInstance().Clear(Renderer::ClearBits::COLOR);
-    Renderer::GetInstance().SetViewPort(glm::ivec2(0, 0), size);
+    Application::GetRenderer().SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    Application::GetRenderer().SetDepth(Renderer::State::DISABLE);
+    Application::GetRenderer().Clear(Renderer::ClearBits::COLOR);
+    Application::GetRenderer().SetViewPort(glm::ivec2(0, 0), size);
 
-    Renderer::GetInstance().SetClearColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+    Application::GetRenderer().SetClearColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
 
     m_shader->Bind();
     m_shader->SetFloat4x4("viewMatrix", m_viewMatrix);
@@ -61,7 +60,7 @@ void UiLayout::Render()
         CreateRenderAreaForUiElements(i);
         m_layout->Bind();
         static_cast<UiRenderArea*>(GetChildren()[i].get())->BindTargetTexture();
-        Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+        Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
     }
 }
 

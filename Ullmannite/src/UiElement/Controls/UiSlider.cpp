@@ -1,6 +1,5 @@
 #include "Ullpch.h"
 #include "UiSlider.h"
-#include "Rendering/Api/Renderer.h"
 #include "Application/Application.h"
 
 using namespace Ull;
@@ -125,9 +124,9 @@ void UiSlider::Render()
     if (!IsVisible())
         return;
 
-    Renderer::GetInstance().SetBlending(true);
+    Application::GetRenderer().SetBlending(true);
     UiBasicControl::Render();
-    Renderer::GetInstance().SetBlending(false);
+    Application::GetRenderer().SetBlending(false);
 }
 
 void UiSlider::UpdateSliderValue()

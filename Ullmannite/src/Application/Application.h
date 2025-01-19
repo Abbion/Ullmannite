@@ -4,6 +4,7 @@
 #include "Layer/LayerManager.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
+#include "Rendering/Api/Renderer.h"
 #include <memory>
 
 namespace Ull
@@ -19,6 +20,7 @@ namespace Ull
 
 		static Keyboard& GetKeyboard() { return m_keyboard; }
 		static Mouse& GetMouse() { return m_mouse; }
+		static Renderer& GetRenderer() { return m_renderer; }
 
 	private:
 		UllWindow m_window;
@@ -27,6 +29,7 @@ namespace Ull
 
 		inline static Keyboard m_keyboard;
 		inline static Mouse m_mouse;
+		inline static Renderer m_renderer;
 
 		bool m_initFailed{ false };
 

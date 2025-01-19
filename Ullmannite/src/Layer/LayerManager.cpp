@@ -1,6 +1,5 @@
 #include "Ullpch.h"
 #include "Layer/LayerManager.h"
-
 #include "Logger/Logger.h"
 
 using namespace Ull;
@@ -23,6 +22,11 @@ void LayerManager::PushLayer(std::shared_ptr<Layer> newLayer)
 void LayerManager::PopLayer()
 {
     m_layers.pop_back();
+}
+
+void LayerManager::DropAllLayers()
+{
+    m_layers.clear();
 }
 
 std::shared_ptr<Layer> LayerManager::GetTopLayer()
