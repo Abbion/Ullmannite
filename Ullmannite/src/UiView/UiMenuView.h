@@ -53,11 +53,11 @@ namespace Ull
         std::unordered_map<ToolTypes, std::shared_ptr<UiToggle>> m_toolTabs;
         std::shared_ptr<UiSpace> m_toolTabsLine;
         
-        //Load controls
-        std::shared_ptr<UiButton> m_loadFileButton;
-        std::shared_ptr<UiText> m_loadFileText;
+        // Load controls
+        std::shared_ptr<UiButton>   m_loadFileButton;
+        std::shared_ptr<UiText>     m_loadFileText;
 
-        //Cut controls
+        // Cut controls
         std::shared_ptr<UiText>     m_cutSettingsText;
 
         std::shared_ptr<UiText>     m_cutSettingsCutxText;
@@ -74,5 +74,9 @@ namespace Ull
         std::shared_ptr<UiToggle>   m_cutSettingsCutzInvertToggle;
         std::shared_ptr<UiText>     m_cutSettingsCutzInvertText;
         std::shared_ptr<UiSlider>   m_cutSettingsCutzSlider;
+
+        // Transfer Controls
+        std::shared_ptr<UiText>     m_transferSettingsText;
+        //std::shared_ptr<UiColorGradinet> 
     };
 }

@@ -175,7 +175,7 @@ namespace Ull
             currentSize++;
 
             for (auto& child : node->GetChildren())
-                GetTotalSize(child.get(), currentSize);
+                currentSize = GetTotalSize(child.get(), currentSize);
 
             return currentSize;
         }

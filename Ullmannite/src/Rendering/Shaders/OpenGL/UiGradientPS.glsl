@@ -3,13 +3,10 @@
 out vec4 FragColor;
 
 in VS_OUT{
-    float texCoord;
+    vec4 color;
 } vs_out;
-
-uniform sampler1D transferTexture;
 
 void main()
 {
-	vec3 fianlColor = texture(transferTexture, vs_out.texCoord).rgb;
-	FragColor = vec4(fianlColor, 1.0);
+	FragColor = vs_out.color;
 }

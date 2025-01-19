@@ -46,7 +46,8 @@ UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     m_scene("Scene 3D"),
     m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y),
      L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") },
-    m_titleButton{ std::make_shared<UiButton>("testButtonView3d", glm::uvec2(100, 100), glm::uvec2(100, 100))}
+    m_titleButton{ std::make_shared<UiButton>("testButtonView3d", glm::uvec2(100, 100), glm::uvec2(100, 100))},
+    m_colorGradient{ std::make_shared<UiColorGradient>("testColorGradient", glm::uvec2(100, 300), glm::uvec2(50, 300), Ull::UiColorGradient::GradientDirection::VERTICAL) }
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
 
@@ -94,6 +95,17 @@ void UiView3D::Init()
     m_titleButton->CreateResources();
     //AddChildNode(m_titleText);
     AddChildNode(m_titleButton);
+
+    m_colorGradient->AddColor(UiColorGradient::GradientColorData{ 0.0f,     glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) });
+    m_colorGradient->AddColor(UiColorGradient::GradientColorData{ 0.166f,   glm::vec4(1.0f, 0.0f, 1.0f, 1.0f) });
+    m_colorGradient->AddColor(UiColorGradient::GradientColorData{ 0.333f,   glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) });
+    m_colorGradient->AddColor(UiColorGradient::GradientColorData{ 0.5f,     glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) });
+    m_colorGradient->AddColor(UiColorGradient::GradientColorData{ 0.666f,   glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) });
+    m_colorGradient->AddColor(UiColorGradient::GradientColorData{ 0.833f,   glm::vec4(1.0f, 1.0f, 0.0f, 1.0f) });
+    m_colorGradient->AddColor(UiColorGradient::GradientColorData{ 1.0f,     glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) });
+
+    m_colorGradient->CreateResources();
+    AddChildNode(m_colorGradient);
 }
 
 void UiView3D:: HandleEvent(Event* event)

@@ -1,15 +1,15 @@
 #version 460 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in float aTexCord;
+layout (location = 0) in vec3 inPosition;
+layout (location = 1) in vec4 inColor;
 uniform mat4 modelMatrix;
 
 out VS_OUT{
-    float texCoord;
+    vec4 color;
 } vs_out;
 
 void main()
 {
-	gl_Position = modelMatrix * vec4(aPos, 1.0);
-	vs_out.texCoord = aTexCord;
+	gl_Position = modelMatrix * vec4(inPosition, 1.0);
+	vs_out.color = inColor;
 }

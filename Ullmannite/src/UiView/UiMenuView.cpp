@@ -204,7 +204,26 @@ void UiMenuView::CreateControls()
     transferTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     transferTab->CreateResources();
 
-    transferTab->SetOnEnabledFunction(toogleIsEnabledManageTabs);
+    transferTab->SetOnEnabledFunction([this](UiToggle& toggleElement){
+        m_loadFileButton->SetVisibility(false);
+        m_loadFileText->SetVisibility(false);
+
+        m_cutSettingsText->SetVisibility(false);
+        m_cutSettingsCutxText->SetVisibility(false);
+        m_cutSettingsCutxInvertToggle->SetVisibility(false);
+        m_cutSettingsCutxInvertText->SetVisibility(false);
+        m_cutSettingsCutxSlider->SetVisibility(false);
+        m_cutSettingsCutyText->SetVisibility(false);
+        m_cutSettingsCutyInvertToggle->SetVisibility(false);
+        m_cutSettingsCutyInvertText->SetVisibility(false);
+        m_cutSettingsCutySlider->SetVisibility(false);
+        m_cutSettingsCutzText->SetVisibility(false);
+        m_cutSettingsCutzInvertToggle->SetVisibility(false);
+        m_cutSettingsCutzInvertText->SetVisibility(false);
+        m_cutSettingsCutzSlider->SetVisibility(false);
+
+        toogleIsEnabledManageTabs(toggleElement);
+    });
     transferTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
 
     transferTab->Update();
