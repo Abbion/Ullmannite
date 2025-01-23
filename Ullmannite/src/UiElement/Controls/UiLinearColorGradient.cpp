@@ -1,18 +1,18 @@
 #include "Ullpch.h"
-#include "UiColorGradient.h"
+#include "UiLinearColorGradient.h"
 #include "Application/Application.h"
 #include "Utilities/CollisionCheckers.h"
 
 using namespace Ull;
 
-UiColorGradient::UiColorGradient(std::string name, glm::vec2 position, glm::vec2 size, UiColorGradient::GradientDirection gradientDirection) :
+UiLinearColorGradient::UiLinearColorGradient(std::string name, glm::vec2 position, glm::vec2 size, UiLinearColorGradient::GradientDirection gradientDirection) :
     UiBasicControl(name, position, size, UiControlType::UiGradient),
     m_gradientDirection{ gradientDirection }
 {
     
 }
 
-void UiColorGradient::AddColor(const GradientColorData colorData)
+void UiLinearColorGradient::AddColor(const GradientColorData colorData)
 {
     m_gradientColors.push_back(colorData);
     std::sort(m_gradientColors.begin(), m_gradientColors.end(), [](const GradientColorData& dataPoint1, const GradientColorData& dataPoint2) {
@@ -21,13 +21,13 @@ void UiColorGradient::AddColor(const GradientColorData colorData)
     m_updateVertexData = true;
 }
 
-void UiColorGradient::ClearColorData()
+void UiLinearColorGradient::ClearColorData()
 {
     m_gradientColors.clear();
     m_updateVertexData = true;
 }
 
-void UiColorGradient::CreateResources()
+void UiLinearColorGradient::CreateResources()
 {
     auto& shaderManager = Application::GetRenderer().GetShaderManager();
 
@@ -67,7 +67,7 @@ void UiColorGradient::CreateResources()
 
         if (colorData.position > 1.0f || colorData.position < 0.0f)
         {
-            ULOGE("UiColorGradient Error: color data " << i << " out of bounce!");
+            ULOGE("UiLinearColorGradient Error: color data " << i << " out of bounce!");
             continue;
         }
 
@@ -110,7 +110,7 @@ void UiColorGradient::CreateResources()
     m_layout->Unbind();
 }
 
-void UiColorGradient::HandleEvent(Event *event)
+void UiLinearColorGradient::HandleEvent(Event *event)
 {
     switch (event->GetType())
     {
@@ -122,7 +122,7 @@ void UiColorGradient::HandleEvent(Event *event)
     UiBasicControl::HandleEvent(event);
 }
 
-void UiColorGradient::Update()
+void UiLinearColorGradient::Update()
 {
     const auto& mouse = Application::GetMouse();
 
@@ -130,7 +130,7 @@ void UiColorGradient::Update()
         InteractWithMouse();
 }
 
-void UiColorGradient::Render()
+void UiLinearColorGradient::Render()
 {
     m_shader->Bind();
 
@@ -143,7 +143,7 @@ void UiColorGradient::Render()
     UiElement::Render();
 }
 
-void UiColorGradient::InteractWithMouse()
+void UiLinearColorGradient::InteractWithMouse()
 {
     if (!m_isInteractive)
         return;
@@ -163,7 +163,7 @@ void UiColorGradient::InteractWithMouse()
     }
 }
 
-glm::vec4 UiColorGradient::GetColorForRatio(const float ratio)
+glm::vec4 UiLinearColorGradient::GetColorForRatio(const float ratio)
 {
     for (auto itr = m_gradientColors.begin(); itr != m_gradientColors.end(); ++itr)
     {

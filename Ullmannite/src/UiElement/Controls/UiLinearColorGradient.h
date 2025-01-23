@@ -4,7 +4,7 @@
 
 namespace Ull
 {
-    class UiColorGradient : public UiBasicControl
+    class UiLinearColorGradient : public UiBasicControl
     {
     public:
         struct GradientColorData
@@ -20,7 +20,7 @@ namespace Ull
         };
 
     public:
-        UiColorGradient(std::string name, glm::vec2 position, glm::vec2 size, GradientDirection gradientDirection);
+        UiLinearColorGradient(std::string name, glm::vec2 position, glm::vec2 size, GradientDirection gradientDirection);
         void SetInteractive(bool state) { m_isInteractive = state; }
         void AddColor(const GradientColorData colorData);
         void ClearColorData();
