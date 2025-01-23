@@ -1,6 +1,7 @@
 #include "Ullpch.h"
 #include "UiColorGradient.h"
 #include "Application/Application.h"
+#include "Utilities/CollisionCheckers.h"
 
 using namespace Ull;
 
@@ -60,8 +61,6 @@ void UiColorGradient::CreateResources()
     const auto drawDirection = m_gradientDirection == GradientDirection::HORIZONTAL ? glm::vec2(1.0f, 0.0f) : glm::vec2(0.0f, 1.0f);
     const auto normalToDrawDirection = m_gradientDirection == GradientDirection::HORIZONTAL ? glm::vec2(0.0f, 1.0f) : glm::vec2(1.0f, 0.0f);
 
-
-
     for (size_t i = 0; i < m_gradientColors.size(); ++i)
     {
         const auto colorData = m_gradientColors[i];
@@ -113,7 +112,22 @@ void UiColorGradient::CreateResources()
 
 void UiColorGradient::HandleEvent(Event *event)
 {
+    switch (event->GetType())
+    {
+    case EventType::MouseUp:
+        InteractWithMouse();
+        break;
+    }
+
     UiBasicControl::HandleEvent(event);
+}
+
+void UiColorGradient::Update()
+{
+    const auto& mouse = Application::GetMouse();
+
+    if (mouse.IsButtonPressed(Mouse::Button::LEFT))
+        InteractWithMouse();
 }
 
 void UiColorGradient::Render()
@@ -127,4 +141,47 @@ void UiColorGradient::Render()
     Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 
     UiElement::Render();
+}
+
+void UiColorGradient::InteractWithMouse()
+{
+    if (!m_isInteractive)
+        return;
+
+    const auto mousePosition = glm::vec2(Application::GetMouse().GetMousePosition());
+    const auto controlPosition = GetGlobalPosition();
+    const auto controlSize = GetSize() * GetScale();
+
+    if (PointInStaticRect(mousePosition, controlPosition, controlSize))
+    {
+        const auto inRectMousePosition = mousePosition - controlPosition;
+         const auto ratio = m_gradientDirection == GradientDirection::HORIZONTAL ?
+                            inRectMousePosition.x / controlSize.x :
+                            inRectMousePosition.y / controlSize.y;
+
+        m_lastInteractionColor = GetColorForRatio(ratio);
+    }
+}
+
+glm::vec4 UiColorGradient::GetColorForRatio(const float ratio)
+{
+    for (auto itr = m_gradientColors.begin(); itr != m_gradientColors.end(); ++itr)
+    {
+        if (itr->position >= ratio)
+        {
+            if (itr == m_gradientColors.begin())
+                return itr->color;
+            
+            const auto previousColorDataPoint = itr - 1;
+            const auto relativeRatio = ratio - previousColorDataPoint->position;
+            const auto range = itr->position - previousColorDataPoint->position;
+            if (range <= 0.0f)
+                itr->color;
+
+            const auto rangeRatio = relativeRatio / range;
+            return (previousColorDataPoint->color * (1.0f - rangeRatio)) + (itr->color * rangeRatio);
+        }
+    }
+
+    return glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }
