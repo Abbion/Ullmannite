@@ -6,6 +6,7 @@ namespace Ull
     enum class ShaderTag {
         UI_BASIC_COLOR,
         UI_GRADIENT_SHADER,
+        UI_GRADIENT_SHADER_HSV,
         FRAME_DISPLAY_SHADER,
         MARKER,
         CUBE_MARCH_MESH_GENERATOR,

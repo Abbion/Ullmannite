@@ -9,7 +9,8 @@ namespace Ull
         UiToggle,
         UiSpace,
         UiSlider,
-        UiGradient
+        UiLinearGradient,
+        UiRectGradient
     };
 
     enum class UiControlFunctionality : uint64_t {

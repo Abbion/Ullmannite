@@ -5,11 +5,10 @@
 
 using namespace Ull;
 
-UiLinearColorGradient::UiLinearColorGradient(std::string name, glm::vec2 position, glm::vec2 size, UiLinearColorGradient::GradientDirection gradientDirection) :
-    UiBasicControl(name, position, size, UiControlType::UiGradient),
+UiLinearColorGradient::UiLinearColorGradient(const std::string name, const glm::vec2 position, const glm::vec2 size, const UiLinearColorGradient::GradientDirection gradientDirection) :
+    UiBasicControl(name, position, size, UiControlType::UiLinearGradient),
     m_gradientDirection{ gradientDirection }
-{
-    
+{   
 }
 
 void UiLinearColorGradient::AddColor(const GradientColorData colorData)
@@ -29,6 +28,15 @@ void UiLinearColorGradient::ClearColorData()
 
 void UiLinearColorGradient::CreateResources()
 {
+    if (m_vertexBuffer != nullptr)
+        delete m_vertexBuffer;
+
+    if (m_indexBuffer != nullptr)
+        delete m_indexBuffer;
+
+    if (m_layout != nullptr)
+        delete m_layout;
+
     auto& shaderManager = Application::GetRenderer().GetShaderManager();
 
     if (m_gradientColors.size() < 2)

@@ -3,28 +3,22 @@
 
 namespace Ull
 {
-    class UiLinearColorGradient : public UiBasicControl
+    class UiRectGradient : public UiBasicControl
     {
     public:
         struct GradientColorData
         {
-            float position;
-            glm::vec4 color;
-        };
-
-        enum class GradientDirection
-        {
-            HORIZONTAL,
-            VERTICAL
+            unsigned index;
+            glm::vec3 color;
         };
 
     public:
-        UiLinearColorGradient(const std::string name, const glm::vec2 position, const glm::vec2 size, const GradientDirection gradientDirection);
-        void SetInteractive(const bool state) { m_isInteractive = state; }
-        void AddColor(const GradientColorData colorData);
-        void ClearColorData();
+        UiRectGradient(const std::string name, const glm::vec2 position, const glm::vec2 size);
 
-        glm::vec4 GetColorFromLastInteraction() const { return m_lastInteractionColor; }
+        void SetInteractive(const bool state) { m_isInteractive = state; }
+
+        void SetColorData(std::initializer_list<GradientColorData> colors);
+        void SetColorData(GradientColorData colorData);
 
         void CreateResources() override;
         void HandleEvent(Event* event) override;
@@ -36,8 +30,7 @@ namespace Ull
         glm::vec4 GetColorForRatio(const float ratio);
 
         bool m_updateVertexData{ true };
-        std::vector<GradientColorData> m_gradientColors;
-        const GradientDirection m_gradientDirection;
+        std::array<glm::vec3, 4> m_gradientColors;
 
         bool m_isInteractive{ false };
         glm::vec4 m_lastInteractionColor{ 0.0f, 0.0f, 0.0f, 0.0f };
