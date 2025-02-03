@@ -12,8 +12,14 @@ namespace Ull
             glm::vec3 color;
         };
 
+        enum class ColorMixType
+        {
+            RGB,
+            HSV
+        };
+
     public:
-        UiRectGradient(const std::string name, const glm::vec2 position, const glm::vec2 size);
+        UiRectGradient(const std::string name, const glm::vec2 position, const glm::vec2 size, const ColorMixType colorMixType = ColorMixType::HSV);
 
         void SetInteractive(const bool state) { m_isInteractive = state; }
 
@@ -31,6 +37,7 @@ namespace Ull
 
         bool m_updateVertexData{ true };
         std::array<glm::vec3, 4> m_gradientColors;
+        const ColorMixType m_colorMixType;
 
         bool m_isInteractive{ false };
         glm::vec4 m_lastInteractionColor{ 0.0f, 0.0f, 0.0f, 0.0f };

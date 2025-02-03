@@ -1,12 +1,12 @@
 #include "Ullpch.h"
 #include "UiRectGradient.h"
 #include "Application/Application.h"
-#include "Rendering/Utils/RenderHelper.h"
 
 using namespace Ull;
 
-UiRectGradient::UiRectGradient(const std::string name, const glm::vec2 position, const glm::vec2 size) :
-    UiBasicControl(name, position, size, UiControlType::UiRectGradient)
+UiRectGradient::UiRectGradient(const std::string name, const glm::vec2 position, const glm::vec2 size, const ColorMixType colorMixType) :
+    UiBasicControl(name, position, size, UiControlType::UiRectGradient),
+    m_colorMixType{ colorMixType }
 {
     for (auto colorData : m_gradientColors)
         colorData = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -22,7 +22,7 @@ void UiRectGradient::SetColorData(std::initializer_list<GradientColorData> color
             continue;
         }
 
-        m_gradientColors[colorData.index] =  RgbToHsl(colorData.color);
+        m_gradientColors[colorData.index] =  colorData.color;
     }
 
     CreateResources();
@@ -36,12 +36,8 @@ void UiRectGradient::SetColorData(GradientColorData colorData)
         return;
     }
 
-    const auto hslColor = RgbToHsv(colorData.color);
+    m_gradientColors[colorData.index] = colorData.color;
 
-    m_gradientColors[0] = glm::vec3(hslColor.x, 0.0f, 1.0f);
-    m_gradientColors[1] = glm::vec3(hslColor.x, 1.0f, 1.0f);
-    m_gradientColors[2] = glm::vec3(hslColor.x, 0.0f, 0.0f);
-    m_gradientColors[3] = glm::vec3(hslColor.x, 1.0f, 0.0f);
     CreateResources();
 }
 
@@ -57,7 +53,11 @@ void UiRectGradient::CreateResources()
         delete m_layout;
 
     auto& shaderManager = Application::GetRenderer().GetShaderManager();
-    m_shader = shaderManager.GetShader(ShaderTag::UI_GRADIENT_SHADER_HSV);
+
+    if (m_colorMixType == ColorMixType::RGB)
+        m_shader = shaderManager.GetShader(ShaderTag::UI_GRADIENT_SHADER);
+    else if (m_colorMixType == ColorMixType::HSV)
+        m_shader = shaderManager.GetShader(ShaderTag::UI_GRADIENT_SHADER_HSV);
 
     struct VertexDesc
     {

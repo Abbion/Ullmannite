@@ -5,7 +5,7 @@ out vec4 FragColor;
 vec3 HsvToRgb(const vec3 hsvValue)
 {
     const float C = hsvValue.b * hsvValue.g;
-    const float X = C * (1.0f - abs(mod(hsvValue.r / 60.0, 2.0f) - 1.0f));
+    const float X = C * (1.0f - abs(mod(hsvValue.r / 60.0f, 2.0f) - 1.0f));
     const float H = hsvValue.r / 60.0f;
 
     vec3 rgbOutput = vec3(0.0f, 0.0f, 0.0f);

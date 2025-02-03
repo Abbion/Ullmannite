@@ -5,6 +5,7 @@
 #include "Rendering/Objects/Cube.h"
 #include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
+#include "Rendering/Utils/RenderHelper.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Utilities/CollisionCheckers.h"
 #include <string>
@@ -112,11 +113,6 @@ void UiView3D::Init()
     m_colorSpace->CreateResources();
     AddChildNode(m_colorSpace);
 
-
-    m_rectGradient->SetColorData({ UiRectGradient::GradientColorData{ 0, glm::vec3(0.0f, 0.0f, 0.0f)}, 
-                                    UiRectGradient::GradientColorData{ 1, glm::vec3(0.0f, 0.0f, 0.0f)}, 
-                                    UiRectGradient::GradientColorData{ 2, glm::vec3(0.0f, 0.0f, 0.0f)}, 
-                                    UiRectGradient::GradientColorData{ 3, glm::vec3(0.0f, 0.0f, 0.0f)} });
     m_rectGradient->CreateResources();
     AddChildNode(m_rectGradient);
 }
@@ -189,7 +185,13 @@ void UiView3D::Update()
 
     const auto color = m_colorGradient->GetColorFromLastInteraction();
     m_colorSpace->SetBackgroundColor(color);
-    m_rectGradient->SetColorData(UiRectGradient::GradientColorData{ 1, color });
+
+    const auto hslColor = RgbToHsv(color);
+
+    m_rectGradient->SetColorData({ UiRectGradient::GradientColorData{ 0, glm::vec3(hslColor.x, 0.0f, 1.0f) } ,
+                                UiRectGradient::GradientColorData{ 1, glm::vec3(hslColor.x, 1.0f, 1.0f) },
+                                UiRectGradient::GradientColorData{ 2, glm::vec3(hslColor.x, 0.0f, 0.0f) },
+                                UiRectGradient::GradientColorData{ 3, glm::vec3(hslColor.x, 1.0f, 0.0f) } });
 
     UiRenderArea::Update();
 }

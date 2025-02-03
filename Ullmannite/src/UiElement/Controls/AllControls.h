@@ -4,3 +4,5 @@
 #include "UiText.h"
 #include "UiToggle.h"
 #include "UiSlider.h"
+#include "UiRectGradient.h"
+#include "UiLinearColorGradient.h"

@@ -14,6 +14,11 @@
 
 #ifdef  PLATFORM_WINDOWS
 #include <Windows.h>
+#include <dwmapi.h>
+
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#pragma comment(lib, "dwmapi.lib") // ADD THIS TO THE BUILDER
 #endif
 
 #ifdef PLATFORM_LINUX
@@ -77,6 +82,13 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
     glfwSetWindowSizeLimits(m_window, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     InitCallBacks();
+
+    HWND hwnd = glfwGetWin32Window(m_window);
+
+    if (hwnd) {
+        const int param = DWMWCP_ROUND;
+        DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &param, sizeof(param));
+    }
 
     m_lastRefresh = std::chrono::steady_clock::now();
 }
