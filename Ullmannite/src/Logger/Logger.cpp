@@ -1,7 +1,6 @@
 #include "Ullpch.h"
 #include "Logger.h"
 #include "Layer/Layer.h"
-#include "UiElement/UiLayout.h"
 #include "UiElement/UiRenderArea.h"
 #include "UiElement/UiElement.h"
 
@@ -50,7 +49,7 @@ void Ull::ClearLogs()
 void Ull::LogLayerTree(const Ull::Layer& layer)
 {
     std::stringstream ss;
-    ss << "\nLayer " << layer.GetName() << "\n\t+ "
+    ss << "\nLayer " << layer.GetLayout()->GetName() << "\n\t+ "
        << layer.GetLayout()->GetName() << "\n";
 
     LogElements(ss, layer.GetLayout()->GetChildren(), 2);

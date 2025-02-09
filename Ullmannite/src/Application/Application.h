@@ -34,6 +34,7 @@ namespace Ull
 		bool m_initFailed{ false };
 
 	private:
+		void UpdateAndRenderLayers();
 		void InitApplciation();
 		void HandleEvents();
 		void WindowResizeHandler(const glm::uvec2& size);

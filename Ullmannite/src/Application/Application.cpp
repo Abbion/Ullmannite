@@ -56,14 +56,23 @@ void Application::Run()
 
         m_window.PullEvents();
         HandleEvents();
-        
-        m_layerManager.GetTopLayer()->Update();
-        
-        if (!m_window.IsMinimized())
-        {
-            m_layerManager.GetTopLayer()->Render();
-            m_window.SwapBuffers();
-        }
+        UpdateAndRenderLayers();
+    }
+}
+
+void Application::UpdateAndRenderLayers()
+{
+    auto& layers = m_layerManager.GetLayers();
+
+    for (auto layer : layers)
+        layer->Update();
+
+    if (!m_window.IsMinimized())
+    {
+        for (auto layer : layers)
+            layer->Render();
+
+        m_window.SwapBuffers();
     }
 }
 
@@ -214,11 +223,5 @@ void Application::WindowResizeHandler(const glm::uvec2& size)
 void Application::WindowRefreshFunction()
 {
     HandleEvents();
-
-    m_layerManager.GetTopLayer()->Update();
-    if (!m_window.IsMinimized())
-    {
-        m_layerManager.GetTopLayer()->Render();
-        m_window.SwapBuffers();
-    }
+    UpdateAndRenderLayers();
 }

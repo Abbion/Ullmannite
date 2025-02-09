@@ -18,7 +18,7 @@ namespace Ull
 
         void HandleEvent(Event* event) override;
         void Update();
-        void Render();
+        void Render() override;
 
     private:
         glm::mat4 m_viewMatrix;

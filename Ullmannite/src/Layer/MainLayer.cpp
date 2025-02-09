@@ -64,15 +64,10 @@ void MainLayer::Render()
 
     ImGui::NewFrame();
 
-    for (auto& element : m_layout->GetChildren())
-    {
-        element->Render();
-    }
+    Layer::Render();
 
     ImGui::EndFrame();
     ImGui::Render();
-
-    m_layout->Render();
 }
 
 void MainLayer::CreateLayout()
@@ -82,21 +77,19 @@ void MainLayer::CreateLayout()
 
     const auto initSize = m_layout->GetSize();
     const auto initScale = m_layout->GetScale();
-    m_layout->CreateResources();
 
     m_titleBar = std::make_shared<UiTitleBar>("titleBarElement", glm::vec2(0.f, 0.f), glm::vec2(initSize.x, 30.f * initScale));
     m_layout->AddChildNode(m_titleBar);
 
     m_menuView = std::make_shared<UiMenuView>("menuElement", glm::vec2(0.f, (30.f * initScale) + 1), glm::vec2(260.f, initSize.y - (30.f * initScale) - 1.f));
-    m_layout->AddChildNode(m_menuView);
+    //m_layout->AddChildNode(m_menuView);
 
     m_3DView = std::make_shared<UiView3D>("view3DElement", glm::vec2((260.f + initScale) + 1.f, (30.f * initScale) + 1.f), glm::vec2(initSize.x - (260.f * initScale) - 1.f, initSize.y - (30.f * initScale) - 1.f));
-    m_layout->AddChildNode(m_3DView);
+    //m_layout->AddChildNode(m_3DView);
 }
 
 void MainLayer::Resize(const glm::uvec2& size)
 {
-    m_layout->CreateResources();
     const auto scale = m_layout->GetScale();
     
     m_titleBar->SetSize(glm::vec2(size.x, 30.f * scale));

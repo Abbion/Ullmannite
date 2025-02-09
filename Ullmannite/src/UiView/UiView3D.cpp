@@ -210,15 +210,15 @@ void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
 #include <imgui.h>
 void UiView3D::Render()
 {
-    ImGui::Text("BoxSettings");
+    //ImGui::Text("BoxSettings");
 
     m_titleButton->SetBackgroundColor(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
     auto boxPosition = m_titleButton->GetPosition();
     auto boxSize = m_titleButton->GetSize();
 
-    ImGui::SliderFloat2("box position", (float*)&boxPosition, -100.0f, 1500.0f);
-    ImGui::SliderFloat2("box size", (float*)&boxSize, 1.0f, 1000.0f);
+    //ImGui::SliderFloat2("box position", (float*)&boxPosition, -100.0f, 1500.0f);
+    //ImGui::SliderFloat2("box size", (float*)&boxSize, 1.0f, 1000.0f);
 
     m_titleButton->SetPosition(boxPosition);
     m_titleButton->SetSize(boxSize);
@@ -233,18 +233,18 @@ void UiView3D::Render()
     auto color = textControll->GetColor();
     auto aligment = textControll->GetAlignment();
 
-    ImGui::Text("Text settings");
+    //ImGui::Text("Text settings");
 
-    ImGui::SliderInt("fontSize", &fontSize, 1, 256);
-    ImGui::SliderFloat("spaceing", &spaceing, -10.0f, 100.0f);
-    ImGui::SliderFloat("leading", &leading, -2.0f, 5.0f);
-    ImGui::SliderFloat("smoothing", &smoothing, 0.0f, 20.0f);
-    ImGui::SliderFloat("threshold", &threshold, -10.0f, 50.0f);
-    ImGui::SliderFloat4("color", (float*)&color, 0.0f, 1.0f);
+    //ImGui::SliderInt("fontSize", &fontSize, 1, 256);
+    //ImGui::SliderFloat("spaceing", &spaceing, -10.0f, 100.0f);
+    //ImGui::SliderFloat("leading", &leading, -2.0f, 5.0f);
+    //ImGui::SliderFloat("smoothing", &smoothing, 0.0f, 20.0f);
+    //ImGui::SliderFloat("threshold", &threshold, -10.0f, 50.0f);
+    //ImGui::SliderFloat4("color", (float*)&color, 0.0f, 1.0f);
 
     const char* horizontalAligmentList[] = { "Left", "Center", "Right" };
     static int current_h_aligment = 1;
-    ImGui::ListBox("horizontal aligment", &current_h_aligment, horizontalAligmentList, 3);
+    //ImGui::ListBox("horizontal aligment", &current_h_aligment, horizontalAligmentList, 3);
 
     if (current_h_aligment == 0)
         textControll->SetAlignment(UiText::HorizontalAlignment::LEFT, aligment.vertical);
@@ -259,7 +259,7 @@ void UiView3D::Render()
 
     const char* verticalAligmentList[] = { "Top", "Center", "Bottom" };
     static int current_v_aligment = 1;
-    ImGui::ListBox("vertical aligment", &current_v_aligment, verticalAligmentList, 3);
+    //ImGui::ListBox("vertical aligment", &current_v_aligment, verticalAligmentList, 3);
 
     if (current_v_aligment == 0)
         textControll->SetAlignment(aligment.horizontal, UiText::VerticalAlignment::TOP);

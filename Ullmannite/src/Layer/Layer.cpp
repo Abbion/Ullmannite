@@ -4,16 +4,22 @@
 
 using namespace Ull;
 
-Layer::Layer(const std::string& name, const glm::uvec2& size) : 
-    m_name{ name }
+Layer::Layer(const std::string& name, const glm::uvec2 size)
 {
     if (size.x < 1 || size.y < 1)
         ULOGE("Layer Error: size cannot be 0. size x: " << size.x << " size.y: " << size.y);
 
-    m_layout = std::make_shared<UiLayout>(m_name + " Layout", glm::uvec2(0, 0), size);
+    m_layout = std::make_shared<UiLayout>(name + " LayerLayout", size);
 }
 
-Layer::~Layer()
+void Layer::Update()
 {
-    ULOGD("Layer " << m_name << " terminated");
+    for (auto& element : m_layout->GetChildren())
+        element->Update();
+}
+
+void Layer::Render()
+{
+    if (m_layout->IsVisible())
+        m_layout->Render();
 }

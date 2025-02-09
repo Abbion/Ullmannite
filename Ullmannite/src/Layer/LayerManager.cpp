@@ -19,21 +19,9 @@ void LayerManager::PushLayer(std::shared_ptr<Layer> newLayer)
     m_layers.push_back(newLayer);
 }
 
-void LayerManager::PopLayer()
-{
-    m_layers.pop_back();
-}
-
 void LayerManager::DropAllLayers()
 {
     m_layers.clear();
-}
-
-std::shared_ptr<Layer> LayerManager::GetTopLayer()
-{
-    UASSERT(m_layers.size() != 0, "Layer queue is empty");
-
-    return m_layers.back();
 }
 
 unsigned int LayerManager::GetSize() const
@@ -47,10 +35,5 @@ void LayerManager::HandleEvent(Event* event)
         return;
 
     for(auto & layer : m_layers)
-    {
         layer->HandleEvent(event);
-
-        if(event->IsHandeled())
-            break;
-    }
 }
