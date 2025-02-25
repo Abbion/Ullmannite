@@ -232,9 +232,17 @@ void UllWindow::SwitchHiddenCursor()
     }
 }
 
+void UllWindow::Clear()
+{
+    auto& renderer = Application::GetRenderer();
+    renderer.SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    renderer.Clear(Renderer::ClearBits::COLOR | Renderer::ClearBits::COLOR | Renderer::ClearBits::SETNCIL);
+    renderer.SetViewPort(glm::ivec2(0, 0), GetSize());
+}
+
 void UllWindow::SwapBuffers()
 {
- //   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfwSwapBuffers(m_window);
 }
 

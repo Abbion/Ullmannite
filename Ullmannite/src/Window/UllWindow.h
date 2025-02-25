@@ -42,6 +42,7 @@ namespace Ull
         void Minimize();
         void Restore();
 
+        void Clear();
         void SwapBuffers();
         void PullEvents();
 

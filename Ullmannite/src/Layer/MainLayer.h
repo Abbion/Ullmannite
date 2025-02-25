@@ -16,16 +16,11 @@ namespace Ull
 
         void SetWindow(const NotOwner<UllWindow>& window);
 
-        void HandleEvent(Event* event) override;
-        void Update();
-        void Render() override;
+        virtual void RenderLayerComponents() override;
 
     private:
-        glm::mat4 m_viewMatrix;
-
-    private:
-        void CreateLayout();
-        void Resize(const glm::uvec2& size);
+        virtual void CreateLayout() override;
+        virtual void ResizeLayout() override;
 
         std::shared_ptr<UiTitleBar> m_titleBar;
         std::shared_ptr<UiMenuView> m_menuView;

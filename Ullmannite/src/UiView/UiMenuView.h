@@ -19,6 +19,7 @@ namespace Ull
 		void HandleEvent(Event* event) override;
 		void Update() override;
 		void Render() override;
+		void ResizeControls();
 
     private:
         enum class ToolTypes {
@@ -33,7 +34,6 @@ namespace Ull
         void CreateLoadPanel();
         void CreateCutPanel();
 
-		void ResizeControls();
 
 
 		void Init();

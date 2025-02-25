@@ -32,7 +32,7 @@ namespace Ull
         void SetBackgroundColor(const glm::vec4& backgroundColor) { m_backgroundColor = backgroundColor; }
         void SetHoverColor(const glm::vec4& hoverColor) { m_hoverColor = hoverColor; }
 
-        void CreateResources() override;
+        virtual void CreateResources();
         void HandleEvent(Event* event) override;
         virtual void Update() override;
         virtual void Render() override;

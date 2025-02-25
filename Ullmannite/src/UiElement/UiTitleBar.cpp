@@ -1,19 +1,8 @@
 #include "Ullpch.h"
 #include "UiTitleBar.h"
-#include "Rendering/Api/Renderer.h"
-#include "Utilities/CollisionCheckers.h"
 #include "Resources/Fonts/IconCodes.h"
 
-#include <imgui.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_glfw.h>
-
 using namespace Ull;
-
-namespace
-{
-	constexpr float buttonWidth = 45.f;
-}
 
 UiTitleBar::UiTitleBar(const std::string& name, const glm::uvec2 position, const glm::uvec2 size) :
 	UiRenderArea(name, position, size, false),
@@ -26,20 +15,6 @@ UiTitleBar::UiTitleBar(const std::string& name, const glm::uvec2 position, const
 	CreateControls();
 
 	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
-}
-
-void UiTitleBar::CreateResources()
-{
-	CreateFrameBuffer();
-
-	const auto size = GetSize();
-	auto areaSizeChangedEvent = std::make_shared<RenderAreaSizeChanged>(EventType::RenderAreaSizeChanged);
-	UiRenderArea::HandleEvent(areaSizeChangedEvent.get());
-
-	const auto buttonWidth = ((float)size.y * 1.5f);
-	m_window->SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(size.x - (3.0f * buttonWidth), size.y));
-
-	ResizeControls();
 }
 
 void UiTitleBar::HandleEvent(Event* event)
@@ -62,16 +37,6 @@ void UiTitleBar::HandleEvent(Event* event)
 	}
 
 	UiRenderArea::HandleEvent(event);
-}
-
-void UiTitleBar::Update()
-{
-	UiRenderArea::Update();
-}
-
-void UiTitleBar::Render()
-{
-	UiRenderArea::Render();
 }
 
 void UiTitleBar::CreateControls()
@@ -139,9 +104,12 @@ void UiTitleBar::CreateControls()
 
 void UiTitleBar::ResizeControls()
 {
-	const auto size = GetSize();
+	CreateFrameBuffer();
 
-	const auto buttonWidth = (unsigned)((float)size.y * 1.5f);
+	const auto size = GetSize();
+	const auto buttonWidth = ((float)size.y * 1.5f);
+
+	m_window->SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(size.x - (3.0f * buttonWidth), size.y));
 
 	m_closeButton->SetPosition(glm::uvec2(size.x - buttonWidth, 0));
 	m_closeButton->SetSize(glm::uvec2(buttonWidth, size.y));

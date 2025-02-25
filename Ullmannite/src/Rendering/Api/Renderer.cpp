@@ -151,7 +151,7 @@ void Renderer::SetClearColor(glm::vec4 color)
     }
 }
 
-void Renderer::Clear(ClearBits clearBits)
+void Renderer::Clear(ClearMask clearBits)
 {
     if (m_api == API::OPEN_GL)
     {

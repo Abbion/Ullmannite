@@ -16,7 +16,7 @@ LayerManager::~LayerManager()
 
 void LayerManager::PushLayer(std::shared_ptr<Layer> newLayer)
 {
-    m_layers.push_back(newLayer);
+    m_layers.emplace_back(newLayer);
 }
 
 void LayerManager::DropAllLayers()

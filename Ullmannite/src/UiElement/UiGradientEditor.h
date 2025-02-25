@@ -31,7 +31,7 @@ namespace Ull
 		void SetViewPos(glm::ivec2 pos) { m_viewPos = pos; }
 		void SetMinMaxBounds(int min, int max) { m_minMax.x = min; m_minMax.y = max; }
 
-		void CreateResources() override;
+		void CreateResources();
 
 		void HandleEvent(Event* event) override;
 		void Update() override;
@@ -62,7 +62,7 @@ namespace Ull
 	public:
 		UiGradientEditor(const std::string& name, const glm::uvec2 position, const glm::uvec2 size);
 
-		void CreateResources() override;
+		void CreateResources();
 
 		void SetTransferFunction(NotOwner<TransferFunctionRenderer> transferFunction);
 

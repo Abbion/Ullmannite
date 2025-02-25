@@ -82,7 +82,8 @@ glm::mat4 UiElement::GetTransform() const
 
 void UiElement::HandleEvent(Event* event)
 {
-	event->IsHandeled();
+	if (event->IsHandeled())
+		return;
 
 	for (auto& child : GetChildren())
 		child->HandleEvent(event);

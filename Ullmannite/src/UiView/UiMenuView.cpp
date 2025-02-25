@@ -49,9 +49,6 @@ void UiMenuView::HandleEvent(Event* event)
             m_cubeMarchTresholds.y = newThresholds.y;
             m_newDataLoaded = false;
         }
-    case EventType::WindowResize:
-    {
-    }
     break;
 
     break;
@@ -71,7 +68,7 @@ void UiMenuView::Render()
     if(m_areaUpdated)
     {
         m_frameBuffer->Bind();
-        RenderBackground();
+        Clear();
         m_frameBuffer->Unbind();
 
         m_areaUpdated = false;
@@ -494,6 +491,8 @@ void UiMenuView::CreateCutPanel()
 
 void UiMenuView::ResizeControls()
 {
+    CreateFrameBuffer();
+
     const auto renderAreaSize = GetSize();
     const auto tabWidth = renderAreaSize.x / TOOL_BAR_SIZE;
     const auto tabHeight = 40;

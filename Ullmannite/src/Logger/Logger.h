@@ -19,8 +19,8 @@ namespace Ull
 	void SetLogSeverity(plog::Severity serverity);
 	void ClearLogs();
 
-	void LogLayerTree(const Layer& layer);
-	void LogElements(std::stringstream& ss, const std::vector<std::shared_ptr<Ull::UiElement>> elements, unsigned int tabs = 0);
+	void LogLayerTree(Layer& layer);
+	void LogElements(std::stringstream& ss, const std::vector<std::shared_ptr<Ull::UiElement>>& elements, unsigned int tabs = 0);
 }
 
 #define ULOGF(message) PLOGF << message

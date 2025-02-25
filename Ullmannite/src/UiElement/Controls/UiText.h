@@ -54,7 +54,7 @@ namespace Ull
         void SetSampleThreshold(const float threshold);
         void SetSmoothingExceptance(std::initializer_list<wchar_t> exceptance);
 
-        void CreateResources() override;
+        void CreateResources();
         void Update() override;
         void Render() override;
 

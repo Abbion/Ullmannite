@@ -1,11 +1,8 @@
 #pragma once
+#include <memory>
 #include "UiRenderArea.h"
 #include "Window/UllWindow.h"
-#include <memory>
-#include "Utilities/PointerHelper.h"
-#include "Controls/UiButton.h"
-#include "Controls/UiToggle.h"
-#include "Controls/UiText.h"
+#include "UiElement/Controls/AllControls.h"
 
 namespace Ull
 {
@@ -15,23 +12,15 @@ namespace Ull
 		UiTitleBar(const std::string& name, const glm::uvec2 position, const glm::uvec2 size);
 		virtual ~UiTitleBar() {}
 
-		void SetWindow(const NotOwner<UllWindow>& window) { m_window = window; }
-
-		bool IsOnDragArea() { return m_onDragArea; }
-
-		void CreateResources() override;
-
 		void HandleEvent(Event* event) override;
 
-		void Update() override;
-		void Render() override;
-	private:
-		void CreateControls();
+		void SetWindow(const NotOwner<UllWindow>& window) { m_window = window; }
 		void ResizeControls();
 
-		NotOwner<UllWindow> m_window{ nullptr };
+	private:
+		void CreateControls();
 
-		bool m_onDragArea{ false };
+		NotOwner<UllWindow> m_window{ nullptr };
 
 		std::shared_ptr<UiButton> m_closeButton;
 		std::shared_ptr<UiButton> m_minimizeButton;

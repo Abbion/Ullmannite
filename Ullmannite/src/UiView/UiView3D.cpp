@@ -173,6 +173,7 @@ void UiView3D::HandleEvent(Event* event)
     UiRenderArea::HandleEvent(event);
 }
 
+#include <imgui.h>
 void UiView3D::Update()
 {
     m_scene.Update();
@@ -207,10 +208,11 @@ void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
     }
 }
 
+
 #include <imgui.h>
 void UiView3D::Render()
 {
-    //ImGui::Text("BoxSettings");
+    ImGui::Text("BoxSettings");
 
     m_titleButton->SetBackgroundColor(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
@@ -281,27 +283,6 @@ void UiView3D::Render()
     textControll->Update();
 
     m_areaUpdated = true;
-
-    //if(m_areaUpdated)
-    {
-        m_frameBuffer->Bind();
-
-		RenderBackground();
-
-        UiRenderArea::Render();
-
-        Application::GetRenderer().SetDepth(Renderer::State::ENABLE);
-        Application::GetRenderer().Clear(Renderer::ClearBits::DEPTH);
-
-        //Application::GetRenderer().SetFaceCulling(Renderer::FaceCulling::BACK);
-        //Application::GetRenderer().SetFaceWinding(Renderer::FaceWinding::COUNTER_CLOCKWISE);
-        m_scene.Render();
-        //Application::GetRenderer().SetFaceCulling(Renderer::FaceCulling::NONE);
-        //Application::GetRenderer().SetDepth(Renderer::State::DISABLE);
-
-		m_frameBuffer->Unbind();
-
-		m_areaUpdated = false;
-    }
-
+    
+    UiRenderArea::Render();
 }

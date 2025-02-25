@@ -1,30 +1,28 @@
 #pragma once
-#include "Event/Event.h"
-#include "Event/EventHandler.h"
-#include "UiElement/UiLayout.h"
 #include "UiElement/UiRenderArea.h"
 
 namespace Ull
 {
-    // Add something to this class because it looks like UiLayout can be used instead of it
-    // Add a focused element for example
-    class Layer : public EventHandler
+    class Layer : protected UiRenderArea
     {
     public:
-        NON_COPYABLE(Layer);
+        Layer(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth);
 
-        void Update();
-        virtual void Render();
+        void HandleEvent(Event* event) override;
 
-        void SetVisibility(const bool state) { m_layout->SetVisibility(state); }
-        bool IsVisible() const { return m_layout->IsVisible(); }
+        UiRenderArea::Update;
+        virtual void Render() override final;
+        virtual void RenderLayerComponents() = 0;
 
-        const std::shared_ptr<UiLayout> GetLayout() const { return m_layout; }
+        UiRenderArea::GetName;
+        UiRenderArea::GetChildren;
 
     protected:
-        std::shared_ptr<UiLayout> m_layout;
-    
-    protected:
-        Layer(const std::string& name, const glm::uvec2 size);
+        virtual void CreateLayout() = 0;
+        virtual void ResizeLayout() = 0;
+        void CreateRenderArea(const glm::vec2 position, const glm::vec2 size);
+
+    private:
+        glm::mat4 m_viewMatrix;
     };
 };

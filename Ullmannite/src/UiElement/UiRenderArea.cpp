@@ -11,56 +11,8 @@ UiRenderArea::UiRenderArea(const std::string& name, const glm::uvec2 position, c
     UiElement(name, position, size, UiElementType::RenderArea),
     m_usesDepth(usesDepth)
 {
-    auto& shaderManager = Application::GetRenderer().GetShaderManager();
-    m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
-    CreateResources();
-}
-
-UiRenderArea::~UiRenderArea()
-{
-    if (m_frameBuffer != nullptr)
-        delete m_frameBuffer;
-}
-
-void UiRenderArea::CreateResources()
-{
-    if (m_vertexBuffer != nullptr)
-        delete m_vertexBuffer;
-
-    if (m_indexBuffer != nullptr)
-        delete m_indexBuffer;
-
-    if (m_layout != nullptr)
-        delete m_layout;
-
+    SetBackgroundColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     CreateFrameBuffer();
-
-    float vertices[] = { 
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f
-    };
-
-    unsigned int indices[] = { 
-        0, 1, 2,
-        1, 3, 2 
-    };
-
-    m_layout = VertexLayout::Create({
-        LayoutElement("Position", GraphicsDataType::FLOAT, 3)
-    });
-
-    m_layout->Bind();
-
-    m_vertexBuffer = VertexBuffer::Create(sizeof(vertices), vertices, GraphicsBufferType::STATIC_DRAW);
-    m_indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
-
-    m_layout->Build();
-    m_vertexBuffer->Unbind();
-    m_layout->Unbind();
-
-    m_areaUpdated = true;
 }
 
 void UiRenderArea::BindTargetTexture()
@@ -109,7 +61,7 @@ void UiRenderArea::Render()
     {
         m_frameBuffer->Bind();
 
-        RenderBackground();
+        Clear();
         UiElement::Render();
 
         m_frameBuffer->Unbind();
@@ -118,19 +70,11 @@ void UiRenderArea::Render()
     }
 }
 
-void UiRenderArea::RenderBackground()
+void UiRenderArea::Clear()
 {
+    Application::GetRenderer().SetClearColor(m_color);
     Application::GetRenderer().Clear(Renderer::ClearBits::COLOR);
     Application::GetRenderer().SetViewPort(glm::ivec2(0, 0), GetSize());
-
-    m_shader->Bind();
-
-    m_shader->SetFloat4("color", m_color);
-    m_shader->SetFloat4x4("modelMatrix", glm::mat4(1.0f));
-
-    m_layout->Bind();
-
-    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }
 
 void UiRenderArea::CheckMouseInArea()

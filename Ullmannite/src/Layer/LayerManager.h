@@ -15,13 +15,13 @@ namespace Ull
 
         void PushLayer(std::shared_ptr<Layer> newLayer);
         void DropAllLayers();
-        std::vector<std::shared_ptr<Layer>>& GetLayers() { return m_layers; }
+        std::deque<std::shared_ptr<Layer>>& GetLayers() { return m_layers; }
 
         unsigned int GetSize() const;
 
         void HandleEvent(Event* event) override;
         
     private:
-        std::vector<std::shared_ptr<Layer>> m_layers;
+        std::deque<std::shared_ptr<Layer>> m_layers;
     };
 };

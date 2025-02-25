@@ -9,9 +9,8 @@ namespace Ull
     {
     public:
         UiRenderArea(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth);
-        virtual ~UiRenderArea();
+        virtual ~UiRenderArea() {};
 
-        void CreateResources() override;
         void SetBackgroundColor(const glm::vec4& color);
         void BindTargetTexture();
 
@@ -20,7 +19,7 @@ namespace Ull
         void Render() override;
 
     protected:
-        void RenderBackground();
+        void Clear();
         void CheckMouseInArea();
         void CreateFrameBuffer();
 

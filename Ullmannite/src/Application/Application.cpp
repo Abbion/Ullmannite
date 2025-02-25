@@ -70,6 +70,11 @@ void Application::UpdateAndRenderLayers()
     if (!m_window.IsMinimized())
     {
         for (auto layer : layers)
+            layer->RenderLayerComponents();
+
+        m_window.Clear();
+
+        for (auto layer : layers)
             layer->Render();
 
         m_window.SwapBuffers();

@@ -33,8 +33,6 @@ namespace Ull
     protected:
         UiElement(const std::string& name, const glm::vec2 position, const glm::vec2 size, const UiElementType type);
 
-        virtual void CreateResources() = 0;
-
     private:
         const UiElementType m_uiElementType;
     };
