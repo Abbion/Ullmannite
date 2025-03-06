@@ -20,6 +20,11 @@ namespace Ull
 
         virtual glm::mat4 GetTransform() const;
 
+    protected:
+        virtual void OnPositionChange() {};
+        virtual void OnSizeChange() {};
+        virtual void OnScaleChange() {};
+
     private:
         glm::vec2 m_position{ 0.0f, 0.0f };
         glm::vec2 m_size{ 1.0f, 1.0f };

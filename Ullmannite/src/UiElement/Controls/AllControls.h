@@ -1,6 +1,7 @@
 #pragma once
 #include "UiButton.h"
 #include "UiSpace.h"
+#include "UiFrame.h"
 #include "UiText.h"
 #include "UiToggle.h"
 #include "UiSlider.h"

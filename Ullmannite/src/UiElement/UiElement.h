@@ -15,7 +15,7 @@ namespace Ull
         GradientMarker
     };
 
-    class UiElement : public TreeNode<UiElement>, public Object2D, public EventHandler, public Drawable
+    class UiElement : public TreeNode<UiElement>, std::enable_shared_from_this<UiElement>, public Object2D, public EventHandler, public Drawable
     {
     public:
         std::optional<NotOwner<UiElement>> FindUiElementAboveByType(const UiElementType type);

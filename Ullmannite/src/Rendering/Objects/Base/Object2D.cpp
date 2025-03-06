@@ -19,16 +19,19 @@ Object2D::Object2D(Object2D&& source) noexcept :
 void Object2D::SetPosition(const glm::vec2 position)
 {
     m_position = position;
+    OnPositionChange();
 }
 
 void Object2D::SetSize(const glm::vec2 size)
 {
     m_size = size;
+    OnSizeChange();
 }
 
 void Object2D::SetScale(const float scale)
 {
     m_scale = scale;
+    OnScaleChange();
 }
 
 glm::mat4 Object2D::GetTransform() const

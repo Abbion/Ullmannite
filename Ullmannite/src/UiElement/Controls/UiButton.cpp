@@ -58,7 +58,7 @@ void UiButton::Render()
     if (!IsVisible())
         return;
 
-    Application::GetRenderer().SetBlending(true);
+    Application::GetRenderer().SetBlending(Renderer::State::ENABLE);
     UiBasicControl::Render();
-    Application::GetRenderer().SetBlending(false);
+    Application::GetRenderer().SetBlending(Renderer::State::DISABLE);
 }

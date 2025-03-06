@@ -43,7 +43,7 @@ namespace Ull
 
         void SetSize(const glm::uvec2 size);
 
-        void SetString(std::wstring& text);
+        void SetString(const std::wstring& text);
         void SetFont(const FontTag font);
         void SetColor(const glm::vec4 color);
         void SetFontSize(const unsigned size);

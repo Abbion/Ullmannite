@@ -212,7 +212,7 @@ void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
 #include <imgui.h>
 void UiView3D::Render()
 {
-    ImGui::Text("BoxSettings");
+    //ImGui::Text("BoxSettings");
 
     m_titleButton->SetBackgroundColor(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
@@ -236,7 +236,7 @@ void UiView3D::Render()
     auto aligment = textControll->GetAlignment();
 
     //ImGui::Text("Text settings");
-
+    //
     //ImGui::SliderInt("fontSize", &fontSize, 1, 256);
     //ImGui::SliderFloat("spaceing", &spaceing, -10.0f, 100.0f);
     //ImGui::SliderFloat("leading", &leading, -2.0f, 5.0f);

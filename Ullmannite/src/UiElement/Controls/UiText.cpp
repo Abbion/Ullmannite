@@ -45,7 +45,7 @@ void UiText::SetSize(const glm::uvec2 size)
 	m_updateDrawData = true;
 }
 
-void UiText::SetString(std::wstring& text)
+void UiText::SetString(const std::wstring& text)
 {
 	m_text = text;
 	m_updateDrawData = true;
@@ -288,9 +288,9 @@ void UiText::Render()
 
 	m_layout->Bind();
 
-	Application::GetRenderer().SetBlending(true);
+	Application::GetRenderer().SetBlending(Renderer::State::ENABLE);
 	Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
-	Application::GetRenderer().SetBlending(false);
+	Application::GetRenderer().SetBlending(Renderer::State::DISABLE);
 }
 
 void UiText::UpdateDisplayTextSize()

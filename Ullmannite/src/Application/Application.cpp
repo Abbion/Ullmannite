@@ -14,6 +14,7 @@
 
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
+#include "Layer/ToolLayer.h"
 
 #include "Resources/ResourceManager.h"
 
@@ -71,9 +72,9 @@ void Application::UpdateAndRenderLayers()
     {
         for (auto layer : layers)
             layer->RenderLayerComponents();
-
+        
         m_window.Clear();
-
+        
         for (auto layer : layers)
             layer->Render();
 
@@ -145,6 +146,9 @@ void Application::InitApplciation()
     auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());
     mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));
     m_layerManager.PushLayer(mainLayer);
+
+    auto toolLayer = std::make_shared<ToolLayer>(m_window.GetSize());
+    m_layerManager.PushLayer(toolLayer);
 
     //First resizeEvent to inform components of the initial window size
     const auto windowSize = m_window.GetSize();

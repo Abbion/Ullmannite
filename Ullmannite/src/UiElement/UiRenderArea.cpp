@@ -20,6 +20,11 @@ void UiRenderArea::BindTargetTexture()
     m_frameBuffer->GetColorTarget()->Bind();
 }
 
+void UiRenderArea::OnSizeChange()
+{
+    CreateFrameBuffer();
+}
+
 void UiRenderArea::SetBackgroundColor(const glm::vec4& color)
 {
     m_color = color;

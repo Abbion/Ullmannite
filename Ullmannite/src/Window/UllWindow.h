@@ -54,18 +54,20 @@ namespace Ull
 
         WindowPointerDataStruct m_windowPointerDataStruct;
 
+        std::unordered_map<ResizeState, RectU> m_resizeMargins;
+
     private:
         std::string m_title;
         bool m_isOpen{ true };
         bool m_isMinimized{ false };
         bool m_isMaximized{ false };
         bool m_cursorLocked{ false };
-        int m_scaleCounter{ 0 };
 
         GLFWwindow* m_window{ nullptr };
 
         std::chrono::time_point<std::chrono::steady_clock> m_lastRefresh;
 
+        void UpdateResizeMargins();
         void SwitchHiddenCursor();
 
         void InitCallBacks();

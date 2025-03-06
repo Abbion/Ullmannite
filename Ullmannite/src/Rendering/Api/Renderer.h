@@ -71,6 +71,7 @@ namespace Ull
         void SetDepth(State state);
         void SetFaceCulling(FaceCulling culling);
         void SetFaceWinding(FaceWinding winding);
+        void SetBlending(const State state);
 
         void SetPixelPackWidth(unsigned int width);
         void SetPixelUnpackWidth(unsigned int width);
@@ -82,8 +83,6 @@ namespace Ull
         void DispatchComputeShader(unsigned int groupSizeX, unsigned int groupSizeY, unsigned int groupSizeZ);
         void FlushContext();
         void Barrier(BarrierType barrier);
-
-        void SetBlending(const bool enableState);
 
     protected:
         Renderer() = default;

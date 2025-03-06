@@ -38,21 +38,17 @@ void Layer::Render()
 
     m_frameBuffer->Bind();
 
-    for (auto& renderArea : GetChildren())
-    {
-        if (renderArea->GetType() != UiElementType::RenderArea)
-        {
-            ULOGE("Layer: " << GetName() << " cannot render " << renderArea->GetName() << " because its not a renderArea!");
-            continue;
-        }
-
-        CreateRenderArea(renderArea->GetPosition(), renderArea->GetSize());
-        reinterpret_cast<UiRenderArea*>(renderArea.get())->BindTargetTexture();
-
+    ForEachNode([this](UiElement* node) {
+        if (node->GetType() != UiElementType::RenderArea)
+            return;
+            
+        CreateRenderArea(node->GetGlobalPosition(), node->GetSize());
+        reinterpret_cast<UiRenderArea*>(node)->BindTargetTexture();
+            
         m_layout->Bind();
-        
+
         Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
-    }
+    });
 
     m_frameBuffer->Unbind();
 
@@ -61,7 +57,10 @@ void Layer::Render()
 
     m_layout->Bind();
 
-    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    auto& renderer = Application::GetRenderer();
+    renderer.SetBlending(Renderer::State::ENABLE);
+    renderer.DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    renderer.SetBlending(Renderer::State::DISABLE);
 }
 
 void Layer::CreateRenderArea(const glm::vec2 position, const glm::vec2 size)

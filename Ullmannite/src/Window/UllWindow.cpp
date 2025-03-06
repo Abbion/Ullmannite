@@ -34,7 +34,7 @@ namespace
     constexpr double DoubleClickDurationWindow = 0.4;
     constexpr float ScaleUpFactor = 1.25f;
     constexpr float ScaleDownFactor = 1.f / ScaleUpFactor;
-    constexpr int MaxScaleCounter = 3;
+    constexpr unsigned ResizeMarginSize = 3;
 }
 
 UllWindow::UllWindow()
@@ -88,6 +88,8 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
     if (hwnd) {
         const int param = DWMWCP_ROUND;
         DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &param, sizeof(param));
+        MARGINS margins = { 8, 8, 8, 8 }; // Extend the border area by 8 pixels
+        DwmExtendFrameIntoClientArea(hwnd, &margins);
     }
 
     m_lastRefresh = std::chrono::steady_clock::now();
@@ -155,20 +157,6 @@ void UllWindow::HandleEvent(Event* event)
         }
     break;
 
-    case EventType::UiScaledUp:
-        if (m_scaleCounter < MaxScaleCounter)
-            m_scaleCounter++;
-        else
-            event->MarkHandeled(true);
-    break;
-
-    case EventType::UiScaledDown:
-        if (m_scaleCounter > -MaxScaleCounter)
-            m_scaleCounter--;
-        else
-            event->MarkHandeled(true);
-    break;
-
     default:
         break;
     }
@@ -218,6 +206,25 @@ void UllWindow::Restore()
     m_isMinimized = false;
 }
 
+void UllWindow::UpdateResizeMargins()
+{
+    const auto size = GetSize();
+
+    m_resizeMargins.reserve(8);
+
+    m_resizeMargins.insert({ ResizeState::Left, RectU(0, ResizeMarginSize, ResizeMarginSize, size.y - (2 * ResizeMarginSize)) });
+    m_resizeMargins.insert({ ResizeState::Right, RectU(size.x - ResizeMarginSize, ResizeMarginSize, ResizeMarginSize, size.y - (2 * ResizeMarginSize)) });
+
+    m_resizeMargins.insert({ ResizeState::Top, RectU(ResizeMarginSize, 0, size.x - (2 * ResizeMarginSize), ResizeMarginSize) });
+    m_resizeMargins.insert({ ResizeState::Bottom, RectU(ResizeMarginSize, size.y - ResizeMarginSize, size.x - (2 * ResizeMarginSize), ResizeMarginSize) });
+
+    m_resizeMargins.insert({ ResizeState::TopLeft, RectU(0, 0, ResizeMarginSize, ResizeMarginSize) });
+    m_resizeMargins.insert({ ResizeState::TopRight, RectU(size.x - ResizeMarginSize, 0, ResizeMarginSize, ResizeMarginSize) });
+
+    m_resizeMargins.insert({ ResizeState::BottomLeft, RectU(0, size.y - ResizeMarginSize, ResizeMarginSize, ResizeMarginSize) });
+    m_resizeMargins.insert({ ResizeState::BottomRight, RectU(size.x - ResizeMarginSize, size.y - ResizeMarginSize, ResizeMarginSize, ResizeMarginSize) });
+}
+
 void UllWindow::SwitchHiddenCursor()
 {
     if (m_cursorLocked)
@@ -242,7 +249,7 @@ void UllWindow::Clear()
 
 void UllWindow::SwapBuffers()
 {
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfwSwapBuffers(m_window);
 }
 

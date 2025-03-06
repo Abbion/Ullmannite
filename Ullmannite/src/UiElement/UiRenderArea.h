@@ -11,6 +11,8 @@ namespace Ull
         UiRenderArea(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth);
         virtual ~UiRenderArea() {};
 
+        virtual void OnSizeChange() override;
+
         void SetBackgroundColor(const glm::vec4& color);
         void BindTargetTexture();
 

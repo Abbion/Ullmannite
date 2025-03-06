@@ -7,5 +7,5 @@ uniform sampler2D frameTexture;
 
 void main()
 {
-	OutFragmentColor = vec4(texture(frameTexture, TextureCoords).rgb, 1.0);
+	OutFragmentColor = texture(frameTexture, TextureCoords);
 }
