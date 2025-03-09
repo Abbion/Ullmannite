@@ -9,10 +9,9 @@ namespace {
 }
 
 UiTitleBar::UiTitleBar(const std::string& name, const glm::uvec2 position, const glm::uvec2 size) :
-	UiRenderArea(name, position, size, false)
+	UiElement(name, position, size, UiElementType::TitleBar)
 {
 	CreateControls();
-	SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
 }
 
 void UiTitleBar::HandleEvent(Event* event)
@@ -34,7 +33,7 @@ void UiTitleBar::HandleEvent(Event* event)
 
 	}
 
-	UiRenderArea::HandleEvent(event);
+	UiElement::HandleEvent(event);
 }
 
 void UiTitleBar::CreateControls()
@@ -142,8 +141,6 @@ RectF UiTitleBar::GetGrabArea() const
 
 void UiTitleBar::ResizeControls()
 {
-	CreateFrameBuffer();
-
 	const auto size = GetSize();
 	const auto buttonWidth = ((float)size.y * ButtonWidthRatio);
 	float buttonCount = 0.0;

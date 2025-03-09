@@ -1,13 +1,15 @@
 #include "Ullpch.h"
 #include "Layer.h"
+#include "Layer/LayerManager.h"
 #include "Application/Application.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 using namespace Ull;
 
-Layer::Layer(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth) : 
-	UiRenderArea(name, position, size, usesDepth),
-    m_viewMatrix{ glm::ortho(0.0f, static_cast<float>(size.x), static_cast<float>(size.y), 0.0f, -1.0f, 1.0f) }
+Layer::Layer(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth, const NotOwner<LayerManager>& layerManager) :
+    UiRenderArea(name, position, size, usesDepth),
+    m_viewMatrix{ glm::ortho(0.0f, static_cast<float>(size.x), static_cast<float>(size.y), 0.0f, -1.0f, 1.0f) },
+    m_layerManager{ layerManager }
 {
     auto& shaderManager = Application::GetRenderer().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::FRAME_DISPLAY_SHADER);
@@ -38,17 +40,21 @@ void Layer::Render()
 
     m_frameBuffer->Bind();
 
-    ForEachNode([this](UiElement* node) {
-        if (node->GetType() != UiElementType::RenderArea)
+    for (auto child : GetChildren())
+    {
+        if (child->GetType() != UiElementType::RenderArea)
+        {
+            ULOGW(GetName() + ": Element: " << child->GetName() << " has to be a renderArea element!");
             return;
-            
-        CreateRenderArea(node->GetGlobalPosition(), node->GetSize());
-        reinterpret_cast<UiRenderArea*>(node)->BindTargetTexture();
-            
+        }
+
+        CreateRenderArea(child->GetGlobalPosition(), child->GetSize());
+        reinterpret_cast<UiRenderArea*>(child.get())->BindTargetTexture();
+
         m_layout->Bind();
 
         Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
-    });
+    }
 
     m_frameBuffer->Unbind();
 

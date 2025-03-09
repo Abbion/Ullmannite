@@ -1,6 +1,8 @@
 #include "Ullpch.h"
 #include "Application/Application.h"
 #include "UiPickerView.h"
+#include "Layer/ToolLayer.h"
+#include "Event/EventAggregator.h"
 
 using namespace Ull;
 
@@ -22,6 +24,9 @@ UiPickerView::UiPickerView(const std::string& name, const glm::uvec2 position) :
 {
     SetBackgroundColor(glm::vec4(0.15f, 0.15f, 0.15f, 1.0f));
     CreateControls();
+
+    RenderAreaSizeChanged renderAreaSizeChangedEvent(EventType::RenderAreaSizeChanged);
+    HandleEvent(&renderAreaSizeChangedEvent);
 }
 
 void UiPickerView::HandleEvent(Event* event) 
@@ -29,39 +34,64 @@ void UiPickerView::HandleEvent(Event* event)
     if (event->IsHandeled())
         return;
 
+    UiRenderArea::HandleEvent(event);
+
+    const auto mousePositionI = Application::GetMouse().GetMousePosition();
+    const auto mousePositionF = glm::vec2(static_cast<float>(mousePositionI.x), static_cast<float>(mousePositionI.y));
+
     switch (event->GetType())
     {
     case EventType::MouseDown:
     {
-        const auto mousePosition = Application::GetMouse().GetMousePosition();
         const auto grabArea = m_titleBar->GetGrabArea();
 
-        if (grabArea.IsPointInside(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y)))
+        if (grabArea.IsPointInside(mousePositionF))
         {
-            m_grabStartPosition = mousePosition - glm::ivec2(GetPosition());
+            m_grabStartPosition = mousePositionI - glm::ivec2(GetPosition());
             m_isGrabbed = true;
-            ULOGD("IN");
         }
     }
     break;
 
     case EventType::MouseUp:
         m_isGrabbed = false;
-        ULOGD("OUT");
+
     break;
 
     case EventType::MouseMove:
     {
         if (m_isGrabbed)
         {
-            const auto mousePosition = static_cast<MouseMoveEvent*>(event)->GetVal();
-            SetPosition(mousePosition - m_grabStartPosition);
+            const auto viewSize = GetSize();
+            auto newViewPosition = mousePositionI - m_grabStartPosition;
+
+            const auto toolLayer = GetParent();
+            const auto layerSize = toolLayer->GetSize();
+
+            if (newViewPosition.x < 1.0f)
+                newViewPosition.x = 1.0f;
+
+            else if (newViewPosition.x + viewSize.x > layerSize.x - 1.0f)
+                newViewPosition.x = layerSize.x - viewSize.x - 1.0f;
+
+            if (newViewPosition.y < 1.0f)
+                newViewPosition.y = 1.0f;
+
+            else if (newViewPosition.y + viewSize.y > layerSize.y - 1.0f)
+                newViewPosition.y = layerSize.y - viewSize.y - 1.0f;
+
+            SetPosition(newViewPosition);
         }
     }
     break;
     }
 
-    UiRenderArea::HandleEvent(event);
+    const auto viewGlobalPosition = GetGlobalPosition();
+    const auto viewSize = GetSize();
+    RectF viewRect(viewGlobalPosition.x, viewGlobalPosition.y, viewSize.x, viewSize.y);
+
+    if (viewRect.IsPointInside(mousePositionF))
+        event->MarkHandeled(true);
 }
 
 void UiPickerView::Update()
@@ -105,12 +135,14 @@ void UiPickerView::CreateControls()
     m_frame->CreateResources();
     AddChildNode(m_frame);
 
-    // Title bar
-    m_titleBar->SetSize(glm::vec2(size.x - 2.0f, 20.0f));
+    m_titleBar->SetSize(glm::vec2(size.x - 2.0f, 25.0f));
     m_titleBar->SetTitleBarFunctionality(UiTitleBar::TitleBarFunctionality::CLOSE, State::Enable);
     m_titleBar->SetTitleBarFunctionality(UiTitleBar::TitleBarFunctionality::TITLE, State::Enable);
     m_titleBar->SetTitleText(L"Color picker");
     m_titleBar->ResizeControls();
+    m_titleBar->SetCloseFunction([this]() {
+        m_readyToRelease = true;
+    });
 
     AddChildNode(m_titleBar);
 }

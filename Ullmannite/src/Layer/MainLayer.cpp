@@ -13,7 +13,13 @@
 
 using namespace Ull;
 
-MainLayer::MainLayer(const glm::uvec2 size) : Layer("mainLayer", glm::uvec2(0, 0), size, false)
+namespace
+{
+    constexpr auto TitleBarHeight = 30.0f;
+    constexpr auto MenuWidth = 260.0f;
+}
+
+MainLayer::MainLayer(const glm::uvec2 size, const NotOwner<LayerManager>& layerManager) : Layer(LayerNames::mainLayer, glm::uvec2(0, 0), size, false, layerManager)
 {
     CreateLayout();
 }
@@ -45,7 +51,10 @@ void MainLayer::CreateLayout()
     const auto initSize = GetSize();
     const auto initScale = GetScale();
 
-    m_titleBar = std::make_shared<UiTitleBar>("titleBarElement", glm::vec2(0.f, 0.f), glm::vec2(initSize.x, 30.f * initScale));
+    m_titleBarView = std::make_shared<UiRenderArea>(GetName() + "titleBarAreaView", glm::vec2(0.0f, 0.0f), glm::vec2(initSize.x, TitleBarHeight * initScale), false);
+    m_titleBarView->SetBackgroundColor(glm::vec4(0.149f, 0.149f, 0.149f, 1.0f));
+
+    m_titleBar = std::make_shared<UiTitleBar>(GetName() + "titleBar", glm::vec2(0.f, 0.f), glm::vec2(initSize.x, TitleBarHeight * initScale));
     m_titleBar->SetTitleBarFunctionality(UiTitleBar::TitleBarFunctionality::MINIMIZE, State::Enable);
     m_titleBar->SetTitleBarFunctionality(UiTitleBar::TitleBarFunctionality::RESTORE, State::Enable);
     m_titleBar->SetTitleBarFunctionality(UiTitleBar::TitleBarFunctionality::CLOSE, State::Enable);
@@ -57,12 +66,13 @@ void MainLayer::CreateLayout()
     m_titleBar->SetMaximizeFunction([this] { m_window->Maximize(); });
     m_titleBar->SetRestoreFunction([this] { m_window->Restore(); });
 
-    AddChildNode(m_titleBar);
+    m_titleBarView->AddChildNode(m_titleBar);
+    AddChildNode(m_titleBarView);
 
-    m_menuView = std::make_shared<UiMenuView>("menuElement", glm::vec2(0.f, (30.f * initScale) + 1), glm::vec2(260.f, initSize.y - (30.f * initScale) - 1.f));
+    m_menuView = std::make_shared<UiMenuView>("menuElement", glm::vec2(0.f, (TitleBarHeight * initScale) + 1), glm::vec2(MenuWidth, initSize.y - (TitleBarHeight * initScale) - 1.f));
     AddChildNode(m_menuView);
 
-    m_3DView = std::make_shared<UiView3D>("view3DElement", glm::vec2((260.f + initScale) + 1.f, (30.f * initScale) + 1.f), glm::vec2(initSize.x - (260.f * initScale) - 1.f, initSize.y - (30.f * initScale) - 1.f));
+    m_3DView = std::make_shared<UiView3D>("view3DElement", glm::vec2((MenuWidth + initScale) + 1.f, (TitleBarHeight * initScale) + 1.f), glm::vec2(initSize.x - (MenuWidth * initScale) - 1.f, initSize.y - (TitleBarHeight * initScale) - 1.f));
     AddChildNode(m_3DView);
  }
 
@@ -71,16 +81,26 @@ void MainLayer::ResizeLayout()
     const auto size = GetSize();
     const auto scale = GetScale();
     
-    m_titleBar->SetSize(glm::vec2(size.x, 30.f * scale));
+    m_titleBarView->SetSize(glm::vec2(size.x, TitleBarHeight * scale));
+    m_titleBar->SetSize(m_titleBarView->GetSize());
     m_titleBar->ResizeControls();
 
     const auto grabArea = m_titleBar->GetGrabArea();
     m_window->SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(grabArea.width, grabArea.height));
+    for (auto layer : m_layerManager->GetLayers())
+    {
+        if (layer->GetName() == LayerNames::toolLayer)
+        {
+            layer->SetSize(glm::vec2(size.x, size.y - grabArea.height));
+            layer->SetPosition(glm::vec2(0.0f, grabArea.height));
+            break;
+        }
+    }
 
-    m_menuView->SetPosition(glm::vec2(0.f, (30.f * scale) + 1.f));
-    m_menuView->SetSize(glm::vec2(260.f * scale, size.y - (30.f * scale) - 1.f));
+    m_menuView->SetPosition(glm::vec2(0.f, (TitleBarHeight * scale) + 1.f));
+    m_menuView->SetSize(glm::vec2(MenuWidth * scale, size.y - (TitleBarHeight * scale) - 1.f));
     m_menuView->ResizeControls();
 
-    m_3DView->SetPosition(glm::vec2((260.f * scale) + 1.0f, (30.f * scale) + 1.f));
-    m_3DView->SetSize(glm::vec2(size.x - (260.f * scale) - 1.0f, size.y - (30.f * scale) - 1.f));
+    m_3DView->SetPosition(glm::vec2((MenuWidth * scale) + 1.0f, (TitleBarHeight * scale) + 1.f));
+    m_3DView->SetSize(glm::vec2(size.x - (MenuWidth * scale) - 1.0f, size.y - (TitleBarHeight * scale) - 1.f));
 }

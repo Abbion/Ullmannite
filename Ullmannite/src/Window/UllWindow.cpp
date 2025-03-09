@@ -44,6 +44,7 @@ UllWindow::UllWindow()
 void UllWindow::Create(std::string title, glm::uvec2 size)
 {
     m_title = title;
+    m_grabArea = RectU(0, 0, 1, 1);
 
     if (size.x < MIN_WINDOW_WIDTH)
         size.x = MIN_WINDOW_WIDTH;
@@ -139,6 +140,7 @@ void UllWindow::SetRefreshFunction(std::function<void()> refreshFunction)
 
 void UllWindow::SetDragArea(const glm::uvec2 position, const glm::uvec2 size)
 {
+    m_grabArea = RectU(position.x, position.y, size.x, size.y);
     glfwSetWindowBorderlessGrabArea(m_window, position.x, position.y, size.x, size.y);
 }
 
@@ -204,25 +206,6 @@ void UllWindow::Restore()
     glfwRestoreWindow(m_window);
     m_isMaximized = false;
     m_isMinimized = false;
-}
-
-void UllWindow::UpdateResizeMargins()
-{
-    const auto size = GetSize();
-
-    m_resizeMargins.reserve(8);
-
-    m_resizeMargins.insert({ ResizeState::Left, RectU(0, ResizeMarginSize, ResizeMarginSize, size.y - (2 * ResizeMarginSize)) });
-    m_resizeMargins.insert({ ResizeState::Right, RectU(size.x - ResizeMarginSize, ResizeMarginSize, ResizeMarginSize, size.y - (2 * ResizeMarginSize)) });
-
-    m_resizeMargins.insert({ ResizeState::Top, RectU(ResizeMarginSize, 0, size.x - (2 * ResizeMarginSize), ResizeMarginSize) });
-    m_resizeMargins.insert({ ResizeState::Bottom, RectU(ResizeMarginSize, size.y - ResizeMarginSize, size.x - (2 * ResizeMarginSize), ResizeMarginSize) });
-
-    m_resizeMargins.insert({ ResizeState::TopLeft, RectU(0, 0, ResizeMarginSize, ResizeMarginSize) });
-    m_resizeMargins.insert({ ResizeState::TopRight, RectU(size.x - ResizeMarginSize, 0, ResizeMarginSize, ResizeMarginSize) });
-
-    m_resizeMargins.insert({ ResizeState::BottomLeft, RectU(0, size.y - ResizeMarginSize, ResizeMarginSize, ResizeMarginSize) });
-    m_resizeMargins.insert({ ResizeState::BottomRight, RectU(size.x - ResizeMarginSize, size.y - ResizeMarginSize, ResizeMarginSize, ResizeMarginSize) });
 }
 
 void UllWindow::SwitchHiddenCursor()

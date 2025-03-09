@@ -1,12 +1,13 @@
-#pragma
+#pragma once
 #include <memory>
 #include "Event/EventHandler.h"
-#include "Layer/Layer.h"
 #include "Event/Event.h"
 #include <deque>
 
 namespace Ull
 {
+    class Layer;
+
     class LayerManager : public EventHandler
     {
     public:

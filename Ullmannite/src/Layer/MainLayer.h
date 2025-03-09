@@ -12,7 +12,7 @@ namespace Ull
     class MainLayer : public Layer
     {
     public:
-        MainLayer(const glm::uvec2 size);
+        MainLayer(const glm::uvec2 size, const NotOwner<LayerManager>& layerManager);
 
         void SetWindow(const NotOwner<UllWindow>& window);
 
@@ -25,6 +25,8 @@ namespace Ull
         NotOwner<UllWindow> m_window{ nullptr };
 
         std::shared_ptr<UiTitleBar> m_titleBar;
+        std::shared_ptr<UiRenderArea> m_titleBarView;
+
         std::shared_ptr<UiMenuView> m_menuView;
         std::shared_ptr<UiView3D> m_3DView;
     };

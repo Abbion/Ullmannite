@@ -7,16 +7,13 @@ namespace Ull
         Disable
     };
 
-    enum class ResizeState {
-        None,
-        Left,
-        Right,
-        Top,
-        Bottom,
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight
+    enum class ToolType {
+        ColorPicker
+    };
+
+    struct ToolSetup {
+        ToolType toolType;
+        glm::uvec2 spawnPoint;
     };
 
     template<typename T>
@@ -32,6 +29,10 @@ namespace Ull
 
         [[nodiscard]] inline bool IsPointInside(T pointX, T pointY) const noexcept {
             return (pointX >= x) && (pointX <= x + width) && (pointY >= y) && (pointY <= y + height);
+        }
+
+        [[nodiscard]] inline bool IsPointInside(glm::vec<2, T, glm::packed_highp> point) const noexcept {
+            return IsPointInside(point.x, point.y);
         }
     };
 

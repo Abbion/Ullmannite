@@ -29,6 +29,7 @@ namespace Ull
         const glm::ivec2 GetPosition() const;
         const glm::ivec2 GetSize() const;
         const std::string GetTitle() const { return m_title; }
+        const RectU GetGrabArea() const { return m_grabArea; }
 
         GLFWwindow* GetWindowContext() const { return m_window; }
 
@@ -54,10 +55,10 @@ namespace Ull
 
         WindowPointerDataStruct m_windowPointerDataStruct;
 
-        std::unordered_map<ResizeState, RectU> m_resizeMargins;
-
     private:
         std::string m_title;
+        RectU m_grabArea;
+
         bool m_isOpen{ true };
         bool m_isMinimized{ false };
         bool m_isMaximized{ false };
@@ -67,7 +68,6 @@ namespace Ull
 
         std::chrono::time_point<std::chrono::steady_clock> m_lastRefresh;
 
-        void UpdateResizeMargins();
         void SwitchHiddenCursor();
 
         void InitCallBacks();

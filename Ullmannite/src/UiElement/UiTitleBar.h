@@ -5,7 +5,7 @@
 
 namespace Ull
 {
-	class UiTitleBar : public UiRenderArea
+	class UiTitleBar : public UiElement
 	{
 	public:
 		enum class TitleBarFunctionality: uint8_t{

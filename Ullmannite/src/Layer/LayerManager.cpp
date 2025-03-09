@@ -1,6 +1,7 @@
 #include "Ullpch.h"
 #include "Layer/LayerManager.h"
 #include "Logger/Logger.h"
+#include "Layer/Layer.h"
 
 using namespace Ull;
 
@@ -34,6 +35,10 @@ void LayerManager::HandleEvent(Event* event)
     if(event->IsHandeled())
         return;
 
-    for(auto & layer : m_layers)
-        layer->HandleEvent(event);
+
+    for (auto layerItr = m_layers.rbegin(); layerItr != m_layers.rend(); layerItr++)
+        (*layerItr)->HandleEvent(event);
+
+    //for(auto & layer : m_layers)
+      //  layer->HandleEvent(event);
 }

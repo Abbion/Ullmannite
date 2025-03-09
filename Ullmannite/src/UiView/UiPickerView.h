@@ -10,6 +10,8 @@ namespace Ull
     public:
         UiPickerView(const std::string& name, const glm::uvec2 position);
 
+        bool IsReadyToRelease() const { return m_readyToRelease; }
+
 		void HandleEvent(Event* event) override;
 		void Update() override;
 		void Render() override;
@@ -26,6 +28,7 @@ namespace Ull
 
         RectF m_grabArea;
         bool m_isGrabbed{ false };
+        bool m_readyToRelease{ false };
         glm::ivec2 m_grabStartPosition{ 0, 0 };
 
         std::shared_ptr<UiLinearColorGradient> m_linearGradient;

@@ -7,6 +7,7 @@
 
 #include "Logger/Logger.h"
 #include "Event/Event.h"
+#include "Event/EventAggregator.h"
 #include "Input/Mouse.h"
 
 #include "Application/Application.h"
@@ -143,11 +144,12 @@ void Application::InitApplciation()
     fontManager.ReleaseLoader();
 
     //Layers
-    auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());
+    auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
     mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));
     m_layerManager.PushLayer(mainLayer);
 
-    auto toolLayer = std::make_shared<ToolLayer>(m_window.GetSize());
+    auto toolLayer = std::make_shared<ToolLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
+    toolLayer->SetWindow(NotOwner<UllWindow>(&m_window));
     m_layerManager.PushLayer(toolLayer);
 
     //First resizeEvent to inform components of the initial window size
@@ -186,6 +188,11 @@ void Application::HandleEvents()
         case EventType::KeyDown:
             keyState.key = static_cast<KeyDownEvent*>(currentEvent.get())->GetVal();
             keyState.state = true;
+
+            if (keyState.key == Keyboard::Key::P)
+            {
+                EventAggregator::Publish(std::make_shared<OpenToolEvent>(EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25) }));
+            }
             break;
 
         case EventType::KeyUp:
