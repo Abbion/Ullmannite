@@ -25,6 +25,7 @@ namespace Ull
         void ClearColorData();
 
         glm::vec4 GetColorFromLastInteraction() const { return m_lastInteractionColor; }
+        glm::vec4 GetColorForRatio(const float ratio);
 
         void CreateResources() override;
         void HandleEvent(Event* event) override;
@@ -33,7 +34,6 @@ namespace Ull
 
     private:
         void InteractWithMouse();
-        glm::vec4 GetColorForRatio(const float ratio);
 
         bool m_updateVertexData{ true };
         std::vector<GradientColorData> m_gradientColors;

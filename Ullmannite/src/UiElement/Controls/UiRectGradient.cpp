@@ -12,7 +12,7 @@ UiRectGradient::UiRectGradient(const std::string name, const glm::vec2 position,
         colorData = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void UiRectGradient::SetColorData(std::initializer_list<GradientColorData> colors)
+void UiRectGradient::SetColorData(std::vector<GradientColorData> colors)
 {
     for (const auto colorData : colors)
     {
@@ -99,22 +99,11 @@ void UiRectGradient::CreateResources()
 
 void UiRectGradient::HandleEvent(Event *event)
 {
-    switch (event->GetType())
-    {
-    case EventType::MouseUp:
-        InteractWithMouse();
-        break;
-    }
-
     UiBasicControl::HandleEvent(event);
 }
 
 void UiRectGradient::Update()
 { 
-    const auto& mouse = Application::GetMouse();
-
-    if (mouse.IsButtonPressed(Mouse::Button::LEFT))
-        InteractWithMouse();
 }
 
 void UiRectGradient::Render()
@@ -128,13 +117,4 @@ void UiRectGradient::Render()
     Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 
     UiElement::Render();
-}
-
-void UiRectGradient::InteractWithMouse()
-{
-}
-
-glm::vec4 UiRectGradient::GetColorForRatio(const float ratio)
-{
-    return glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }

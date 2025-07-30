@@ -11,6 +11,7 @@
 
 #include <glm/glm.hpp>
 
+#include "Rendering/Utils/RenderHelper.h"
 #include "Exceptions/Exceptions.h"
 #include "Utilities/PointerHelper.h"
 #include "Utilities/FloatHelper.h"

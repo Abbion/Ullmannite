@@ -44,7 +44,7 @@ void ToolLayer::RegisterToolCreationEvents()
 
         const auto& colorPickerSetup = openColorPickerEvent->GetVal();
 
-        m_pickerView = std::make_shared<UiPickerView>("colorPicker", colorPickerSetup.spawnPoint);
+        m_pickerView = std::make_shared<UiPickerView>("colorPicker", colorPickerSetup.spawnPoint, glm::vec4(61.0f / 255.0f, 115.0f / 255.0f, 118.0f / 255.0f, 1.0f));
         AddChildNode(m_pickerView);
     });
 }

@@ -23,7 +23,7 @@ namespace Ull
 
         void SetInteractive(const bool state) { m_isInteractive = state; }
 
-        void SetColorData(std::initializer_list<GradientColorData> colors);
+        void SetColorData(std::vector<GradientColorData> colors);
         void SetColorData(GradientColorData colorData);
 
         void CreateResources() override;
@@ -32,9 +32,6 @@ namespace Ull
         virtual void Render() override;
 
     private:
-        void InteractWithMouse();
-        glm::vec4 GetColorForRatio(const float ratio);
-
         bool m_updateVertexData{ true };
         std::array<glm::vec3, 4> m_gradientColors;
         const ColorMixType m_colorMixType;
