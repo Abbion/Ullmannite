@@ -5,6 +5,7 @@ namespace Ull
 {
     enum class UiControlType {
         UiButton,
+        UiNumberField,
         UiText,
         UiToggle,
         UiSpace,

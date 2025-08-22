@@ -39,6 +39,46 @@ glm::uvec2 UiText::GetTextSize()
 	return glm::uvec2(static_cast<unsigned>(m_cursorPos.x), static_cast<unsigned>(m_cursorPos.y));
 }
 
+glm::vec2 UiText::GetLetterPositionAtIndex(const unsigned index) const
+{
+	const auto letterIndex = min(index, m_lettersPositions.size());
+	const auto rawPosition = m_lettersPositions[index];
+
+	const auto size = GetSize();
+	auto scaleTransform = glm::mat4(1.0f);
+	scaleTransform = glm::scale(scaleTransform, glm::vec3{ size.x, size.y, 1.0f });
+
+	const auto transformation = m_textAlignmentlMatrix * scaleTransform;
+	const auto rawPositionVec4 = glm::vec4{ rawPosition.x, rawPosition.y, 0.0f, 1.0f };
+	const auto transformedPosition = transformation * rawPositionVec4;
+
+	return glm::vec2{ transformedPosition.x, transformedPosition.y };
+}
+
+unsigned UiText::GetClosestLetterIndexToPoint(const glm::vec2 position)
+{
+	if (m_lettersPositions.empty())
+		return 0u;
+
+	auto minIndex = 0u;
+	auto minDistance = glm::length(GetLetterPositionAtIndex(minIndex) - position);
+
+	for (unsigned i = 1; i < m_lettersPositions.size(); ++i)
+	{
+		const auto distance = glm::length(GetLetterPositionAtIndex(i) - position);
+
+		if (distance < minDistance)
+		{
+			minDistance = distance;
+			minIndex = i;
+		}
+		else
+			return minIndex;
+	}
+
+	return minIndex;
+}
+
 void UiText::SetSize(const glm::uvec2 size)
 {
 	UiElement::SetSize(size);
@@ -134,12 +174,15 @@ void UiText::CreateResources()
 
 	m_cursorPos = glm::vec3(0.0f, static_cast<float>(loadedFontSize) * scale.y, 0.0f);
 	m_displayTextSize = glm::vec2{ 0.0f, 0.0f };
+	m_lettersPositions.clear();
 
 	auto displayTextSizeMin = glm::vec2{ 0.0f, 0.0f };
 	auto displayTextSizeMax = glm::vec2{ 0.0f, 0.0f };
 
 	for (unsigned i = 0; i < m_text.length(); ++i)
 	{
+		m_lettersPositions.push_back(glm::vec2{ m_cursorPos.x , m_cursorPos.y });
+
 		const auto letter = m_text[i];
 
 		if (letter == L' ')
@@ -202,27 +245,32 @@ void UiText::CreateResources()
 
 		indices[(i * 6) + 3] = (i * 4) + 2;
 		indices[(i * 6) + 4] = (i * 4) + 3;
-		indices[(i * 6) + 5] = (i * 4);
+		indices[(i * 6) + 5] = (i * 4);	
 	}
 
-	auto topLeftCornerOfTextDisplayArea = vertices[0].position;
-	auto bottomRightCornderOfTextDisplayArea = vertices[0].position;
+	m_lettersPositions.push_back(glm::vec2{ m_cursorPos.x , m_cursorPos.y });
 
-	for (auto& vertex : vertices)
+	if (!vertices.empty())
 	{
-		topLeftCornerOfTextDisplayArea.x = min(topLeftCornerOfTextDisplayArea.x, vertex.position.x);
-		topLeftCornerOfTextDisplayArea.y = min(topLeftCornerOfTextDisplayArea.y, vertex.position.y);
+		auto topLeftCornerOfTextDisplayArea = vertices[0].position;
+		auto bottomRightCornderOfTextDisplayArea = vertices[0].position;
 
-		bottomRightCornderOfTextDisplayArea.x = max(bottomRightCornderOfTextDisplayArea.x, vertex.position.x);
-		bottomRightCornderOfTextDisplayArea.y = max(bottomRightCornderOfTextDisplayArea.y, vertex.position.y);
+		for (auto& vertex : vertices)
+		{
+			topLeftCornerOfTextDisplayArea.x = min(topLeftCornerOfTextDisplayArea.x, vertex.position.x);
+			topLeftCornerOfTextDisplayArea.y = min(topLeftCornerOfTextDisplayArea.y, vertex.position.y);
+
+			bottomRightCornderOfTextDisplayArea.x = max(bottomRightCornderOfTextDisplayArea.x, vertex.position.x);
+			bottomRightCornderOfTextDisplayArea.y = max(bottomRightCornderOfTextDisplayArea.y, vertex.position.y);
+		}
+
+		const auto displayArea = bottomRightCornderOfTextDisplayArea - topLeftCornerOfTextDisplayArea;
+		m_displayTextSize = glm::vec2{ displayArea.x / scale.x, displayArea.y / scale.y };
+		m_displayTextSize = glm::vec2{ (m_displayTextSize.x / loadedFontSize) * m_fontSize, (m_displayTextSize.y / loadedFontSize) * m_fontSize };
+
+		m_displayTextCornderOffset = glm::vec2{ topLeftCornerOfTextDisplayArea.x / scale.x, topLeftCornerOfTextDisplayArea.y / scale.y };
+		m_displayTextCornderOffset = glm::vec2{ (m_displayTextCornderOffset.x / loadedFontSize) * m_fontSize, (m_displayTextCornderOffset.y / loadedFontSize) * m_fontSize };
 	}
-
-	const auto displayArea = bottomRightCornderOfTextDisplayArea - topLeftCornerOfTextDisplayArea;
-	m_displayTextSize = glm::vec2{ displayArea.x / scale.x, displayArea.y / scale.y };
-	m_displayTextSize = glm::vec2{ (m_displayTextSize.x / loadedFontSize) * m_fontSize, (m_displayTextSize.y / loadedFontSize) * m_fontSize };
-
-	m_displayTextCornderOffset = glm::vec2{ topLeftCornerOfTextDisplayArea.x / scale.x, topLeftCornerOfTextDisplayArea.y / scale.y };
-	m_displayTextCornderOffset = glm::vec2{ (m_displayTextCornderOffset.x / loadedFontSize) * m_fontSize, (m_displayTextCornderOffset.y / loadedFontSize) * m_fontSize };
 
 	m_layout = VertexLayout::Create({
 		LayoutElement("Position", GraphicsDataType::FLOAT, 3),

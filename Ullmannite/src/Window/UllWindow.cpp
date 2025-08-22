@@ -293,19 +293,19 @@ void UllWindow::InitCallBacks()
             if (key == GLFW_KEY_KP_ADD || key == GLFW_KEY_EQUAL)
             {
                 eventQueue->PushEvent(std::make_shared<UiScaledUpEvent>(EventType::UiScaledUp, ScaleUpFactor));
+                return;
             }
             else if (key == GLFW_KEY_KP_SUBTRACT || key == GLFW_KEY_MINUS)
             {
                 eventQueue->PushEvent(std::make_shared<UiScaledDownEvent>(EventType::UiScaledDown, ScaleDownFactor));
+                return;
             }
         }
-        else
-        {
-            if (action == GLFW_PRESS)
-                eventQueue->PushEvent(std::make_shared<KeyDownEvent>(EventType::KeyDown, static_cast<Keyboard::Key>(key)));
-            else if (action == GLFW_RELEASE)
-                eventQueue->PushEvent(std::make_shared<KeyUpEvent>(EventType::KeyUp, static_cast<Keyboard::Key>(key)));
-        }
+        
+        if (action == GLFW_PRESS)
+            eventQueue->PushEvent(std::make_shared<KeyDownEvent>(EventType::KeyDown, static_cast<Keyboard::Key>(key)));
+        else if (action == GLFW_RELEASE)
+            eventQueue->PushEvent(std::make_shared<KeyUpEvent>(EventType::KeyUp, static_cast<Keyboard::Key>(key)));
     });
 
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {

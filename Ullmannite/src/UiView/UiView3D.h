@@ -7,9 +7,8 @@
 #include <memory>
 #include "UiElement/Controls/UiText.h"
 #include "UiElement/Controls/UiButton.h"
-#include "UiElement/Controls/UiLinearColorGradient.h"
-#include "UiElement/Controls/UiRectGradient.h"
 #include "UiElement/Controls/UiSpace.h"
+#include "UiElement/Controls/UiNumberField.h"
 
 namespace Ull
 {
@@ -34,8 +33,6 @@ namespace Ull
 
 		std::shared_ptr<UiText> m_titleText;
 		std::shared_ptr<UiButton> m_titleButton;
-		std::shared_ptr<UiLinearColorGradient> m_colorGradient;
-		std::shared_ptr<UiSpace> m_colorSpace;
-		std::shared_ptr<UiRectGradient> m_rectGradient;
+		std::shared_ptr<UiNumberField> m_numberField;
 	};
 }

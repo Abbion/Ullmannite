@@ -147,7 +147,7 @@ void UiMenuView::CreateControls()
     loadTab->SetEnabled(true);
     loadTab->Update();
 
-    auto& loadTabText = loadTab->GetTextControl();
+    auto loadTabText = loadTab->GetTextControl();
 	loadTabText->SetFontSize(TOOL_TAB_ICON_SIZE);
 	loadTabText->SetFont(FontTag::UI_ICON);
     loadTabText->SetSampleThreshold(-2);
@@ -186,7 +186,7 @@ void UiMenuView::CreateControls()
 
     cutTab->Update();
 
-    auto& cutTabText = cutTab->GetTextControl();
+    auto cutTabText = cutTab->GetTextControl();
 	cutTabText->SetFontSize(TOOL_TAB_ICON_SIZE);
 	cutTabText->SetFont(FontTag::UI_ICON);
     cutTabText->SetSampleThreshold(-2);
@@ -225,7 +225,7 @@ void UiMenuView::CreateControls()
 
     transferTab->Update();
 
-    auto& transferTabText = transferTab->GetTextControl();
+    auto transferTabText = transferTab->GetTextControl();
 	transferTabText->SetFontSize(TOOL_TAB_ICON_SIZE + 2);
 	transferTabText->SetFont(FontTag::UI_ICON);
     transferTabText->SetSampleThreshold(-2);
@@ -245,7 +245,7 @@ void UiMenuView::CreateControls()
 
     settingsTab->Update();
 
-    auto& settingsTabText = settingsTab->GetTextControl();
+    auto settingsTabText = settingsTab->GetTextControl();
 	settingsTabText->SetFontSize(TOOL_TAB_ICON_SIZE);
 	settingsTabText->SetFont(FontTag::UI_ICON);
     settingsTabText->SetSampleThreshold(-2);
@@ -275,7 +275,7 @@ void UiMenuView::CreateLoadPanel()
         m_loadFileText->SetVisibility(true);
     });
 
-    auto& loadButtonTextControl = m_loadFileButton->GetTextControl();
+    auto loadButtonTextControl = m_loadFileButton->GetTextControl();
     loadButtonTextControl->SetFontSize(MENU_TEXT_SIZE);
     loadButtonTextControl->SetString(std::wstring(L"Load file"));
     loadButtonTextControl->SetEdgeSmoothing(3.5f);

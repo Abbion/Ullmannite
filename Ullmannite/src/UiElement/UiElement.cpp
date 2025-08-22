@@ -98,5 +98,8 @@ void UiElement::Update()
 void UiElement::Render()
 {
 	for (auto& child : GetChildren())
-		child->Render();
+	{
+		if (child->IsVisible())
+			child->Render();
+	}
 }

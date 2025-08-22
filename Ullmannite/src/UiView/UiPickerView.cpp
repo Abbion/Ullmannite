@@ -282,7 +282,7 @@ void UiPickerView::CreateControls()
     m_confirmButton->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
     m_confirmButton->CreateResources();
 
-    auto& confirmButtonTextControl = m_confirmButton->GetTextControl();
+    auto confirmButtonTextControl = m_confirmButton->GetTextControl();
     confirmButtonTextControl->SetFontSize(13.0f);
     confirmButtonTextControl->SetString(std::wstring(L"OK"));
     confirmButtonTextControl->SetEdgeSmoothing(2.5f);
@@ -301,7 +301,7 @@ void UiPickerView::CreateControls()
         UpdateSelectors();
     });
 
-    auto& restoreButtonTextControl = m_restoreButton->GetTextControl();
+    auto restoreButtonTextControl = m_restoreButton->GetTextControl();
     restoreButtonTextControl->SetFontSize(13.0f);
     restoreButtonTextControl->SetString(std::wstring(L"Restore"));
     restoreButtonTextControl->SetEdgeSmoothing(2.5f);
@@ -320,7 +320,7 @@ void UiPickerView::CreateControls()
         m_readyToRelease = true;
         });
 
-    auto& cancelButtonTextControl = m_cancelButton->GetTextControl();
+    auto cancelButtonTextControl = m_cancelButton->GetTextControl();
     cancelButtonTextControl->SetFontSize(13.0f);
     cancelButtonTextControl->SetString(std::wstring(L"Cancel"));
     cancelButtonTextControl->SetEdgeSmoothing(2.5f);

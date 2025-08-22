@@ -40,6 +40,8 @@ namespace Ull
         float GetSampleThreshold() const        { return m_threshold; }
         Alignment GetAlignment() const          { return { m_horizontalAlignment, m_verticalAlignment }; }
         glm::uvec2 GetTextSize();
+        glm::vec2 GetLetterPositionAtIndex(const unsigned index) const;
+        unsigned GetClosestLetterIndexToPoint(const glm::vec2 position);
 
         void SetSize(const glm::uvec2 size);
 
@@ -66,6 +68,7 @@ namespace Ull
         glm::vec3           m_cursorPos{ 0.0f, 0.0f, 0.0f };
         glm::vec2           m_displayTextSize{ 0.0f, 0.0f };
         glm::vec2           m_displayTextCornderOffset{ 0.0f, 0.0f };
+        std::vector<glm::vec2> m_lettersPositions;
 
         FontTag             m_fontTag{ FontTag::UI_FONT };
         glm::vec4           m_color{ 1.0f, 1.0f, 1.0f, 1.0f };

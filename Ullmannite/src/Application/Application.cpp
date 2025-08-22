@@ -55,6 +55,8 @@ void Application::Run()
         {
             m_window.Close();
         }
+        
+        m_mouse.UpdateCursorMode(m_window);
 
         m_window.PullEvents();
         HandleEvents();
