@@ -15,14 +15,15 @@ namespace {
     constexpr auto PICKER_INACTIVE_COLOR = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
     constexpr auto PICKER_ACTIVE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     constexpr auto RECT_GRADIENT_PICKER_WIDTH = 2.0f;
+    constexpr auto MAX_COLOR_VALUE = 255.0f;
 }
 
 UiPickerView::UiPickerView(const std::string& name, const glm::uvec2 position, const glm::vec4 startingColor) :
     UiRenderArea(name, position, glm::uvec2(viewWidth, viewHeight), false),
     m_startingColor{ startingColor },
     m_currentColor{ startingColor },
-    m_frame{ std::make_shared<UiFrame>("pickerViewFrame", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f))},
-    m_titleBar{ std::make_shared<UiTitleBar>("pickerViewTitleBar", glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 1.0f))},
+    m_frame{ std::make_shared<UiFrame>("pickerViewFrame", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
+    m_titleBar{ std::make_shared<UiTitleBar>("pickerViewTitleBar", glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 1.0f)) },
     m_linearGradient{ std::make_shared<UiLinearColorGradient>("pickerViewLinearGradient", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), UiLinearColorGradient::GradientDirection::VERTICAL) },
     m_linearGradientPick{ std::make_shared<UiSpace>("pickerViewLinearGradientPick", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
     m_colorGradientRect{ std::make_shared<UiRectGradient>("pickerViewColorGradientRect", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
@@ -32,14 +33,49 @@ UiPickerView::UiPickerView(const std::string& name, const glm::uvec2 position, c
     m_selectedColorRectOutline{ std::make_shared<UiSpace>("pickerViewSelectedColorRectOutline", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
     m_confirmButton{ std::make_shared<UiButton>("pickerViewConfirmButton", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
     m_restoreButton{ std::make_shared<UiButton>("pickerViewRestoreButton", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
-    m_cancelButton{ std::make_shared<UiButton>("pickerViewCancelButton", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) }
+    m_cancelButton{ std::make_shared<UiButton>("pickerViewCancelButton", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
+    m_redValueFieldLabel{ std::make_shared<UiText>("pickerViewRedValueFieldLabel", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"R")},
+    m_greenValueFieldLabel{ std::make_shared<UiText>("pickerViewGreenValueFieldLabel", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"G")},
+    m_blueValueFieldLabel{ std::make_shared<UiText>("pickerViewBlueValueFieldLabel", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"B") },
+    m_redValueNumberField{ std::make_shared<UiNumberField>("pickerViewRedValueField", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), 0.0f, false) },
+    m_greenValueNumberField{ std::make_shared<UiNumberField>("pickerViewGreenValueField", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), 0.0f, false) },
+    m_blueValueNumberField{ std::make_shared<UiNumberField>("pickerViewBlueValueField", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), 0.0f, false) }
 {
     SetBackgroundColor(glm::vec4(0.15f, 0.15f, 0.15f, 1.0f));
     CreateControls();
     UpdateSelectors();
+    UpdateValueFields();
 
     RenderAreaSizeChanged renderAreaSizeChangedEvent(EventType::RenderAreaSizeChanged);
     HandleEvent(&renderAreaSizeChangedEvent);
+
+    m_redValueNumberField->SetOnNumberConfirmedFunction([this](const float redComponent) {
+        const auto currentRed = std::round(m_currentColor.r * MAX_COLOR_VALUE);
+        if (currentRed == redComponent)
+            return;
+
+        m_currentColor.r = redComponent / MAX_COLOR_VALUE;
+        UpdateSelectors();
+    });
+    
+    m_greenValueNumberField->SetOnNumberConfirmedFunction([this](const float greenComponent) {
+        const auto currentGreen = std::round(m_currentColor.g * MAX_COLOR_VALUE);
+        if (currentGreen == greenComponent)
+            return;
+
+        m_currentColor.g = greenComponent / MAX_COLOR_VALUE;
+        UpdateSelectors();
+    });
+
+    m_blueValueNumberField->SetOnNumberConfirmedFunction([this](const float blueComponent) {
+        const auto currentBlue = std::round(m_currentColor.b * MAX_COLOR_VALUE);
+        if (currentBlue == blueComponent)
+            return;
+
+        m_currentColor.b = blueComponent / MAX_COLOR_VALUE;
+        UpdateSelectors();
+    });
+    
 }
 
 void UiPickerView::HandleEvent(Event* event) 
@@ -92,6 +128,7 @@ void UiPickerView::HandleEvent(Event* event)
         m_horizontalPick->SetFunctionality(UiControlFunctionality::Hover, State::Enable);
         m_verticalPick->SetFunctionality(UiControlFunctionality::Hover, State::Enable);
 
+        UpdateValueFields();
     break;
 
     case EventType::MouseMove:
@@ -121,10 +158,12 @@ void UiPickerView::HandleEvent(Event* event)
         else if (m_isLinearGradientInteracting)
         {
             UpdateLinearPickerPosition(mousePositionF);
+            UpdateValueFields();
         }
         else if (m_isGradientRectInteracting)
         {
             UpdateGradientRectPickerPosition(mousePositionF);
+            UpdateValueFields();
         }
     }
     break;
@@ -162,8 +201,8 @@ void UiPickerView::Update()
     const auto verticalInterpolationDown = ((1.0f - verticalGradientRatio) * hslColorData[2].color) + (verticalGradientRatio * hslColorData[3].color);
     const auto horizontalInterpolation = ((1.0f - horizontalGradientRatio) * verticalInterpolationTop) + (horizontalGradientRatio * verticalInterpolationDown);
     const auto interpolatedColor = HsvToRgb(horizontalInterpolation);
-
-    m_selectedColorRect->SetBackgroundColor(glm::vec4(interpolatedColor, 1.0f));
+    m_currentColor = glm::vec4(interpolatedColor, 1.0f);
+    m_selectedColorRect->SetBackgroundColor(m_currentColor);
 
     if (!m_isGradientRectInteracting && !m_isLinearGradientInteracting)
     {
@@ -299,6 +338,7 @@ void UiPickerView::CreateControls()
     m_restoreButton->SetOnClickFunction([this](UiButton& buttonElement) {
         m_currentColor = m_startingColor;
         UpdateSelectors();
+        UpdateValueFields();
     });
 
     auto restoreButtonTextControl = m_restoreButton->GetTextControl();
@@ -321,13 +361,88 @@ void UiPickerView::CreateControls()
         });
 
     auto cancelButtonTextControl = m_cancelButton->GetTextControl();
-    cancelButtonTextControl->SetFontSize(13.0f);
+    cancelButtonTextControl->SetFontSize(13);
     cancelButtonTextControl->SetString(std::wstring(L"Cancel"));
     cancelButtonTextControl->SetEdgeSmoothing(2.5f);
     cancelButtonTextControl->SetSampleThreshold(2.0f);
     cancelButtonTextControl->SetSmoothingExceptance({ 'l' });
 
     AddChildNode(m_cancelButton);
+
+    m_redValueFieldLabel->SetPosition(m_cancelButton->GetPosition() + glm::vec2(-MARGIN * 0.25f, m_cancelButton->GetSize().y + MARGIN * 2.0f));
+    m_redValueFieldLabel->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
+    m_redValueFieldLabel->SetSize(glm::vec2(MARGIN, 20.0f));
+    m_redValueFieldLabel->SetFontSize(13);
+    m_redValueFieldLabel->SetEdgeSmoothing(2.5f);
+    m_redValueFieldLabel->SetSampleThreshold(2.0f);
+    m_redValueFieldLabel->CreateResources();
+
+    AddChildNode(m_redValueFieldLabel);
+
+    m_redValueNumberField->SetPosition(m_cancelButton->GetPosition() + glm::vec2(MARGIN , m_cancelButton->GetSize().y + MARGIN * 2.0f));
+    m_redValueNumberField->SetSize(glm::vec2(m_selectedColorRectOutline->GetSize().x - MARGIN, 20.0f));
+    m_redValueNumberField->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    m_redValueNumberField->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
+    m_redValueNumberField->SetMinNumber(0.0f);
+    m_redValueNumberField->SetMaxNumber(MAX_COLOR_VALUE);
+    m_redValueNumberField->CreateResources();
+
+    const auto redValueNumberFieldTextControl = m_redValueNumberField->GetTextControl();
+    redValueNumberFieldTextControl->SetFontSize(12);
+    redValueNumberFieldTextControl->SetEdgeSmoothing(1.5f);
+    redValueNumberFieldTextControl->SetSampleThreshold(4.0f);
+
+    AddChildNode(m_redValueNumberField);
+
+    m_greenValueFieldLabel->SetPosition(m_redValueFieldLabel->GetPosition() + glm::vec2(0.0f, m_redValueNumberField->GetSize().y + MARGIN / 2.0f));
+    m_greenValueFieldLabel->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
+    m_greenValueFieldLabel->SetSize(glm::vec2(MARGIN, 20.0f));
+    m_greenValueFieldLabel->SetFontSize(13.0f);
+    m_greenValueFieldLabel->SetEdgeSmoothing(2.5f);
+    m_greenValueFieldLabel->SetSampleThreshold(2.0f);
+    m_greenValueFieldLabel->CreateResources();
+
+    AddChildNode(m_greenValueFieldLabel);
+
+    m_greenValueNumberField->SetPosition(m_redValueNumberField->GetPosition() + glm::vec2(0.0f, m_redValueNumberField->GetSize().y + MARGIN / 2.0f));
+    m_greenValueNumberField->SetSize(glm::vec2(m_selectedColorRectOutline->GetSize().x - MARGIN, 20.0f));
+    m_greenValueNumberField->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    m_greenValueNumberField->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
+    m_greenValueNumberField->SetMinNumber(0.0f);
+    m_greenValueNumberField->SetMaxNumber(MAX_COLOR_VALUE);
+    m_greenValueNumberField->CreateResources();
+
+    const auto greenValueNumberFieldTextControl = m_greenValueNumberField->GetTextControl();
+    greenValueNumberFieldTextControl->SetFontSize(12);
+    greenValueNumberFieldTextControl->SetEdgeSmoothing(1.5f);
+    greenValueNumberFieldTextControl->SetSampleThreshold(4.0f);
+
+    AddChildNode(m_greenValueNumberField);
+
+    m_blueValueFieldLabel->SetPosition(m_greenValueFieldLabel->GetPosition() + glm::vec2(0.0f, m_greenValueNumberField->GetSize().y + MARGIN / 2.0f));
+    m_blueValueFieldLabel->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
+    m_blueValueFieldLabel->SetSize(glm::vec2(MARGIN, 20.0f));
+    m_blueValueFieldLabel->SetFontSize(13.0f);
+    m_blueValueFieldLabel->SetEdgeSmoothing(2.5f);
+    m_blueValueFieldLabel->SetSampleThreshold(2.0f);
+    m_blueValueFieldLabel->CreateResources();
+
+    AddChildNode(m_blueValueFieldLabel);
+
+    m_blueValueNumberField->SetPosition(m_greenValueNumberField->GetPosition() + glm::vec2(0.0f, m_greenValueNumberField->GetSize().y + MARGIN / 2.0f));
+    m_blueValueNumberField->SetSize(glm::vec2(m_selectedColorRectOutline->GetSize().x - MARGIN, 20.0f));
+    m_blueValueNumberField->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    m_blueValueNumberField->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
+    m_blueValueNumberField->SetMinNumber(0.0f);
+    m_blueValueNumberField->SetMaxNumber(MAX_COLOR_VALUE);
+    m_blueValueNumberField->CreateResources();
+
+    const auto blueValueNumberFieldTextControl = m_blueValueNumberField->GetTextControl();
+    blueValueNumberFieldTextControl->SetFontSize(12);
+    blueValueNumberFieldTextControl->SetEdgeSmoothing(1.5f);
+    blueValueNumberFieldTextControl->SetSampleThreshold(4.0f);
+
+    AddChildNode(m_blueValueNumberField);
 }
 
 void UiPickerView::UpdateLinearPickerPosition(const glm::vec2 cursorPosition)
@@ -364,16 +479,25 @@ void UiPickerView::UpdateGradientRectPickerPosition(const glm::vec2 cursorPositi
 
 void UiPickerView::UpdateSelectors() 
 {
-    const auto hsvColor = RgbToHsv(glm::vec3(m_currentColor.x, m_currentColor.y, m_currentColor.z));
-    const auto hueNormalized = hsvColor.r / 360.f;
+    const auto hsvColor = RgbToHsv(glm::vec3(m_currentColor.r, m_currentColor.g, m_currentColor.b));
+    const auto hueNormalized = 1.0f - (hsvColor.r / 360.f);
     const auto hueOffset = hueNormalized * m_linearGradient->GetSize().y;
     const auto linearGradientPickStartPosition = m_linearGradient->GetPosition().y - (m_linearGradientPick->GetSize().y / 2.0f);
 
     m_linearGradientPick->SetPosition(glm::vec2(m_linearGradientPick->GetPosition().x, linearGradientPickStartPosition + hueOffset));
 
     const auto saturation = hsvColor.g;
-    m_verticalPick->SetPosition(m_colorGradientRect->GetPosition() + glm::vec2(m_colorGradientRect->GetSize().x * saturation - 2.0f, 0.0f));
+    const auto verticalOffset = glm::vec2(m_colorGradientRect->GetSize().x * saturation - 2.0f, 0.0f);
+    m_verticalPick->SetPosition(m_colorGradientRect->GetPosition() + verticalOffset);
 
     const auto brightness = hsvColor.b;
-    m_horizontalPick->SetPosition(m_colorGradientRect->GetPosition() + glm::vec2(0.0f, m_colorGradientRect->GetSize().y * (1.0f - brightness)));
+    const auto horizontalOffest = glm::vec2(0.0f, m_colorGradientRect->GetSize().y * (1.0f - brightness));
+    m_horizontalPick->SetPosition(m_colorGradientRect->GetPosition() + horizontalOffest);
+}
+
+void UiPickerView::UpdateValueFields()
+{
+    m_redValueNumberField->SetNumber(m_currentColor.r * MAX_COLOR_VALUE);
+    m_greenValueNumberField->SetNumber(m_currentColor.g * MAX_COLOR_VALUE);
+    m_blueValueNumberField->SetNumber(m_currentColor.b * MAX_COLOR_VALUE);
 }

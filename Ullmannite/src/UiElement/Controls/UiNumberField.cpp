@@ -60,6 +60,12 @@ float UiNumberField::GetNumber() const
 	return std::round(m_currentNumber);
 }
 
+void UiNumberField::SetSize(const glm::vec2 size)
+{
+	m_numberText->SetSize(size);
+	Object2D::SetSize(size);
+}
+
 void UiNumberField::SetNumber(float number)
 {
 	m_currentNumber = std::clamp(number, m_minNumber, m_maxNumber);
@@ -72,10 +78,15 @@ void UiNumberField::SetMinNumber(const float minNumber)
 	SetNumber(m_currentNumber);
 }
 
-void UiNumberField::SetMaNumber(const float maxNumber)
+void UiNumberField::SetMaxNumber(const float maxNumber)
 {
 	m_maxNumber = maxNumber;
 	SetNumber(m_currentNumber);
+}
+
+void UiNumberField::SetOnNumberConfirmedFunction(std::function<void(const float)> onNumberConfirmedFunction)
+{
+	m_onNumberConfirmedFunction = onNumberConfirmedFunction;
 }
 
 void UiNumberField::HandleEvent(Event* event)
@@ -106,7 +117,7 @@ void UiNumberField::HandleEvent(Event* event)
 
 			m_isEdited = true;
 		}
-		else
+		else if (m_isEdited)
 		{
 			ConfirmValue();
 		}
@@ -119,8 +130,6 @@ void UiNumberField::HandleEvent(Event* event)
 	{
 		if (!m_isEdited)
 			break;
-
-		m_fullSelect = false;
 
 		const auto key = static_cast<KeyDownEvent*>(event)->GetVal();
 
@@ -325,4 +334,7 @@ void UiNumberField::ConfirmValue()
 	{
 		SetNumber(m_maxNumber);
 	}
+
+	if (m_onNumberConfirmedFunction)
+		(*m_onNumberConfirmedFunction)(GetNumber());
 }

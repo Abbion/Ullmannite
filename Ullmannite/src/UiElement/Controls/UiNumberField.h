@@ -11,10 +11,14 @@ namespace Ull
         UiNumberField(const std::string& name, const glm::vec2 position, const glm::vec2 size, const float startNumber, const bool useDecimals = true);
 
         float GetNumber() const;
+        std::shared_ptr<UiText> GetTextControl() { return m_numberText; };
 
+        void SetSize(const glm::vec2 size);
         void SetNumber(float number);
         void SetMinNumber(const float minNumber);
-        void SetMaNumber(const float maxNumber);
+        void SetMaxNumber(const float maxNumber);
+
+        void SetOnNumberConfirmedFunction(std::function<void(const float)> onNumberConfirmedFunction);
 
         void HandleEvent(Event* event);
         void Update() override;
@@ -42,5 +46,7 @@ namespace Ull
         unsigned m_cursorPosition{ 0u };
 
         double m_lsatBlinkTime = 0.0f;
+
+        std::optional<std::function<void(const float)>> m_onNumberConfirmedFunction;
     };
 }

@@ -47,7 +47,7 @@ UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y),
      L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") },
     m_titleButton{ std::make_shared<UiButton>("testButtonView3d", glm::uvec2(100, 100), glm::uvec2(100, 100))},
-    m_numberField{ std::make_shared<UiNumberField>("testNumberField", glm::uvec2(300, 100), glm::uvec2(100, 50), 20.256)}
+    m_numberField{ std::make_shared<UiNumberField>("testNumberField", glm::uvec2(300, 100), glm::uvec2(100, 20), 20.256)}
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
 

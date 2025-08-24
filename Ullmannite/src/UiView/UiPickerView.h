@@ -25,6 +25,7 @@ namespace Ull
         void UpdateLinearPickerPosition(const glm::vec2 cursorPosition);
         void UpdateGradientRectPickerPosition(const glm::vec2 cursorPosition);
         void UpdateSelectors();
+        void UpdateValueFields();
 
         const glm::vec4 m_startingColor;
         glm::vec4 m_currentColor;
@@ -51,5 +52,13 @@ namespace Ull
         std::shared_ptr<UiButton> m_confirmButton;
         std::shared_ptr<UiButton> m_restoreButton;
         std::shared_ptr<UiButton> m_cancelButton;
+
+        std::shared_ptr<UiText> m_redValueFieldLabel;
+        std::shared_ptr<UiText> m_greenValueFieldLabel;
+        std::shared_ptr<UiText> m_blueValueFieldLabel;
+
+        std::shared_ptr<UiNumberField> m_redValueNumberField;
+        std::shared_ptr<UiNumberField> m_greenValueNumberField;
+        std::shared_ptr<UiNumberField> m_blueValueNumberField;
     };
 }
