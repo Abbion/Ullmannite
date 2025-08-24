@@ -1,4 +1,6 @@
 #pragma once
+#include <variant>
+#include "ToolsData.h"
 
 namespace Ull
 {
@@ -14,6 +16,7 @@ namespace Ull
     struct ToolSetup {
         ToolType toolType;
         glm::uvec2 spawnPoint;
+        std::variant<ColorPickerData> toolData;
     };
 
     template<typename T>

@@ -38,14 +38,16 @@ void ToolLayer::RegisterToolCreationEvents()
         if (m_pickerView != nullptr)
             return;
 
-        const auto openColorPickerEvent = dynamic_cast<OpenToolEvent*>(openEvent.get());
+        const auto openToolEvent = dynamic_cast<OpenToolEvent*>(openEvent.get());
+        UASSERT(openToolEvent != nullptr, "Open event failed to convert!");
+        const auto& toolData = openToolEvent->GetVal();
 
-        UASSERT(openColorPickerEvent != nullptr, "Open event failed to convert!");
-
-        const auto& colorPickerSetup = openColorPickerEvent->GetVal();
-
-        m_pickerView = std::make_shared<UiPickerView>("colorPicker", colorPickerSetup.spawnPoint, glm::vec4(0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f, 1.0f));
-        AddChildNode(m_pickerView);
+        if (toolData.toolType == ToolType::ColorPicker)
+        {
+            const auto colorPickerData = std::get<ColorPickerData>(toolData.toolData);
+            m_pickerView = std::make_shared<UiPickerView>("colorPicker", toolData.spawnPoint, colorPickerData.initialColor);
+            AddChildNode(m_pickerView);
+        }
     });
 }
 

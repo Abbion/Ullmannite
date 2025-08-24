@@ -193,7 +193,8 @@ void Application::HandleEvents()
 
             if (keyState.key == Keyboard::Key::P)
             {
-                EventAggregator::Publish(std::make_shared<OpenToolEvent>(EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25) }));
+                const auto colorPickerData = ColorPickerData{ glm::vec4(1.0f, 0.0f, 1.0f, 1.0f) };
+                EventAggregator::Publish(std::make_shared<OpenToolEvent>(EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25), colorPickerData }));
             }
             break;
 
