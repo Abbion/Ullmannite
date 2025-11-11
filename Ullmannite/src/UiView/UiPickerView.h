@@ -8,7 +8,7 @@ namespace Ull
     class UiPickerView : public UiRenderArea
     {
     public:
-        UiPickerView(const std::string& name, const glm::uvec2 position, const glm::vec4 startingColor);
+        UiPickerView(const std::string& name, const glm::uvec2 position, const glm::vec4 startingColor, const onColorChangeCallback& callback);
 
         bool IsReadyToRelease() const { return m_readyToRelease; }
 
@@ -29,6 +29,7 @@ namespace Ull
 
         const glm::vec4 m_startingColor;
         glm::vec4 m_currentColor;
+        onColorChangeCallback m_onColorChangeCallback;
 
         std::shared_ptr<UiFrame> m_frame;
         std::shared_ptr<UiTitleBar> m_titleBar;

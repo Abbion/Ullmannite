@@ -33,8 +33,8 @@ namespace Ull
 		void CreateControls();
         void CreateLoadPanel();
         void CreateCutPanel();
-
-
+        void CreateColorTransformPanel();
+        void CreateMarkersForTransferFunction();
 
 		void Init();
         void RenderUI();
@@ -54,29 +54,31 @@ namespace Ull
         std::shared_ptr<UiSpace> m_toolTabsLine;
         
         // Load controls
-        std::shared_ptr<UiButton>   m_loadFileButton;
-        std::shared_ptr<UiText>     m_loadFileText;
+        std::shared_ptr<UiButton>       m_loadFileButton;
+        std::shared_ptr<UiText>         m_loadFileText;
 
         // Cut controls
-        std::shared_ptr<UiText>     m_cutSettingsText;
+        std::shared_ptr<UiText>         m_cutSettingsText;
 
-        std::shared_ptr<UiText>     m_cutSettingsCutxText;
-        std::shared_ptr<UiToggle>   m_cutSettingsCutxInvertToggle;
-        std::shared_ptr<UiText>     m_cutSettingsCutxInvertText;
-        std::shared_ptr<UiSlider>   m_cutSettingsCutxSlider;
+        std::shared_ptr<UiText>         m_cutSettingsCutxText;
+        std::shared_ptr<UiToggle>       m_cutSettingsCutxInvertToggle;
+        std::shared_ptr<UiText>         m_cutSettingsCutxInvertText;
+        std::shared_ptr<UiSlider>       m_cutSettingsCutxSlider;
 
-        std::shared_ptr<UiText>     m_cutSettingsCutyText;
-        std::shared_ptr<UiToggle>   m_cutSettingsCutyInvertToggle;
-        std::shared_ptr<UiText>     m_cutSettingsCutyInvertText;
-        std::shared_ptr<UiSlider>   m_cutSettingsCutySlider;
+        std::shared_ptr<UiText>         m_cutSettingsCutyText;
+        std::shared_ptr<UiToggle>       m_cutSettingsCutyInvertToggle;
+        std::shared_ptr<UiText>         m_cutSettingsCutyInvertText;
+        std::shared_ptr<UiSlider>       m_cutSettingsCutySlider;
 
-        std::shared_ptr<UiText>     m_cutSettingsCutzText;
-        std::shared_ptr<UiToggle>   m_cutSettingsCutzInvertToggle;
-        std::shared_ptr<UiText>     m_cutSettingsCutzInvertText;
-        std::shared_ptr<UiSlider>   m_cutSettingsCutzSlider;
+        std::shared_ptr<UiText>         m_cutSettingsCutzText;
+        std::shared_ptr<UiToggle>       m_cutSettingsCutzInvertToggle;
+        std::shared_ptr<UiText>         m_cutSettingsCutzInvertText;
+        std::shared_ptr<UiSlider>       m_cutSettingsCutzSlider;
 
         // Transfer Controls
-        std::shared_ptr<UiText>     m_transferSettingsText;
-        //std::shared_ptr<UiColorGradinet> 
+        std::shared_ptr<UiText>                 m_transferSettingsText;
+        std::shared_ptr<UiLinearColorGradient>  m_transferLinearGradient;
+        std::vector<std::shared_ptr<UiMarker>>  m_transferMarkers;
+        std::shared_ptr<UiText>                 m_cursorIndicatorText;
     };
 }

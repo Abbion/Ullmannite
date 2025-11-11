@@ -14,20 +14,19 @@ UiLinearColorGradient::UiLinearColorGradient(const std::string name, const glm::
 void UiLinearColorGradient::AddColor(const GradientColorData colorData)
 {
     m_gradientColors.push_back(colorData);
-    std::sort(m_gradientColors.begin(), m_gradientColors.end(), [](const GradientColorData& dataPoint1, const GradientColorData& dataPoint2) {
-        return dataPoint1.position < dataPoint1.position;
-    });
-    m_updateVertexData = true;
 }
 
 void UiLinearColorGradient::ClearColorData()
 {
     m_gradientColors.clear();
-    m_updateVertexData = true;
 }
 
 void UiLinearColorGradient::CreateResources()
 {
+    std::sort(m_gradientColors.begin(), m_gradientColors.end(), [](const GradientColorData& dataPoint1, const GradientColorData& dataPoint2) {
+        return dataPoint1.position < dataPoint2.position;
+    });
+
     if (m_vertexBuffer != nullptr)
         delete m_vertexBuffer;
 
@@ -68,6 +67,21 @@ void UiLinearColorGradient::CreateResources()
 
     const auto drawDirection = m_gradientDirection == GradientDirection::HORIZONTAL ? glm::vec2(1.0f, 0.0f) : glm::vec2(0.0f, 1.0f);
     const auto normalToDrawDirection = m_gradientDirection == GradientDirection::HORIZONTAL ? glm::vec2(0.0f, 1.0f) : glm::vec2(1.0f, 0.0f);
+
+    if (m_gradientColors[0].position > 0.0f)
+    {
+        auto firstColor = m_gradientColors[0];
+        firstColor.position = 0.0f;
+        m_gradientColors.insert(m_gradientColors.begin(), firstColor);
+    }
+
+    const auto colorCount = m_gradientColors.size();
+    if (m_gradientColors[colorCount - 1].position < 1.0f)
+    {
+        auto lastColor = m_gradientColors[colorCount - 1];
+        lastColor.position = 1.0f;
+        m_gradientColors.push_back(lastColor);
+    }
 
     for (size_t i = 0; i < m_gradientColors.size(); ++i)
     {

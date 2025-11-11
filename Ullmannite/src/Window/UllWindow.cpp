@@ -35,6 +35,8 @@ namespace
     constexpr float ScaleUpFactor = 1.25f;
     constexpr float ScaleDownFactor = 1.f / ScaleUpFactor;
     constexpr unsigned ResizeMarginSize = 3;
+
+    static auto s_lastTimePoint = std::chrono::high_resolution_clock::now();
 }
 
 UllWindow::UllWindow()
@@ -311,8 +313,6 @@ void UllWindow::InitCallBacks()
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
         auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
 
-        static auto lastTimePoint = std::chrono::high_resolution_clock::now();
-
         if (action == GLFW_PRESS)
         {
             eventQueue->PushEvent(std::make_shared<MouseDownEvent>(EventType::MouseDown, static_cast<Mouse::Button>(button)));
@@ -324,8 +324,8 @@ void UllWindow::InitCallBacks()
             if (static_cast<Mouse::Button>(button) == Mouse::Button::LEFT)
             {
                 auto timePoint = std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> duration = timePoint - lastTimePoint;
-                lastTimePoint = timePoint;
+                std::chrono::duration<double> duration = timePoint - s_lastTimePoint;
+                s_lastTimePoint = timePoint;
 
                 if (duration.count() < DoubleClickDurationWindow)
                 {

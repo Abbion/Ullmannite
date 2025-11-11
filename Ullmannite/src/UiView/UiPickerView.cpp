@@ -18,10 +18,11 @@ namespace {
     constexpr auto MAX_COLOR_VALUE = 255.0f;
 }
 
-UiPickerView::UiPickerView(const std::string& name, const glm::uvec2 position, const glm::vec4 startingColor) :
+UiPickerView::UiPickerView(const std::string& name, const glm::uvec2 position, const glm::vec4 startingColor, const onColorChangeCallback& callback) :
     UiRenderArea(name, position, glm::uvec2(viewWidth, viewHeight), false),
     m_startingColor{ startingColor },
     m_currentColor{ startingColor },
+    m_onColorChangeCallback{ callback },
     m_frame{ std::make_shared<UiFrame>("pickerViewFrame", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f)) },
     m_titleBar{ std::make_shared<UiTitleBar>("pickerViewTitleBar", glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 1.0f)) },
     m_linearGradient{ std::make_shared<UiLinearColorGradient>("pickerViewLinearGradient", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), UiLinearColorGradient::GradientDirection::VERTICAL) },
@@ -203,6 +204,7 @@ void UiPickerView::Update()
     const auto interpolatedColor = HsvToRgb(horizontalInterpolation);
     m_currentColor = glm::vec4(interpolatedColor, 1.0f);
     m_selectedColorRect->SetBackgroundColor(m_currentColor);
+    m_onColorChangeCallback(m_currentColor);
 
     if (!m_isGradientRectInteracting && !m_isLinearGradientInteracting)
     {
@@ -327,6 +329,11 @@ void UiPickerView::CreateControls()
     confirmButtonTextControl->SetEdgeSmoothing(2.5f);
     confirmButtonTextControl->SetSampleThreshold(2.0f);
 
+    m_confirmButton->SetOnClickFunction([this](UiButton& _)
+    {
+        m_readyToRelease = true;
+    });
+
     AddChildNode(m_confirmButton);
 
     m_restoreButton->SetPosition(m_confirmButton->GetPosition() + glm::vec2(0.0f, m_confirmButton->GetSize().y + MARGIN / 2.0f));
@@ -339,6 +346,7 @@ void UiPickerView::CreateControls()
         m_currentColor = m_startingColor;
         UpdateSelectors();
         UpdateValueFields();
+        m_onColorChangeCallback(m_currentColor);
     });
 
     auto restoreButtonTextControl = m_restoreButton->GetTextControl();
@@ -358,7 +366,8 @@ void UiPickerView::CreateControls()
     m_cancelButton->SetOnClickFunction([this](UiButton& buttonElement) {
         m_currentColor = m_startingColor;
         m_readyToRelease = true;
-        });
+        m_onColorChangeCallback(m_currentColor);
+    });
 
     auto cancelButtonTextControl = m_cancelButton->GetTextControl();
     cancelButtonTextControl->SetFontSize(13);

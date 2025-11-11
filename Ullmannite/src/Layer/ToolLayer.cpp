@@ -45,7 +45,7 @@ void ToolLayer::RegisterToolCreationEvents()
         if (toolData.toolType == ToolType::ColorPicker)
         {
             const auto colorPickerData = std::get<ColorPickerData>(toolData.toolData);
-            m_pickerView = std::make_shared<UiPickerView>("colorPicker", toolData.spawnPoint, colorPickerData.initialColor);
+            m_pickerView = std::make_shared<UiPickerView>("colorPicker", toolData.spawnPoint, colorPickerData.initialColor, std::move(colorPickerData.onColorChange));
             AddChildNode(m_pickerView);
         }
     });

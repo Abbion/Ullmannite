@@ -12,7 +12,8 @@ namespace Ull
         UiSlider,
         UiLinearGradient,
         UiRectGradient,
-        UiFrame
+        UiFrame,
+        UiMarker
     };
 
     enum class UiControlFunctionality : uint64_t {

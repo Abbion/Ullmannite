@@ -8,7 +8,7 @@
 #include "UiElement/Controls/UiText.h"
 #include "UiElement/Controls/UiButton.h"
 #include "UiElement/Controls/UiSpace.h"
-#include "UiElement/Controls/UiNumberField.h"
+#include "UiElement/Controls/UiMarker.h"
 
 namespace Ull
 {
@@ -33,6 +33,5 @@ namespace Ull
 
 		std::shared_ptr<UiText> m_titleText;
 		std::shared_ptr<UiButton> m_titleButton;
-		std::shared_ptr<UiNumberField> m_numberField;
 	};
 }

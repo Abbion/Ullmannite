@@ -24,6 +24,8 @@ namespace Ull
         void AddColor(const GradientColorData colorData);
         void ClearColorData();
 
+        const std::vector<GradientColorData>& GetGradientColors() const { return m_gradientColors; }
+
         glm::vec4 GetColorFromLastInteraction() const { return m_lastInteractionColor; }
         glm::vec4 GetColorForRatio(const float ratio);
 
@@ -35,7 +37,6 @@ namespace Ull
     private:
         void InteractWithMouse();
 
-        bool m_updateVertexData{ true };
         std::vector<GradientColorData> m_gradientColors;
         const GradientDirection m_gradientDirection;
 

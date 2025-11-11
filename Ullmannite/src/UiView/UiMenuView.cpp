@@ -1,5 +1,6 @@
 #include "Ullpch.h"
 #include "UiMenuView.h"
+#include <Application/Application.h>
 #include "Core/PlatformDependantFreeFunctions.h"
 #include "Logger/Logger.h"
 #include "Event/EventAggregator.h"
@@ -17,6 +18,7 @@ namespace
     constexpr unsigned TOOL_BAR_SIZE = 6;
     constexpr unsigned TOOL_TAB_ICON_SIZE = 24;
     constexpr unsigned MENU_TEXT_SIZE = 14;
+    constexpr float MARKER_SIZE = 10.0f;
 }
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
@@ -51,6 +53,84 @@ void UiMenuView::HandleEvent(Event* event)
         }
     break;
 
+    case EventType::MouseMove:
+        if (m_transferLinearGradient->IsVisible())
+        {
+            bool mouseOverMarker = false;
+            for (auto marker : m_transferMarkers)
+            {
+                if (marker->IsHover())
+                {
+                    mouseOverMarker = true;
+                    break;
+                }
+            }
+
+            if (mouseOverMarker)
+            {
+                const auto mousePosition = glm::vec2(Application::GetMouse().GetMousePosition());
+                m_cursorIndicatorText->SetPosition(mousePosition + glm::vec2(16.0f, 5.0f) - GetGlobalPosition());
+                m_cursorIndicatorText->SetVisibility(true);
+            }
+            else
+            {
+                m_cursorIndicatorText->SetVisibility(false);
+            }
+        }
+        else
+        {
+            m_cursorIndicatorText->SetVisibility(false);
+        }
+    break;
+
+    case EventType::MouseDoubleUp:
+        if (m_transferLinearGradient->IsVisible() == false)
+            break;
+
+        if (m_transferLinearGradient->IsHover())
+        {
+            const auto mousePosition = Application::GetMouse().GetMousePosition();
+            const auto linearGradientPosition = m_transferLinearGradient->GetPosition();
+            const auto linearGradientSize = m_transferLinearGradient->GetSize();
+            const auto normalizedPosition = (mousePosition.x - linearGradientPosition.x) / linearGradientSize.x;
+            const auto initColor = m_transferLinearGradient->GetColorForRatio(normalizedPosition);
+
+            m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ normalizedPosition, initColor });
+            m_transferLinearGradient->CreateResources();
+            CreateMarkersForTransferFunction();
+            event->MarkHandeled(true);
+        }
+
+        for (auto marker : m_transferMarkers)
+        {
+            if (marker->IsHover())
+            {
+                m_cursorIndicatorText->SetVisibility(false);
+                break;
+            }
+        }
+    break;
+
+    case EventType::MouseUp:
+        const auto isRightPressed = reinterpret_cast<MouseDoubleUp*>(event)->GetVal() == Mouse::Button::RIGHT;
+
+        if (isRightPressed == false || m_transferMarkers.size() < 3)
+            break;
+
+        size_t itr = 0;
+        for (auto marker : m_transferMarkers)
+        {
+            if (marker->IsHover())
+            {
+                RemoveChildNode(marker);
+                m_transferMarkers.erase(m_transferMarkers.begin() + itr);
+                m_cursorIndicatorText->SetVisibility(false);
+                break;
+            }
+
+            itr++;
+        }
+
     break;
     }
 
@@ -60,6 +140,21 @@ void UiMenuView::HandleEvent(Event* event)
 void UiMenuView::Update()
 {
     //m_areaUpdated = true;
+
+    if (m_toolTabs[ToolTypes::Transfer]->IsEnabled())
+    {
+        m_transferLinearGradient->ClearColorData();
+
+        for (auto marker : m_transferMarkers)
+        {
+            const auto colorRatio = marker->GetPositionRatio();
+            const auto color = marker->GetColor();
+            m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ colorRatio, color });
+        }
+
+        m_transferLinearGradient->CreateResources();
+    }
+
 	UiRenderArea::Update();
 }
 
@@ -86,6 +181,7 @@ void UiMenuView::CreateControls()
 {
     CreateLoadPanel();
     CreateCutPanel();
+    CreateColorTransformPanel();
 
     // Tool tabs
     static auto toogleIsEnabledManageTabs = [this](UiToggle& toggleElement) {
@@ -138,6 +234,11 @@ void UiMenuView::CreateControls()
         m_cutSettingsCutzInvertToggle->SetVisibility(false);
         m_cutSettingsCutzInvertText->SetVisibility(false);
         m_cutSettingsCutzSlider->SetVisibility(false);
+
+        m_transferSettingsText->SetVisibility(false);
+        m_transferLinearGradient->SetVisibility(false);
+        for (auto& marker : m_transferMarkers)
+            marker->SetVisibility(false);
         
         toogleIsEnabledManageTabs(toggleElement);
        });
@@ -180,6 +281,11 @@ void UiMenuView::CreateControls()
         m_cutSettingsCutzInvertText->SetVisibility(true);
         m_cutSettingsCutzSlider->SetVisibility(true);
 
+        m_transferSettingsText->SetVisibility(false);
+        m_transferLinearGradient->SetVisibility(false);
+        for (auto& marker : m_transferMarkers)
+            marker->SetVisibility(false);
+
         toogleIsEnabledManageTabs(toggleElement);
     });
     cutTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
@@ -218,6 +324,11 @@ void UiMenuView::CreateControls()
         m_cutSettingsCutzInvertToggle->SetVisibility(false);
         m_cutSettingsCutzInvertText->SetVisibility(false);
         m_cutSettingsCutzSlider->SetVisibility(false);
+
+        m_transferSettingsText->SetVisibility(true);
+        m_transferLinearGradient->SetVisibility(true);
+        for (auto& marker : m_transferMarkers)
+            marker->SetVisibility(true);
 
         toogleIsEnabledManageTabs(toggleElement);
     });
@@ -260,6 +371,17 @@ void UiMenuView::CreateControls()
     m_toolTabsLine->SetFunctionality(UiControlFunctionality::Hover, State::Disable);
     m_toolTabsLine->CreateResources();
     AddChildNode(m_toolTabsLine);
+
+    m_cursorIndicatorText = std::make_shared<UiText>("menuCursorIndicator", glm::vec2(10.0f, 150.0f), glm::vec2(30.0f, 30.0f), L"empty");
+    m_cursorIndicatorText->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_cursorIndicatorText->SetFont(FontTag::UI_ICON);
+    m_cursorIndicatorText->SetFontSize(28);
+    m_cursorIndicatorText->SetSampleThreshold(-2);
+    m_cursorIndicatorText->SetEdgeSmoothing(5);
+    m_cursorIndicatorText->SetString(std::wstring{ static_cast<wchar_t>(Icon::RIGHT_BUTTON_DELETE) });
+    m_cursorIndicatorText->SetVisibility(false);
+    m_cursorIndicatorText->CreateResources();
+    AddChildNode(m_cursorIndicatorText);
 
     ResizeControls();
 }
@@ -489,6 +611,57 @@ void UiMenuView::CreateCutPanel()
     AddChildNode(m_cutSettingsCutzSlider);
 }
 
+void UiMenuView::CreateColorTransformPanel()
+{
+    m_transferSettingsText = std::make_shared<UiText>("colorTransferText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"Transfer function");
+    m_transferSettingsText->SetFontSize(MENU_TEXT_SIZE);
+    m_transferSettingsText->SetEdgeSmoothing(3.5f);
+    m_transferSettingsText->SetSampleThreshold(1.5f);
+    m_transferSettingsText->SetSmoothingExceptance({ L'i' });
+    m_transferSettingsText->SetVisibility(false);
+    m_transferSettingsText->CreateResources();
+
+    AddChildNode(m_transferSettingsText);
+
+    m_transferLinearGradient = std::make_shared<UiLinearColorGradient>("colorTransferLinearGradient", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), UiLinearColorGradient::GradientDirection::HORIZONTAL);
+    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 0.0f,     glm::vec4(0.9f, 0.75f, 0.45f, 1.0f) });
+    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 0.5f,   glm::vec4(0.33f, 0.47f, 0.16f, 1.0f) });
+    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 1.0f,     glm::vec4(0.25f, 0.46f, 0.5f, 1.0f) });
+    m_transferLinearGradient->CreateResources();
+
+    AddChildNode(m_transferLinearGradient);
+}
+
+void UiMenuView::CreateMarkersForTransferFunction()
+{
+    for (int i = 0; i < m_transferMarkers.size(); ++i)
+        RemoveChildNode(m_transferMarkers[i]);
+
+    m_transferMarkers.clear();
+
+    auto areaSizeChangedEvent = std::make_shared<RenderAreaSizeChanged>(EventType::RenderAreaSizeChanged);
+    const auto& colors = m_transferLinearGradient->GetGradientColors();
+    const auto gradientPosition = m_transferLinearGradient->GetPosition();
+    const auto gradientSize = m_transferLinearGradient->GetSize();
+    const auto markerName = m_transferLinearGradient->GetName();
+    const auto visible = m_transferLinearGradient->IsVisible();
+    unsigned markerIndex = 0u;
+
+    for (const auto& color : colors)
+    {
+        const auto markerPosition = gradientPosition + glm::vec2(gradientSize.x * color.position, gradientSize.y) - glm::vec2(MARKER_SIZE / 2.0f, -MARKER_SIZE * 0.75);
+        auto marker = std::make_shared<UiMarker>(std::format("{}_{}", markerName, markerIndex), markerPosition, glm::vec2(MARKER_SIZE, MARKER_SIZE * 1.5f));
+        marker->SetDragBounderies(gradientPosition.x - MARKER_SIZE / 2.0f, gradientPosition.x - MARKER_SIZE / 2.0f + gradientSize.x);
+        marker->SetMarkerColor(color.color);
+        marker->SetVisibility(visible);
+        marker->CreateResources();
+        AddChildNode(marker);
+        marker->HandleEvent(areaSizeChangedEvent.get());
+        m_transferMarkers.push_back(std::move(marker));
+        markerIndex++;
+    }
+}
+
 void UiMenuView::ResizeControls()
 {
     CreateFrameBuffer();
@@ -586,4 +759,15 @@ void UiMenuView::ResizeControls()
     uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
     m_cutSettingsCutzSlider->SetPosition(uiCursor);
     m_cutSettingsCutzSlider->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 20));
+
+    // Color transfer panel
+    uiCursor = glm::vec2((renderAreaSize.x * 0.5f) - (renderAreaSize.x * 0.4f), tabHeight * 1.5f);
+
+    m_transferSettingsText->SetPosition(uiCursor);
+    m_transferSettingsText->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 30.0f));
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
+
+    m_transferLinearGradient->SetPosition(uiCursor);
+    m_transferLinearGradient->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 30.0f));
+    CreateMarkersForTransferFunction();
 }
