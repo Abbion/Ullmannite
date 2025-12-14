@@ -182,6 +182,7 @@ void UiMenuView::CreateControls()
     CreateLoadPanel();
     CreateCutPanel();
     CreateColorTransformPanel();
+    CreateSettingsPanel();
 
     // Tool tabs
     static auto toogleIsEnabledManageTabs = [this](UiToggle& toggleElement) {
@@ -239,6 +240,8 @@ void UiMenuView::CreateControls()
         m_transferLinearGradient->SetVisibility(false);
         for (auto& marker : m_transferMarkers)
             marker->SetVisibility(false);
+
+        m_examinationThresholdSettingsText->SetVisibility(false);
         
         toogleIsEnabledManageTabs(toggleElement);
        });
@@ -286,6 +289,8 @@ void UiMenuView::CreateControls()
         for (auto& marker : m_transferMarkers)
             marker->SetVisibility(false);
 
+        m_examinationThresholdSettingsText->SetVisibility(false);
+
         toogleIsEnabledManageTabs(toggleElement);
     });
     cutTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
@@ -330,6 +335,8 @@ void UiMenuView::CreateControls()
         for (auto& marker : m_transferMarkers)
             marker->SetVisibility(true);
 
+        m_examinationThresholdSettingsText->SetVisibility(false);
+
         toogleIsEnabledManageTabs(toggleElement);
     });
     transferTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
@@ -351,7 +358,34 @@ void UiMenuView::CreateControls()
     settingsTab->SetHoverColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     settingsTab->CreateResources();
 
-    settingsTab->SetOnEnabledFunction(toogleIsEnabledManageTabs);
+    settingsTab->SetOnEnabledFunction([this](UiToggle& toggleElement) {
+        m_loadFileButton->SetVisibility(false);
+        m_loadFileText->SetVisibility(false);
+
+        m_cutSettingsText->SetVisibility(false);
+        m_cutSettingsCutxText->SetVisibility(false);
+        m_cutSettingsCutxInvertToggle->SetVisibility(false);
+        m_cutSettingsCutxInvertText->SetVisibility(false);
+        m_cutSettingsCutxSlider->SetVisibility(false);
+        m_cutSettingsCutyText->SetVisibility(false);
+        m_cutSettingsCutyInvertToggle->SetVisibility(false);
+        m_cutSettingsCutyInvertText->SetVisibility(false);
+        m_cutSettingsCutySlider->SetVisibility(false);
+        m_cutSettingsCutzText->SetVisibility(false);
+        m_cutSettingsCutzInvertToggle->SetVisibility(false);
+        m_cutSettingsCutzInvertText->SetVisibility(false);
+        m_cutSettingsCutzSlider->SetVisibility(false);
+
+        m_transferSettingsText->SetVisibility(false);
+        m_transferLinearGradient->SetVisibility(false);
+        for (auto& marker : m_transferMarkers)
+            marker->SetVisibility(false);
+
+        m_examinationThresholdSettingsText->SetVisibility(true);
+
+        toogleIsEnabledManageTabs(toggleElement);
+    });
+
     settingsTab->SetOnDisambledFunction(toogleIsDisabledManageTabs);
 
     settingsTab->Update();
@@ -410,7 +444,7 @@ void UiMenuView::CreateLoadPanel()
     m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
     m_loadFileText->SetFontSize(MENU_TEXT_SIZE);
     m_loadFileText->SetEdgeSmoothing(3.5f);
-    m_loadFileText->SetSampleThreshold(1.5f);
+    m_loadFileText->SetSampleThreshold(1.0f);
     m_loadFileText->SetSmoothingExceptance({ L'i', L'l' });
     m_loadFileText->SetVisibility(false);
     m_loadFileText->CreateResources();
@@ -423,7 +457,7 @@ void UiMenuView::CreateCutPanel()
     m_cutSettingsText = std::make_shared<UiText>("menuCutSettingsText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cutting Settings"));
     m_cutSettingsText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsText->SetSampleThreshold(1.5f);
+    m_cutSettingsText->SetSampleThreshold(1.0f);
     m_cutSettingsText->SetSmoothingExceptance({ L'i', L'l' });
     m_cutSettingsText->SetVisibility(false);
     m_cutSettingsText->CreateResources();
@@ -433,7 +467,7 @@ void UiMenuView::CreateCutPanel()
     m_cutSettingsCutxText = std::make_shared<UiText>("menuCutSettingsCutxText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cut X"));    
     m_cutSettingsCutxText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutxText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutxText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutxText->SetSampleThreshold(1.0f);
     m_cutSettingsCutxText->SetVisibility(false);
     m_cutSettingsCutxText->CreateResources();
 
@@ -466,7 +500,7 @@ void UiMenuView::CreateCutPanel()
     m_cutSettingsCutxInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
     m_cutSettingsCutxInvertText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutxInvertText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutxInvertText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutxInvertText->SetSampleThreshold(1.0f);
     m_cutSettingsCutxInvertText->SetVisibility(false);
     m_cutSettingsCutxInvertText->CreateResources();
 
@@ -493,7 +527,7 @@ void UiMenuView::CreateCutPanel()
     m_cutSettingsCutyText = std::make_shared<UiText>("menuCutSettingsCutyText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cut Y"));    
     m_cutSettingsCutyText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutyText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutyText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutyText->SetSampleThreshold(1.0f);
     m_cutSettingsCutyText->SetVisibility(false);
     m_cutSettingsCutyText->CreateResources();
 
@@ -526,7 +560,7 @@ void UiMenuView::CreateCutPanel()
     m_cutSettingsCutyInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
     m_cutSettingsCutyInvertText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutyInvertText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutyInvertText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutyInvertText->SetSampleThreshold(1.0f);
     m_cutSettingsCutyInvertText->SetVisibility(false);
     m_cutSettingsCutyInvertText->CreateResources();
 
@@ -553,7 +587,7 @@ void UiMenuView::CreateCutPanel()
     m_cutSettingsCutzText = std::make_shared<UiText>("menuCutSettingsCutzText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"Cut Z"));    
     m_cutSettingsCutzText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutzText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutzText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutzText->SetSampleThreshold(1.0f);
     m_cutSettingsCutzText->SetVisibility(false);
     m_cutSettingsCutzText->CreateResources();
 
@@ -586,7 +620,7 @@ void UiMenuView::CreateCutPanel()
     m_cutSettingsCutzInvertText->SetAlignment(UiText::HorizontalAlignment::LEFT, UiText::VerticalAlignment::CENTER);
     m_cutSettingsCutzInvertText->SetFontSize(MENU_TEXT_SIZE);
     m_cutSettingsCutzInvertText->SetEdgeSmoothing(3.5f);
-    m_cutSettingsCutzInvertText->SetSampleThreshold(1.5f);
+    m_cutSettingsCutzInvertText->SetSampleThreshold(1.0f);
     m_cutSettingsCutzInvertText->SetVisibility(false);
     m_cutSettingsCutzInvertText->CreateResources();
 
@@ -616,7 +650,7 @@ void UiMenuView::CreateColorTransformPanel()
     m_transferSettingsText = std::make_shared<UiText>("colorTransferText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"Transfer function");
     m_transferSettingsText->SetFontSize(MENU_TEXT_SIZE);
     m_transferSettingsText->SetEdgeSmoothing(3.5f);
-    m_transferSettingsText->SetSampleThreshold(1.5f);
+    m_transferSettingsText->SetSampleThreshold(1.0f);
     m_transferSettingsText->SetSmoothingExceptance({ L'i' });
     m_transferSettingsText->SetVisibility(false);
     m_transferSettingsText->CreateResources();
@@ -660,6 +694,65 @@ void UiMenuView::CreateMarkersForTransferFunction()
         m_transferMarkers.push_back(std::move(marker));
         markerIndex++;
     }
+}
+
+void UiMenuView::CreateSettingsPanel()
+{
+    m_examinationThresholdSettingsText = std::make_shared<UiText>("examinationThresholdSettingsText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"Examination threshold");
+    m_examinationThresholdSettingsText->SetFontSize(MENU_TEXT_SIZE);
+    m_examinationThresholdSettingsText->SetEdgeSmoothing(3.5f);
+    m_examinationThresholdSettingsText->SetSampleThreshold(1.0f);
+    m_examinationThresholdSettingsText->SetSmoothingExceptance({ L'i', L'l'});
+    m_examinationThresholdSettingsText->SetVisibility(false);
+    m_examinationThresholdSettingsText->CreateResources();
+
+    AddChildNode(m_examinationThresholdSettingsText);
+
+    m_minExaminationThresholdText = std::make_shared<UiText>("minExaminationThresholdText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"Min");
+    m_minExaminationThresholdText->SetFontSize(MENU_TEXT_SIZE);
+    m_minExaminationThresholdText->SetEdgeSmoothing(3.5f);
+    m_minExaminationThresholdText->SetSampleThreshold(1.0f);
+    m_minExaminationThresholdText->SetSmoothingExceptance({ L'i' });
+    m_minExaminationThresholdText->SetVisibility(true);
+    m_minExaminationThresholdText->CreateResources();
+
+    AddChildNode(m_minExaminationThresholdText);
+
+    m_minExaminationThresholdValue = std::make_shared<UiText>("minExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"-100");
+    m_minExaminationThresholdValue->SetFontSize(MENU_TEXT_SIZE);
+    m_minExaminationThresholdValue->SetEdgeSmoothing(3.5f);
+    m_minExaminationThresholdValue->SetSampleThreshold(1.0f);
+    m_minExaminationThresholdValue->SetSmoothingExceptance({ L'-' });
+    m_minExaminationThresholdValue->SetVisibility(true);
+    m_minExaminationThresholdValue->CreateResources();
+
+    AddChildNode(m_minExaminationThresholdValue);
+
+    m_maxExaminationThresholdText = std::make_shared<UiText>("maxExaminationThresholdText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"Max");
+    m_maxExaminationThresholdText->SetFontSize(MENU_TEXT_SIZE);
+    m_maxExaminationThresholdText->SetEdgeSmoothing(3.5f);
+    m_maxExaminationThresholdText->SetSampleThreshold(1.0f);
+    m_maxExaminationThresholdText->SetVisibility(true);
+    m_maxExaminationThresholdText->CreateResources();
+
+    AddChildNode(m_maxExaminationThresholdText);
+
+    m_maxExaminationThresholdValue = std::make_shared<UiText>("maxExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"500");
+    m_maxExaminationThresholdValue->SetFontSize(MENU_TEXT_SIZE);
+    m_maxExaminationThresholdValue->SetEdgeSmoothing(3.5f);
+    m_maxExaminationThresholdValue->SetSampleThreshold(1.0f);
+    m_maxExaminationThresholdValue->SetSmoothingExceptance({ L'-' });
+    m_maxExaminationThresholdValue->SetVisibility(true);
+    m_maxExaminationThresholdValue->CreateResources();
+
+    AddChildNode(m_maxExaminationThresholdValue);
+
+    m_thresholdSlider = std::make_shared<UiTwoSideSlider>("thresholdSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 15.0f), -120, 513);
+    m_thresholdSlider->CreateResources();
+    auto thresholdMainSlider = m_thresholdSlider->GetMainSliderHandle();
+    thresholdMainSlider->SetBackgroundColor(glm::vec4(0.02f, 0.5f, 0.98f, 1.0f));
+
+    AddChildNode(m_thresholdSlider);
 }
 
 void UiMenuView::ResizeControls()
@@ -770,4 +863,31 @@ void UiMenuView::ResizeControls()
     m_transferLinearGradient->SetPosition(uiCursor);
     m_transferLinearGradient->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 30.0f));
     CreateMarkersForTransferFunction();
+
+    // Settings panel
+    uiCursor = glm::vec2((renderAreaSize.x * 0.5f) - (renderAreaSize.x * 0.4f), tabHeight * 1.5f);
+
+    m_examinationThresholdSettingsText->SetPosition(uiCursor);
+    m_examinationThresholdSettingsText->SetSize(glm::vec2(renderAreaSize.x * 0.8f, 30.0f));
+
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.75f);
+    m_minExaminationThresholdText->SetPosition(uiCursor);
+    m_minExaminationThresholdText->SetSize(glm::vec2(renderAreaSize.x * 0.3f, 30.0f));
+
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.5f);
+
+    m_minExaminationThresholdValue->SetPosition(uiCursor);
+    m_minExaminationThresholdValue->SetSize(glm::vec2(renderAreaSize.x * 0.3f, 30.0f));
+
+    uiCursor += glm::vec2(renderAreaSize.x - (renderAreaSize.x * 0.3f), -tabHeight * 0.5f);
+    m_maxExaminationThresholdText->SetPosition(uiCursor);
+    m_maxExaminationThresholdText->SetSize(glm::vec2(renderAreaSize.x * 0.3f, 30.0f));
+
+    uiCursor += glm::vec2(0.0f, tabHeight * 0.5f);
+    m_maxExaminationThresholdValue->SetPosition(uiCursor);
+    m_maxExaminationThresholdValue->SetSize(glm::vec2(renderAreaSize.x * 0.3f, 30.0f));
+
+    uiCursor += glm::vec2(-(renderAreaSize.x - (renderAreaSize.x * 0.3f)), tabHeight * 0.5f);
+    m_thresholdSlider->SetPosition(uiCursor);
+    m_thresholdSlider->SetSize(glm::vec2(glm::vec2(renderAreaSize.x * 0.8f, 15.0f)));
 }

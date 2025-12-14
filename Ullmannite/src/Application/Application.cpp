@@ -141,7 +141,7 @@ void Application::InitApplciation()
     //Resources
     auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
     fontManager.InitLoader();
-    fontManager.LoadFont("segoeuil.ttf", FontTag::UI_FONT, 128, 33, 126);
+    fontManager.LoadFont("segoeui.ttf", FontTag::UI_FONT, 128, 33, 126);
     fontManager.LoadFont("UllIcon.ttf", FontTag::UI_ICON, 256, 61440, 61449);
     fontManager.ReleaseLoader();
 

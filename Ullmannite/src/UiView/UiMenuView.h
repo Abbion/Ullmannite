@@ -35,13 +35,10 @@ namespace Ull
         void CreateCutPanel();
         void CreateColorTransformPanel();
         void CreateMarkersForTransferFunction();
+        void CreateSettingsPanel();
 
 		void Init();
         void RenderUI();
-        void RenderLoadTab();
-        void RenderCutSettings();
-        void RenderTransferFunctionSettings();
-        void RenderDataSettings();
 
         std::optional<std::wstring> m_filePath;
         bool m_firstDataLoaded{ false };
@@ -80,5 +77,15 @@ namespace Ull
         std::shared_ptr<UiLinearColorGradient>  m_transferLinearGradient;
         std::vector<std::shared_ptr<UiMarker>>  m_transferMarkers;
         std::shared_ptr<UiText>                 m_cursorIndicatorText;
+
+        // Settings control
+        std::shared_ptr<UiText>             m_examinationThresholdSettingsText;
+        std::shared_ptr<UiText>             m_maxExaminationThresholdText;
+        std::shared_ptr<UiText>             m_maxExaminationThresholdValue;
+        std::shared_ptr<UiText>             m_minExaminationThresholdText;
+        std::shared_ptr<UiText>             m_minExaminationThresholdValue;
+        std::shared_ptr<UiText>             m_leftExaminationThresholdValue;
+        std::shared_ptr<UiText>             m_rightExaminationThresholdValue;
+        std::shared_ptr<UiTwoSideSlider>    m_thresholdSlider;
     };
 }

@@ -95,9 +95,9 @@ namespace Ull
             if (m_grabbed)
             {
                 const auto currentMousePositon = Application::GetMouse().GetMousePosition();
-                const auto dirrection = currentMousePositon - (glm::ivec2(GetPosition()) + m_grabPoint);
+                const auto direction = currentMousePositon - (glm::ivec2(GetPosition()) + m_grabPoint);
 
-                auto newPosition = GetPosition() + glm::vec2(dirrection.x, 0.0f);
+                auto newPosition = GetPosition() + glm::vec2(direction.x, 0.0f);
                 newPosition.x = std::clamp(newPosition.x, m_dragBounderies.x, m_dragBounderies.y);
                 SetPosition(newPosition);
                 event->MarkHandeled(true);

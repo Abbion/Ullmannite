@@ -8,4 +8,5 @@
 #include "UiButton.h"
 #include "UiNumberField.h"
 #include "UiRectGradient.h"
+#include "UiTwoSideSlider.h"
 #include "UiLinearColorGradient.h"
