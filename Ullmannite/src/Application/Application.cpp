@@ -7,7 +7,6 @@
 
 #include "Logger/Logger.h"
 #include "Event/Event.h"
-#include "Event/EventAggregator.h"
 #include "Input/Mouse.h"
 
 #include "Application/Application.h"

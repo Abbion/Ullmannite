@@ -33,6 +33,7 @@ namespace Ull
     private:
         void CreateControls();
         void UpdateSliderValues();
+        void ResizeControls();
 
         std::shared_ptr<UiSpace> m_minSlider;
         std::shared_ptr<UiSpace> m_maxSlider;

@@ -6,7 +6,6 @@
 #include "Rendering/Objects/DirectionalLight.h"
 #include "Rendering/TriangulationTable/TriangulationTable.h"
 #include "Rendering/Api/OpenGL/BufferOpenGL.h"
-#include "Event/EventAggregator.h"
 #include "Scene/Scene.h"
 #include <thread>
 #include <chrono>
@@ -67,7 +66,7 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 	m_thresholds = initThresholds;
 	m_cuttingSettingsInt = glm::ivec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth);
 
-	EventAggregator::Publish(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, initThresholds));
+	Application::GetEventQueue().PushEvent(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, initThresholds));
 	m_thresholdInitEventShip = true;
 }
 

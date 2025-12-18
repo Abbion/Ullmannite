@@ -3,7 +3,6 @@
 #include <Application/Application.h>
 #include "Core/PlatformDependantFreeFunctions.h"
 #include "Logger/Logger.h"
-#include "Event/EventAggregator.h"
 #include "Resources/Fonts/IconCodes.h"
 #include <limits>
 #include <imgui.h>
@@ -242,6 +241,11 @@ void UiMenuView::CreateControls()
             marker->SetVisibility(false);
 
         m_examinationThresholdSettingsText->SetVisibility(false);
+        m_maxExaminationThresholdText->SetVisibility(false);
+        m_maxExaminationThresholdValue->SetVisibility(false);
+        m_minExaminationThresholdText->SetVisibility(false);
+        m_minExaminationThresholdValue->SetVisibility(false);
+        m_thresholdSlider->SetVisibility(false);
         
         toogleIsEnabledManageTabs(toggleElement);
        });
@@ -290,6 +294,11 @@ void UiMenuView::CreateControls()
             marker->SetVisibility(false);
 
         m_examinationThresholdSettingsText->SetVisibility(false);
+        m_maxExaminationThresholdText->SetVisibility(false);
+        m_maxExaminationThresholdValue->SetVisibility(false);
+        m_minExaminationThresholdText->SetVisibility(false);
+        m_minExaminationThresholdValue->SetVisibility(false);
+        m_thresholdSlider->SetVisibility(false);
 
         toogleIsEnabledManageTabs(toggleElement);
     });
@@ -336,6 +345,11 @@ void UiMenuView::CreateControls()
             marker->SetVisibility(true);
 
         m_examinationThresholdSettingsText->SetVisibility(false);
+        m_maxExaminationThresholdText->SetVisibility(false);
+        m_maxExaminationThresholdValue->SetVisibility(false);
+        m_minExaminationThresholdText->SetVisibility(false);
+        m_minExaminationThresholdValue->SetVisibility(false);
+        m_thresholdSlider->SetVisibility(false);
 
         toogleIsEnabledManageTabs(toggleElement);
     });
@@ -382,6 +396,11 @@ void UiMenuView::CreateControls()
             marker->SetVisibility(false);
 
         m_examinationThresholdSettingsText->SetVisibility(true);
+        m_maxExaminationThresholdText->SetVisibility(true);
+        m_maxExaminationThresholdValue->SetVisibility(true);
+        m_minExaminationThresholdText->SetVisibility(true);
+        m_minExaminationThresholdValue->SetVisibility(true);
+        m_thresholdSlider->SetVisibility(true);
 
         toogleIsEnabledManageTabs(toggleElement);
     });

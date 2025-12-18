@@ -5,7 +5,6 @@
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtx/transform.hpp"
 #include "Event/Event.h"
-#include "Event/EventAggregator.h"
 #include "Input/Mouse.h"
 #include "Utilities/CollisionCheckers.h"
 #include "Logger/Logger.h"
@@ -194,7 +193,7 @@ void UiGradientEditor::Update()
 
     if(refreshGradient)
     {
-        EventAggregator::Publish(std::make_shared<GradientUpdatedEvent>(EventType::GradientUpdated));
+        Application::GetEventQueue().PushEvent(std::make_shared<GradientUpdatedEvent>(EventType::GradientUpdated));
 
         m_transferFunctionRenderer->DeleteAppLoints();
 

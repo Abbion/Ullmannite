@@ -84,8 +84,6 @@ namespace Ull
         std::shared_ptr<UiText>             m_maxExaminationThresholdValue;
         std::shared_ptr<UiText>             m_minExaminationThresholdText;
         std::shared_ptr<UiText>             m_minExaminationThresholdValue;
-        std::shared_ptr<UiText>             m_leftExaminationThresholdValue;
-        std::shared_ptr<UiText>             m_rightExaminationThresholdValue;
         std::shared_ptr<UiTwoSideSlider>    m_thresholdSlider;
     };
 }

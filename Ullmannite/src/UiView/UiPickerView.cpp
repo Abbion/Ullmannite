@@ -2,7 +2,6 @@
 #include "Application/Application.h"
 #include "UiPickerView.h"
 #include "Layer/ToolLayer.h"
-#include "Event/EventAggregator.h"
 
 using namespace Ull;
 

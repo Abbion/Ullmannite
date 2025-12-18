@@ -1,7 +1,6 @@
 #include "Ullpch.h"
 #include "UiMarker.h"
 #include "Application/Application.h"
-#include "Event/EventAggregator.h"
 
 namespace
 {
@@ -124,7 +123,8 @@ namespace Ull
             {
                 const auto colorPickerData = ColorPickerData{ m_markerColor->GetBackgroundColor(), 
                                                               std::bind(&UiMarker::SetMarkerColor, this, std::placeholders::_1) };
-                EventAggregator::Publish(std::make_shared<OpenToolEvent>(EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25), colorPickerData }));
+                Application::GetEventQueue().PushEvent(std::make_shared<OpenToolEvent>(
+                    EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25), colorPickerData }));
 
                 m_grabbed = false;
             }

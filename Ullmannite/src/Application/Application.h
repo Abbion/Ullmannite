@@ -21,12 +21,13 @@ namespace Ull
 		static Keyboard& GetKeyboard() { return m_keyboard; }
 		static Mouse& GetMouse() { return m_mouse; }
 		static Renderer& GetRenderer() { return m_renderer; }
+		static EventQueue& GetEventQueue() { return m_eventQueue; }
 
 	private:
 		UllWindow m_window;
-		EventQueue m_eventQueue;
 		LayerManager m_layerManager;
 
+		inline static EventQueue m_eventQueue;
 		inline static Keyboard m_keyboard;
 		inline static Mouse m_mouse;
 		inline static Renderer m_renderer;

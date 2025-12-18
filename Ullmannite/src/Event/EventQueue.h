@@ -7,7 +7,7 @@ namespace Ull
     class EventQueue
     {
     public:
-        EventQueue();
+        EventQueue() = default;
         ~EventQueue();
 
         void PushEvent(const std::shared_ptr<Event>& newEvent);

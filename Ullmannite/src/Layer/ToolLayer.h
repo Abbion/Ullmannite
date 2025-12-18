@@ -11,17 +11,16 @@ namespace Ull
     public:
         ToolLayer(const glm::uvec2 size, const NotOwner<LayerManager>& layerManager);
     
-        virtual void Update() override;
+        void Update() override;
+        void HandleEvent(Event* event) override;
 
         void SetWindow(const NotOwner<UllWindow>& window);
-        virtual void RenderLayerComponents() override;
+        void RenderLayerComponents() override;
 
     private:
         glm::mat4 m_viewMatrix;
     
     private:
-        void RegisterToolCreationEvents();
-
         virtual void CreateLayout() override;
         virtual void ResizeLayout() override;
     

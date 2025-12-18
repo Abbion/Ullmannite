@@ -38,7 +38,7 @@ float UiTwoSideSlider::GetMaxSliderValue() const
 void UiTwoSideSlider::SetSize(const glm::vec2 size)
 {
     Object2D::SetSize(size);
-    CreateControls();
+    ResizeControls();
 }
 
 void UiTwoSideSlider::SetMinValue(const float min)
@@ -195,33 +195,19 @@ void UiTwoSideSlider::CreateControls()
     SetBackgroundColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
     SetFunctionality(UiControlFunctionality::Hover, State::Disable);
 
-    const auto sliderSize = GetSize();
-
-    m_mainSlider->SetPosition(glm::vec2(SLIDER_WIDTH, 0.0f));
-    m_mainSlider->SetSize(glm::vec2(sliderSize.x - (SLIDER_WIDTH * 2.0f), sliderSize.y));
     m_mainSlider->CreateResources();
-
     AddChildNode(m_mainSlider);
 
-    m_minSlider->SetSize(glm::vec2(SLIDER_WIDTH, sliderSize.y));
     m_minSlider->CreateResources();
     m_minSlider->SetBackgroundColor(glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
-    m_minDragBounderies.x = 0.0f;
-    m_minDragBounderies.y = sliderSize.x - (SLIDER_WIDTH * 2.0f);
 
     AddChildNode(m_minSlider);
 
-    m_maxSlider->SetSize(glm::vec2(SLIDER_WIDTH, sliderSize.y));
-    m_maxSlider->SetPosition(glm::vec2(sliderSize.x - m_maxSlider->GetSize().x, 0.0f));
     m_maxSlider->CreateResources();
     m_maxSlider->SetBackgroundColor(glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
-    m_maxDragBounderies.x = SLIDER_WIDTH;
-    m_maxDragBounderies.y = sliderSize.x - SLIDER_WIDTH;
 
     AddChildNode(m_maxSlider);
 
-    m_minSliderValueText->SetPosition(glm::vec2(0, 30));
-    m_minSliderValueText->SetSize(glm::vec2(GetSize().x / 2.0f, 20));
     m_minSliderValueText->SetFontSize(14);
     m_minSliderValueText->SetEdgeSmoothing(3.5f);
     m_minSliderValueText->SetSampleThreshold(1.0f);
@@ -230,8 +216,6 @@ void UiTwoSideSlider::CreateControls()
 
     AddChildNode(m_minSliderValueText);
 
-    m_maxSliderValueText->SetPosition(glm::vec2(GetSize().x / 2.0f, 30));
-    m_maxSliderValueText->SetSize(glm::vec2(GetSize().x / 2.0f, 20));
     m_maxSliderValueText->SetFontSize(14);
     m_maxSliderValueText->SetEdgeSmoothing(3.5f);
     m_maxSliderValueText->SetSampleThreshold(1.0f);
@@ -263,4 +247,28 @@ void UiTwoSideSlider::UpdateSliderValues()
 
     m_minSliderValueText->SetString(std::format(L"{:.2f}", m_minValue));
     m_maxSliderValueText->SetString(std::format(L"{:.2f}", m_maxValue));
+}
+
+void UiTwoSideSlider::ResizeControls()
+{
+    const auto sliderSize = GetSize();
+
+    m_mainSlider->SetPosition(glm::vec2(SLIDER_WIDTH, 0.0f));
+    m_mainSlider->SetSize(glm::vec2(sliderSize.x - (SLIDER_WIDTH * 2.0f), sliderSize.y));
+
+    m_minSlider->SetSize(glm::vec2(SLIDER_WIDTH, sliderSize.y));
+    m_minDragBounderies.x = 0.0f;
+
+    m_maxSlider->SetSize(glm::vec2(SLIDER_WIDTH, sliderSize.y));
+    m_maxSlider->SetPosition(glm::vec2(sliderSize.x - m_maxSlider->GetSize().x, 0.0f));
+    m_maxDragBounderies.y = sliderSize.x - SLIDER_WIDTH;
+
+    m_maxDragBounderies.x = m_minSlider->GetPosition().x + m_minSlider->GetSize().x;
+    m_minDragBounderies.y = m_maxSlider->GetPosition().x - m_maxSlider->GetSize().x;
+
+    m_minSliderValueText->SetPosition(glm::vec2(0, 30));
+    m_minSliderValueText->SetSize(glm::vec2(sliderSize.x / 2.0f, 20));
+
+    m_maxSliderValueText->SetPosition(glm::vec2(sliderSize.x / 2.0f, 30));
+    m_maxSliderValueText->SetSize(glm::vec2(sliderSize.x / 2.0f, 20));
 }
