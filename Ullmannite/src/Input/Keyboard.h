@@ -73,7 +73,10 @@ namespace Ull
             L_CONTROL = GLFW_KEY_LEFT_CONTROL,
             R_CONTROL = GLFW_KEY_RIGHT_CONTROL,
             L_ALT = GLFW_KEY_LEFT_ALT,
-            R_ALT = GLFW_KEY_RIGHT_ALT
+            R_ALT = GLFW_KEY_RIGHT_ALT,
+            PERIOD = GLFW_KEY_PERIOD,
+            HOME = GLFW_KEY_HOME,
+            END = GLFW_KEY_END
         };
 
         struct KeyState 
@@ -87,20 +90,14 @@ namespace Ull
 
         ~Keyboard();
 
-        static Keyboard& GetInstance();
         bool IsKeyPressed(Key key) const;
 
-    protected:
+    private:
         Keyboard();
-        
-        static Keyboard m_keyboardInstance;
-
-    private:
-        std::map<Key, bool> m_keyMap;
-
-    private:
         void UpdateKeyMap(const KeyState keyState);
         void InitKeyMap();
+
+        std::map<Key, bool> m_keyMap;
 
         friend class Application;
     };

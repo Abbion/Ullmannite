@@ -73,6 +73,10 @@ namespace Ull
 
         void AddChildNode(TRef childNode)
         {
+            // Unattach from parent
+            if (childNode->GetParent() != nullptr)
+                childNode->GetParent()->RemoveChildNode(childNode);
+
             std::vector<NodeId> idVector;
             idVector.reserve(GetTotalSize(childNode.get()));
             GetAllIdsInBranch(childNode.get(), idVector);
@@ -99,6 +103,35 @@ namespace Ull
 
             m_children.push_back(childNode);
             childNode->SetParent(static_cast<T*>(this));
+        }
+
+        bool RemoveChildNode(TRef childNode)
+        {
+            const auto itr = std::find(m_children.begin(), m_children.end(), childNode);
+
+            if (itr != m_children.end()) 
+            {
+                std::weak_ptr<T> weakPtr = *itr;
+
+                if (weakPtr.use_count() > 2u)
+                    ULOGW("Element: " << weakPtr.lock()->GetName() << " was removed from tree, but is still in use!");
+
+                m_children.erase(itr);
+                childNode->SetParent(nullptr);
+
+                return true;
+            }
+            
+            ULOGW(m_self->GetName() << " has no element " << childNode->GetName() << " there fore no removal was performed!");
+            return false;
+        }
+
+        void ForEachNode(std::function<void(T* node)> function, const bool skipSelf = true) {
+            if (!skipSelf)
+                function(m_self.Get());
+
+            for (auto child : m_children)
+                child->ForEachNode(function, false);
         }
 
         void PrintTree(const uint32_t depth = 0)
@@ -175,7 +208,7 @@ namespace Ull
             currentSize++;
 
             for (auto& child : node->GetChildren())
-                currentSize += GetTotalSize(child.get(), currentSize);
+                currentSize = GetTotalSize(child.get(), currentSize);
 
             return currentSize;
         }

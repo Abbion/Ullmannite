@@ -1,17 +1,41 @@
 #include "Ullpch.h"
 #include "UiBasicControl.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 #include "Utilities/CollisionCheckers.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 using namespace Ull;
 
-UiBasicControl::UiBasicControl(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const UiControlType type) :
+UiBasicControl::UiBasicControl(const std::string& name, const glm::vec2 position, const glm::vec2 size, const UiControlType type) :
     UiElement(name, position, size, UiElementType::Control),
     m_uiControlType{ type }
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
+}
+
+void UiBasicControl::SetFunctionality(UiControlFunctionality functionality, State state)
+{
+    if (state == State::Enable)
+        m_functionality |= static_cast<Functionality>(functionality);
+    else
+        m_functionality &= (~static_cast<Functionality>(functionality));
+}
+
+bool UiBasicControl::IsFunctionalitySet(UiControlFunctionality functionality) const
+{
+    return m_functionality & static_cast<Functionality>(functionality);
+}
+
+bool UiBasicControl::IsHover() const
+{
+    if (!IsFunctionalitySet(UiControlFunctionality::Hover))
+    {
+        ULOGE("Hover for " << GetName() << " is disabled but ::IsHover() was called");
+        return false;
+    }
+
+    return m_hover;
 }
 
 void UiBasicControl::CreateResources()
@@ -59,7 +83,8 @@ void UiBasicControl::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::MouseMove:
-        CheckHover();
+        if (m_functionality & static_cast<Functionality>(UiControlFunctionality::Hover))
+            CheckHover();
     break;
 
     case EventType::WindowResize:
@@ -96,14 +121,28 @@ void UiBasicControl::Render()
 
     m_layout->Bind();
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 
     UiElement::Render();
 }
 
 void UiBasicControl::CheckHover()
 {
-    if (PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()))
+    // The reander area creates a frame buffer. Every object in a render area is relative to that area.
+    // If the object has the position 0,0 on screen this object will be offeted by the render area.
+    // We have to calculate the offset and subtract it from the cursor position.
+
+    const auto mousePosition = Application::GetMouse().GetMousePosition();
+    glm::ivec2 renderAreaOffset = { 0, 0 };
+
+    auto parent = GetParent();
+    while (parent != nullptr)
+    {
+        renderAreaOffset += parent->GetPosition();
+        parent = parent->GetParent();
+    }
+    
+    if (PointInStaticRect<glm::ivec2>(mousePosition - renderAreaOffset, GetPosition(), GetSize()))
     {
         m_hover = true;
     }
@@ -115,7 +154,7 @@ void UiBasicControl::CheckHover()
 
 inline void UiBasicControl::UpdatePerspective()
 {
-    const auto renderArea = FindUiElementAboveByType(UiElementType::Area);
+    const auto renderArea = FindUiElementAboveByType(UiElementType::RenderArea);
 
     if (renderArea)
     {

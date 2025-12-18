@@ -1,12 +1,13 @@
-#pragma
+#pragma once
 #include <memory>
 #include "Event/EventHandler.h"
-#include "Layer/Layer.h"
 #include "Event/Event.h"
 #include <deque>
 
 namespace Ull
 {
+    class Layer;
+
     class LayerManager : public EventHandler
     {
     public:
@@ -14,10 +15,9 @@ namespace Ull
         ~LayerManager();
 
         void PushLayer(std::shared_ptr<Layer> newLayer);
-        void PopLayer();
+        void DropAllLayers();
+        std::deque<std::shared_ptr<Layer>>& GetLayers() { return m_layers; }
 
-        std::shared_ptr<Layer> GetTopLayer();
-        std::deque<std::shared_ptr<Layer>>& GetAllLayers() { return m_layers; }
         unsigned int GetSize() const;
 
         void HandleEvent(Event* event) override;

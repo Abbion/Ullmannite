@@ -8,10 +8,11 @@ namespace Ull
     class UiRenderArea : public UiElement
     {
     public:
-        UiRenderArea(std::string name, glm::uvec2 position, glm::uvec2 size, bool usesDepth);
-        virtual ~UiRenderArea();
+        UiRenderArea(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth);
+        virtual ~UiRenderArea() {};
 
-        void CreateResources() override;
+        virtual void OnSizeChange() override;
+
         void SetBackgroundColor(const glm::vec4& color);
         void BindTargetTexture();
 
@@ -20,7 +21,7 @@ namespace Ull
         void Render() override;
 
     protected:
-        void RenderBackground();
+        void Clear();
         void CheckMouseInArea();
         void CreateFrameBuffer();
 

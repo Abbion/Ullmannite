@@ -9,17 +9,21 @@ namespace Ull
     enum class UiElementType
     {
         Control,
-        Area,
+        RenderArea,
         Layout,
         GradientEditor,
-        GradientMarker
+        GradientMarker,
+        TitleBar
     };
 
-    class UiElement : public TreeNode<UiElement>, public Object2D, public EventHandler, public Drawable
+    class UiElement : public TreeNode<UiElement>, std::enable_shared_from_this<UiElement>, public Object2D, public EventHandler, public Drawable
     {
     public:
         std::optional<NotOwner<UiElement>> FindUiElementAboveByType(const UiElementType type);
+        const UiElementType GetType() const { return m_uiElementType; }
 
+        virtual glm::vec2 GetGlobalPosition() const override final;
+        virtual glm::vec2 GetRenderAreaPosition() const override final;
         virtual glm::mat4 GetTransform() const override final;
 
         virtual void HandleEvent(Event* event);
@@ -29,8 +33,6 @@ namespace Ull
 
     protected:
         UiElement(const std::string& name, const glm::vec2 position, const glm::vec2 size, const UiElementType type);
-
-        virtual void CreateResources() = 0;
 
     private:
         const UiElementType m_uiElementType;

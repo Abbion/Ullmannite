@@ -14,7 +14,7 @@ namespace Ull
 	class GradientMarker : public UiElement
 	{
 	public:
-		GradientMarker(std::string name, glm::uvec2 position, glm::uvec2 size, glm::vec4 color);
+		GradientMarker(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const glm::vec4 color);
 		GradientMarker(GradientMarker&& source);
 		~GradientMarker();
 
@@ -31,7 +31,7 @@ namespace Ull
 		void SetViewPos(glm::ivec2 pos) { m_viewPos = pos; }
 		void SetMinMaxBounds(int min, int max) { m_minMax.x = min; m_minMax.y = max; }
 
-		void CreateResources() override;
+		void CreateResources();
 
 		void HandleEvent(Event* event) override;
 		void Update() override;
@@ -60,9 +60,9 @@ namespace Ull
 	class UiGradientEditor : public UiElement
 	{
 	public:
-		UiGradientEditor(std::string name, glm::uvec2 position, glm::uvec2 size);
+		UiGradientEditor(const std::string& name, const glm::uvec2 position, const glm::uvec2 size);
 
-		void CreateResources() override;
+		void CreateResources();
 
 		void SetTransferFunction(NotOwner<TransferFunctionRenderer> transferFunction);
 

@@ -1,10 +1,10 @@
 #include "Ullpch.h"
 #include "UIGradientEditor.h"
+#include "Application/Application.h"
 #include "Rendering/Api/Renderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "glm/gtx/transform.hpp"
 #include "Event/Event.h"
-#include "Event/EventAggregator.h"
 #include "Input/Mouse.h"
 #include "Utilities/CollisionCheckers.h"
 #include "Logger/Logger.h"
@@ -15,10 +15,10 @@
 
 using namespace Ull;
 
-UiGradientEditor::UiGradientEditor(std::string name, glm::uvec2 position, glm::uvec2 size) :
+UiGradientEditor::UiGradientEditor(const std::string& name, const glm::uvec2 position, const glm::uvec2 size) :
     UiElement(name, position, size, UiElementType::GradientEditor)
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_GRADIENT_SHADER);
 }
 
@@ -115,7 +115,7 @@ void UiGradientEditor::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::MouseDoubleUp:
-        auto mousePos = Mouse::GetInstance().GetMousePosition();
+        auto mousePos = Application::GetMouse().GetMousePosition();
         const auto position = GetPosition();
         const auto size = GetSize();
 
@@ -193,7 +193,7 @@ void UiGradientEditor::Update()
 
     if(refreshGradient)
     {
-        EventAggregator::Publish(std::make_shared<GradientUpdatedEvent>(EventType::GradientUpdated));
+        Application::GetEventQueue().PushEvent(std::make_shared<GradientUpdatedEvent>(EventType::GradientUpdated));
 
         m_transferFunctionRenderer->DeleteAppLoints();
 
@@ -231,15 +231,15 @@ void UiGradientEditor::RenderGradient()
     texture->Bind();
     m_shader->SetInt("transferTexture", 0);
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 }
 
-GradientMarker::GradientMarker(std::string name, glm::uvec2 position, glm::uvec2 size, glm::vec4 color) :
+GradientMarker::GradientMarker(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const glm::vec4 color) :
     UiElement(name, position, size, UiElementType::GradientMarker),
     m_color(color),
     m_pointerColor(0.7f, 0.7f, 0.7f, 1.0f)
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
     m_shader = shaderManager.GetShader(ShaderTag::UI_BASIC_COLOR);
 }
 
@@ -311,7 +311,7 @@ void GradientMarker::HandleEvent(Event* event)
 
         if (mouseEvent->GetVal() == Mouse::Button::LEFT)
         {
-            auto mousePos = Mouse::GetInstance().GetMousePosition();
+            auto mousePos = Application::GetMouse().GetMousePosition();
             if (PointInMarker(mousePos))
             {
                 if(!m_openColorMenu)
@@ -337,7 +337,7 @@ void GradientMarker::HandleEvent(Event* event)
         }
         else if (mouseEvent->GetVal() == Mouse::Button::RIGHT)
         {
-            auto mousePos = Mouse::GetInstance().GetMousePosition();
+            auto mousePos = Application::GetMouse().GetMousePosition();
 
             if (PointInMarker(mousePos))
             {
@@ -392,7 +392,7 @@ void GradientMarker::Render()
     m_shader->SetFloat4("color", m_pointerColor);
     m_shader->SetFloat4x4("modelMatrix", m_modelMatrix);
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
+    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 
     glm::mat4x4 innerColorMatrix = m_modelMatrix;
     innerColorMatrix = glm::scale(innerColorMatrix, glm::vec3(0.85f, 0.85f, 0.85f));
@@ -400,7 +400,7 @@ void GradientMarker::Render()
     m_shader->SetFloat4("color", m_color);
     m_shader->SetFloat4x4("modelMatrix", innerColorMatrix);
 
-    Renderer::GetInstance().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize() - 2);
+    Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize() - 2);
 
     if (m_openColorMenu)
     {

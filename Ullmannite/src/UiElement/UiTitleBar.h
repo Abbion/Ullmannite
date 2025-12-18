@@ -1,41 +1,51 @@
 #pragma once
-#include "UiRenderArea.h"
-#include "Window/UllWindow.h"
 #include <memory>
-#include "Utilities/PointerHelper.h"
-#include "Controls/UiButton.h"
-#include "Controls/UiToggle.h"
-#include "Controls/UiText.h"
+#include "UiRenderArea.h"
+#include "UiElement/Controls/AllControls.h"
 
 namespace Ull
 {
-	class UiTitleBar : public UiRenderArea
+	class UiTitleBar : public UiElement
 	{
 	public:
-		UiTitleBar(std::string name, glm::uvec2 position, glm::uvec2 size);
+		enum class TitleBarFunctionality: uint8_t{
+			MINIMIZE = 1 << 0,
+			RESTORE = 1 << 1,
+			CLOSE = 1 << 2,
+			TITLE = 1 << 3
+		};
+
+	public:
+		UiTitleBar(const std::string& name, const glm::uvec2 position, const glm::uvec2 size);
 		virtual ~UiTitleBar() {}
 
-		void SetWindow(const NotOwner<UllWindow>& window) { m_window = window; }
-
-		bool IsOnDragArea() { return m_onDragArea; }
-
-		void CreateResources() override;
+		RectF GetGrabArea() const;
 
 		void HandleEvent(Event* event) override;
-
-		void Update() override;
-		void Render() override;
-	private:
-		void CreateControls();
 		void ResizeControls();
 
-		NotOwner<UllWindow> m_window{ nullptr };
+		void SetTitleText(const std::wstring& titleText);
+		void SetTitleBarFunctionality(const TitleBarFunctionality functionality, const State state);
 
-		bool m_onDragArea{ false };
+		void SetMinimizeFunction(std::function<void()> function) { m_minimizeFunction = function; }
+		void SetMaximizeFunction(std::function<void()> function) { m_maximizeFunction = function; }
+		void SetRestoreFunction(std::function<void()> function) { m_restoreFunction = function; }
+		void SetCloseFunction(std::function<void()> function) { m_closeFunction = function; }
 
-		std::shared_ptr<UiButton> m_closeButton;
+	private:
+		void CreateControls();
+
 		std::shared_ptr<UiButton> m_minimizeButton;
 		std::shared_ptr<UiToggle> m_restoreButton;
+		std::shared_ptr<UiButton> m_closeButton;
 		std::shared_ptr<UiText> m_titleText;
+
+		std::function<void()> m_minimizeFunction;
+		std::function<void()> m_maximizeFunction;
+		std::function<void()> m_restoreFunction;
+		std::function<void()> m_closeFunction;
+
+		using Functionality = uint8_t;
+		Functionality m_functionality{ 0u };
 	};
 }

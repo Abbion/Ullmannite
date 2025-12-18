@@ -1,6 +1,12 @@
 #include "Ullpch.h"
 #include "UiElement.h"
 #include <glm/ext/matrix_transform.hpp>
+#include <limits.h>
+
+namespace
+{
+	constexpr auto EPSILON = std::numeric_limits<float>::epsilon();
+}
 
 using namespace Ull;
 
@@ -9,6 +15,8 @@ UiElement::UiElement(const std::string& name, const glm::vec2 position, const gl
 	Object2D{ position, size },
 	m_uiElementType{ type }
 {
+	if (size.x < EPSILON || size.y < EPSILON)
+		ULOGE("UiElement error: " << name << " size cannot be 0. size x: " << size.x << " size.y: " << size.y);
 }
 
 std::optional<NotOwner<UiElement>> UiElement::FindUiElementAboveByType(const UiElementType type)
@@ -26,17 +34,44 @@ std::optional<NotOwner<UiElement>> UiElement::FindUiElementAboveByType(const UiE
 	return std::nullopt;
 }
 
-glm::mat4 UiElement::GetTransform() const
+glm::vec2 UiElement::GetGlobalPosition() const 
 {
 	auto parent = GetParent();
 	auto position = GetPosition();
-	const auto size = GetSize();
 
 	while (parent != nullptr)
 	{
 		position += parent->GetPosition();
 		parent = parent->GetParent();
 	}
+
+	return position;
+}
+
+glm::vec2 UiElement::GetRenderAreaPosition() const 
+{
+	auto parent = GetParent();
+	auto position = GetPosition();
+
+	while (parent != nullptr)
+	{
+		if(parent->GetType() != UiElementType::RenderArea)
+		{
+			position += parent->GetPosition();
+			return position;
+		}
+
+		parent = parent->GetParent();
+	}
+
+	return position;
+}
+
+glm::mat4 UiElement::GetTransform() const
+{
+	auto parent = GetParent();
+	auto position = GetRenderAreaPosition();
+	auto size = GetSize();
 
 	auto transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, glm::vec3{ position.x, position.y, 0.0f });
@@ -47,7 +82,8 @@ glm::mat4 UiElement::GetTransform() const
 
 void UiElement::HandleEvent(Event* event)
 {
-	event->IsHandeled();
+	if (event->IsHandeled())
+		return;
 
 	for (auto& child : GetChildren())
 		child->HandleEvent(event);
@@ -62,5 +98,8 @@ void UiElement::Update()
 void UiElement::Render()
 {
 	for (auto& child : GetChildren())
-		child->Render();
+	{
+		if (child->IsVisible())
+			child->Render();
+	}
 }

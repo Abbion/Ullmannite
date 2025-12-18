@@ -7,14 +7,14 @@
 
 #include "Logger/Logger.h"
 #include "Event/Event.h"
-#include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 #include "Rendering/Api/ShaderManager.h"
 
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
+#include "Layer/ToolLayer.h"
 
 #include "Resources/ResourceManager.h"
 
@@ -41,6 +41,8 @@ Application::Application()
 
 Application::~Application()
 {
+    m_layerManager.DropAllLayers();
+    GetRenderer().Terminate();
     ULOGD("Application terminated");
 }
 
@@ -48,27 +50,44 @@ void Application::Run()
 {    
     while (m_window.IsOpen())
     {        
-        if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::ESCAPE))
+        if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::ESCAPE))
         {
             m_window.Close();
         }
+        
+        m_mouse.UpdateCursorMode(m_window);
 
         m_window.PullEvents();
         HandleEvents();
+        UpdateAndRenderLayers();
+    }
+}
+
+void Application::UpdateAndRenderLayers()
+{
+    auto& layers = m_layerManager.GetLayers();
+
+    for (auto layer : layers)
+        layer->Update();
+
+    if (!m_window.IsMinimized())
+    {
+        for (auto layer : layers)
+            layer->RenderLayerComponents();
         
-        m_layerManager.GetTopLayer()->Update();
+        m_window.Clear();
         
-        if (!m_window.IsMinimized())
-        {
-            m_layerManager.GetTopLayer()->Render();
-            m_window.SwapBuffers();
-        }
+        for (auto layer : layers)
+            layer->Render();
+
+        m_window.SwapBuffers();
     }
 }
 
 void Application::InitApplciation()
 {
-    Ull::Renderer::GetInstance().SetApi(Ull::Renderer::API::OPEN_GL);
+    auto& renderer = GetRenderer();
+    renderer.SetApi(Ull::Renderer::API::OPEN_GL);
 
     //Window
     if (glfwInit() == -1)
@@ -81,8 +100,8 @@ void Application::InitApplciation()
     //Renderer
     glfwMakeContextCurrent(m_window.GetWindowContext());
 
-    Renderer::GetInstance().Init();
-    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), m_window.GetSize());
+    renderer.Init();
+    renderer.SetViewPort(glm::uvec2(0, 0), m_window.GetSize());
 
     //ImGui
     const char* glsl_version = "#version 140";
@@ -101,7 +120,7 @@ void Application::InitApplciation()
     const auto state2 = ImGui_ImplOpenGL3_Init(glsl_version);
 
     //Load Shaders
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = renderer.GetShaderManager();
 
     shaderManager.LoadShader(ShaderTag::UI_BASIC_COLOR, "UiBasicVS", "UiBasicColorPS");
     shaderManager.LoadShader(ShaderTag::FRAME_DISPLAY_SHADER, "DisplayFrameVS", "DisplayFramePS");
@@ -111,6 +130,7 @@ void Application::InitApplciation()
     shaderManager.LoadShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER, "CubeMarchVertexCounterCS");
     shaderManager.LoadShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER, "CubeMarchVS", "CubeMarchPS", "CubeMarchGS");
     shaderManager.LoadShader(ShaderTag::UI_GRADIENT_SHADER, "UiGradientVS", "UiGradientPS");
+    shaderManager.LoadShader(ShaderTag::UI_GRADIENT_SHADER_HSV, "UiGradientVS", "UiGradientHsvPS");
     shaderManager.LoadShader(ShaderTag::SIGNED_DISTANCE_FIELD_FOR_2D_TEXTURES, "SignedDistanceField2DCS");
     shaderManager.LoadShader(ShaderTag::INVERSE_2D_BIT_MAP, "Inverse2DBitMapCS");
     shaderManager.LoadShader(ShaderTag::MEREGE_INNSER_OUTER_SDF, "MergeInnerOuterSdfCS");
@@ -120,14 +140,18 @@ void Application::InitApplciation()
     //Resources
     auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
     fontManager.InitLoader();
-    fontManager.LoadFont("segoeuil.ttf", FontTag::UI_FONT, 128, 33, 126);
-    fontManager.LoadFont("UllIcon.ttf", FontTag::UI_ICON, 256, 61440, 61448);
+    fontManager.LoadFont("segoeui.ttf", FontTag::UI_FONT, 128, 33, 126);
+    fontManager.LoadFont("UllIcon.ttf", FontTag::UI_ICON, 256, 61440, 61449);
     fontManager.ReleaseLoader();
 
     //Layers
-    auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize());
+    auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
     mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));
     m_layerManager.PushLayer(mainLayer);
+
+    auto toolLayer = std::make_shared<ToolLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
+    toolLayer->SetWindow(NotOwner<UllWindow>(&m_window));
+    m_layerManager.PushLayer(toolLayer);
 
     //First resizeEvent to inform components of the initial window size
     const auto windowSize = m_window.GetSize();
@@ -165,6 +189,12 @@ void Application::HandleEvents()
         case EventType::KeyDown:
             keyState.key = static_cast<KeyDownEvent*>(currentEvent.get())->GetVal();
             keyState.state = true;
+
+            if (keyState.key == Keyboard::Key::P)
+            {
+                //const auto colorPickerData = ColorPickerData{ glm::vec4(1.0f, 0.0f, 1.0f, 1.0f) };
+                //EventAggregator::Publish(std::make_shared<OpenToolEvent>(EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25), colorPickerData }));
+            }
             break;
 
         case EventType::KeyUp:
@@ -183,7 +213,7 @@ void Application::HandleEvents()
             break;
 
         case EventType::MouseMove:
-            Mouse::GetInstance().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
+            GetMouse().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
             break;
 
         case EventType::MouseScroll:
@@ -198,24 +228,18 @@ void Application::HandleEvents()
          m_layerManager.HandleEvent(currentEvent.get());
     }
 
-    Keyboard::GetInstance().UpdateKeyMap(keyState);
-    Mouse::GetInstance().UpdateButtonMap(buttonState);
-    Mouse::GetInstance().UpdateScroll(scroll);
+    GetKeyboard().UpdateKeyMap(keyState);
+    GetMouse().UpdateButtonMap(buttonState);
+    GetMouse().UpdateScroll(scroll);
 }
 
 void Application::WindowResizeHandler(const glm::uvec2& size)
 {
-    Renderer::GetInstance().SetViewPort(glm::uvec2(0, 0), size);
+    GetRenderer().SetViewPort(glm::uvec2(0, 0), size);
 }
 
 void Application::WindowRefreshFunction()
 {
     HandleEvents();
-
-    m_layerManager.GetTopLayer()->Update();
-    if (!m_window.IsMinimized())
-    {
-        m_layerManager.GetTopLayer()->Render();
-        m_window.SwapBuffers();
-    }
+    UpdateAndRenderLayers();
 }

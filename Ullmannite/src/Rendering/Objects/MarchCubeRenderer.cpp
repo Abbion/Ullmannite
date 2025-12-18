@@ -2,11 +2,10 @@
 #include "MarchCubeRenderer.h"
 #include "Rendering/Api/ShaderManager.h"
 #include "Rendering/Api/Texture.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 #include "Rendering/Objects/DirectionalLight.h"
 #include "Rendering/TriangulationTable/TriangulationTable.h"
 #include "Rendering/Api/OpenGL/BufferOpenGL.h"
-#include "Event/EventAggregator.h"
 #include "Scene/Scene.h"
 #include <thread>
 #include <chrono>
@@ -35,7 +34,7 @@ using namespace Ull;
 MarchCubeRenderer::MarchCubeRenderer(const std::string& name, NotOwner<Scene> scene) :
 	Node3D(name, scene)
 {
-	auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+	auto& shaderManager = Application::GetRenderer().GetShaderManager();
 	m_cubeMarchVertexCounter = shaderManager.GetShader(ShaderTag::CUBE_MARCH_VERTEX_COUNTER);
 	m_cubeMarchShader = shaderManager.GetShader(ShaderTag::CUBE_MARCH_MESH_GENERATOR);
 	m_vertexRendererShader = shaderManager.GetShader(ShaderTag::CUBE_MARCH_VERTEX_RENDERER);
@@ -54,10 +53,10 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 	m_volumeData = volumeData;
 	m_volumeTexture = Texture3D::Create();
 
-	Renderer::GetInstance().SetPixelUnpackWidth(1);
+	Application::GetRenderer().SetPixelUnpackWidth(1);
 	m_volumeTexture->SetData(glm::vec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth), InternalDataFormat::R_16UI, PixelDataFormat::R_I, GraphicsDataType::USHORT, (void*)volumeData->dataBuffer.data());
 	m_volumeTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
-	Renderer::GetInstance().SetPixelUnpackWidth(4);
+	Application::GetRenderer().SetPixelUnpackWidth(4);
 
 	glm::uvec2 initThresholds((unsigned int)(InitialMinThresholdRate * (float)m_volumeData->maxValue), m_volumeData->maxValue);
 	
@@ -67,7 +66,7 @@ void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeDa
 	m_thresholds = initThresholds;
 	m_cuttingSettingsInt = glm::ivec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth);
 
-	EventAggregator::Publish(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, initThresholds));
+	Application::GetEventQueue().PushEvent(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, initThresholds));
 	m_thresholdInitEventShip = true;
 }
 
@@ -112,9 +111,9 @@ void MarchCubeRenderer::GenerateMesh()
 	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(m_volumeData->height + 2) / vertexCounterLocalSize);
 	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(m_volumeData->depth + 2) / vertexCounterLocalSize);
 
-	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
-	Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::ATOMIC_COUNTER_BARRIER);
-	Renderer::GetInstance().GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+	Application::GetRenderer().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
+	Application::GetRenderer().Barrier(Renderer::BarrierType::ATOMIC_COUNTER_BARRIER);
+	Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 
 	atomicCounter->Unbind();
 
@@ -186,7 +185,7 @@ void MarchCubeRenderer::Render()
 
 	SetUpLight();
 
-	Renderer::GetInstance().DrawArrays(GraphicsRenderPrimitives::TRIANGLE, (unsigned int)m_vertexCount, 0);
+	Application::GetRenderer().DrawArrays(GraphicsRenderPrimitives::TRIANGLE, (unsigned int)m_vertexCount, 0);
 
 	m_vertexPosTexture->Unbind();
 }
@@ -219,8 +218,8 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	m_cubeMarchVertexCounter->SetInt3("cuttingPlanes", m_cuttingSettingsInt);
 
 	//Run shader
-	Renderer::GetInstance().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
-	Renderer::GetInstance().Barrier(Renderer::BarrierType::STORAGE_BUFFER_BARRIER);
+	Application::GetRenderer().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
+	Application::GetRenderer().Barrier(Renderer::BarrierType::STORAGE_BUFFER_BARRIER);
 
 	TriangulationTable::GetInstance().GetVertexCountTexture()->Unbind();
 

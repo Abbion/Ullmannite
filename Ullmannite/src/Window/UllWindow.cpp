@@ -1,10 +1,9 @@
 #include "Ullpch.h"
 #include "UllWindow.h"
-#include "Input/Keyboard.h"
+#include "Application/Application.h"
 #include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Event/Event.h"
-#include "Rendering/Api/Renderer.h"
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -15,6 +14,11 @@
 
 #ifdef  PLATFORM_WINDOWS
 #include <Windows.h>
+#include <dwmapi.h>
+
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#pragma comment(lib, "dwmapi.lib") // ADD THIS TO THE BUILDER
 #endif
 
 #ifdef PLATFORM_LINUX
@@ -30,7 +34,9 @@ namespace
     constexpr double DoubleClickDurationWindow = 0.4;
     constexpr float ScaleUpFactor = 1.25f;
     constexpr float ScaleDownFactor = 1.f / ScaleUpFactor;
-    constexpr int MaxScaleCounter = 3;
+    constexpr unsigned ResizeMarginSize = 3;
+
+    static auto s_lastTimePoint = std::chrono::high_resolution_clock::now();
 }
 
 UllWindow::UllWindow()
@@ -40,6 +46,7 @@ UllWindow::UllWindow()
 void UllWindow::Create(std::string title, glm::uvec2 size)
 {
     m_title = title;
+    m_grabArea = RectU(0, 0, 1, 1);
 
     if (size.x < MIN_WINDOW_WIDTH)
         size.x = MIN_WINDOW_WIDTH;
@@ -47,7 +54,7 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
     if (size.y < MIN_WINDOW_HEIGHT)
         size.y = MIN_WINDOW_HEIGHT;
 
-    if (Renderer::GetInstance().GetApi() == Renderer::API::OPEN_GL)
+    if (Application::GetRenderer().GetApi() == Renderer::API::OPEN_GL)
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -78,6 +85,15 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
     glfwSetWindowSizeLimits(m_window, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     InitCallBacks();
+
+    HWND hwnd = glfwGetWin32Window(m_window);
+
+    if (hwnd) {
+        const int param = DWMWCP_ROUND;
+        DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &param, sizeof(param));
+        MARGINS margins = { 8, 8, 8, 8 }; // Extend the border area by 8 pixels
+        DwmExtendFrameIntoClientArea(hwnd, &margins);
+    }
 
     m_lastRefresh = std::chrono::steady_clock::now();
 }
@@ -126,6 +142,7 @@ void UllWindow::SetRefreshFunction(std::function<void()> refreshFunction)
 
 void UllWindow::SetDragArea(const glm::uvec2 position, const glm::uvec2 size)
 {
+    m_grabArea = RectU(position.x, position.y, size.x, size.y);
     glfwSetWindowBorderlessGrabArea(m_window, position.x, position.y, size.x, size.y);
 }
 
@@ -139,23 +156,9 @@ void UllWindow::HandleEvent(Event* event)
     case EventType::KeyDown:
         if (static_cast<KeyDownEvent*>(event)->GetVal() == Keyboard::Key::F)
         {
-            if (Keyboard::GetInstance().IsKeyPressed(Keyboard::Key::L_CONTROL))
+            if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::L_CONTROL))
                 SwitchHiddenCursor();
         }
-    break;
-
-    case EventType::UiScaledUp:
-        if (m_scaleCounter < MaxScaleCounter)
-            m_scaleCounter++;
-        else
-            event->MarkHandeled(true);
-    break;
-
-    case EventType::UiScaledDown:
-        if (m_scaleCounter > -MaxScaleCounter)
-            m_scaleCounter--;
-        else
-            event->MarkHandeled(true);
     break;
 
     default:
@@ -221,9 +224,17 @@ void UllWindow::SwitchHiddenCursor()
     }
 }
 
+void UllWindow::Clear()
+{
+    auto& renderer = Application::GetRenderer();
+    renderer.SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    renderer.Clear(Renderer::ClearBits::COLOR | Renderer::ClearBits::COLOR | Renderer::ClearBits::SETNCIL);
+    renderer.SetViewPort(glm::ivec2(0, 0), GetSize());
+}
+
 void UllWindow::SwapBuffers()
 {
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfwSwapBuffers(m_window);
 }
 
@@ -284,25 +295,23 @@ void UllWindow::InitCallBacks()
             if (key == GLFW_KEY_KP_ADD || key == GLFW_KEY_EQUAL)
             {
                 eventQueue->PushEvent(std::make_shared<UiScaledUpEvent>(EventType::UiScaledUp, ScaleUpFactor));
+                return;
             }
             else if (key == GLFW_KEY_KP_SUBTRACT || key == GLFW_KEY_MINUS)
             {
                 eventQueue->PushEvent(std::make_shared<UiScaledDownEvent>(EventType::UiScaledDown, ScaleDownFactor));
+                return;
             }
         }
-        else
-        {
-            if (action == GLFW_PRESS)
-                eventQueue->PushEvent(std::make_shared<KeyDownEvent>(EventType::KeyDown, static_cast<Keyboard::Key>(key)));
-            else if (action == GLFW_RELEASE)
-                eventQueue->PushEvent(std::make_shared<KeyUpEvent>(EventType::KeyUp, static_cast<Keyboard::Key>(key)));
-        }
+        
+        if (action == GLFW_PRESS)
+            eventQueue->PushEvent(std::make_shared<KeyDownEvent>(EventType::KeyDown, static_cast<Keyboard::Key>(key)));
+        else if (action == GLFW_RELEASE)
+            eventQueue->PushEvent(std::make_shared<KeyUpEvent>(EventType::KeyUp, static_cast<Keyboard::Key>(key)));
     });
 
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
         auto eventQueue = reinterpret_cast<WindowPointerDataStruct*>(glfwGetWindowUserPointer(window))->eventQueue;
-
-        static auto lastTimePoint = std::chrono::high_resolution_clock::now();
 
         if (action == GLFW_PRESS)
         {
@@ -315,8 +324,8 @@ void UllWindow::InitCallBacks()
             if (static_cast<Mouse::Button>(button) == Mouse::Button::LEFT)
             {
                 auto timePoint = std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> duration = timePoint - lastTimePoint;
-                lastTimePoint = timePoint;
+                std::chrono::duration<double> duration = timePoint - s_lastTimePoint;
+                s_lastTimePoint = timePoint;
 
                 if (duration.count() < DoubleClickDurationWindow)
                 {

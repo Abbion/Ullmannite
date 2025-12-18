@@ -29,6 +29,7 @@ namespace Ull
         const glm::ivec2 GetPosition() const;
         const glm::ivec2 GetSize() const;
         const std::string GetTitle() const { return m_title; }
+        const RectU GetGrabArea() const { return m_grabArea; }
 
         GLFWwindow* GetWindowContext() const { return m_window; }
 
@@ -42,6 +43,7 @@ namespace Ull
         void Minimize();
         void Restore();
 
+        void Clear();
         void SwapBuffers();
         void PullEvents();
 
@@ -55,11 +57,12 @@ namespace Ull
 
     private:
         std::string m_title;
+        RectU m_grabArea;
+
         bool m_isOpen{ true };
         bool m_isMinimized{ false };
         bool m_isMaximized{ false };
         bool m_cursorLocked{ false };
-        int m_scaleCounter{ 0 };
 
         GLFWwindow* m_window{ nullptr };
 

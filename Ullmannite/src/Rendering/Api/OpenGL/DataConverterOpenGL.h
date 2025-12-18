@@ -290,7 +290,6 @@ namespace Ull
         case GraphicsRenderPrimitives::TRIANGLE:
             return GL_TRIANGLES;
             break;
-
         case GraphicsRenderPrimitives::LINE:
             return GL_LINES;
             break;

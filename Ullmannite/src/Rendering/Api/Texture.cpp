@@ -2,14 +2,14 @@
 #include "Texture.h"
 #include "Logger/Logger.h"
 #include "OpenGL/TextureOpenGL.h"
-#include "Renderer.h"
+#include "Application/Application.h"
 
 
 using namespace Ull;
 
 Texture1D* Texture1D::Create()
 {
-    switch(Renderer::GetInstance().GetApi())
+    switch(Application::GetRenderer().GetApi())
     {
         case Renderer::API::OPEN_GL:
             return new Texture1DOpenGL();
@@ -22,7 +22,7 @@ Texture1D* Texture1D::Create()
 
 Texture2D* Texture2D::Create()
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new Texture2DOpenGL();
@@ -35,7 +35,7 @@ Texture2D* Texture2D::Create()
 
 Texture3D* Texture3D::Create()
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new Texture3DOpenGL();

@@ -41,7 +41,9 @@ namespace Ull
         ExaminationThresholdChanged,
         GradientUpdated,
 
-        RenderAreaSizeChanged
+        RenderAreaSizeChanged,
+        
+        OpenTool,
     };
 
     //==================================================================
@@ -51,7 +53,7 @@ namespace Ull
         Event(EventType eventType) : m_type(eventType) {}
         virtual ~Event() { /*ULOGD("event " << (int)m_type << " terminated");*/ }
 
-        void MarkHandeled(bool handeled) { m_handeled = handeled; } 
+        void MarkHandeled(const bool handeled) { m_handeled = handeled; } 
 
         EventType GetType() const { return m_type; }
         bool IsHandeled() const { return m_handeled; }
@@ -93,8 +95,8 @@ namespace Ull
     typedef ValueEvent<Keyboard::Key> KeyUpEvent;
 
     typedef ValueEvent<Mouse::Button> MouseDownEvent;
-    typedef ValueEvent<Mouse::Button> MouseDoubleUp;
     typedef ValueEvent<Mouse::Button> MouseUpEvent;
+    typedef ValueEvent<Mouse::Button> MouseDoubleUp;
     typedef ValueEvent<int> MouseScrollEvent;
     typedef ValueEvent<glm::ivec2> MouseMoveEvent;
 
@@ -106,4 +108,6 @@ namespace Ull
     typedef ValueEvent<CuttingSettings> CuttingSettingsChangedEvent;
 
     typedef Event RenderAreaSizeChanged;
+
+    typedef ValueEvent<ToolSetup> OpenToolEvent;
 };

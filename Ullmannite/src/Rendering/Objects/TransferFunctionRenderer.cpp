@@ -1,7 +1,7 @@
 #include "Ullpch.h"
 #include "TransferFunctionRenderer.h"
 #include "Rendering/Api/ShaderManager.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 #include "Rendering/Api/Buffer.h"
 #include <algorithm>
 
@@ -76,8 +76,8 @@ void TransferFunctionRenderer::GenerateTransferFunction()
     m_transferFunctionGeneratorShader->Bind();
     m_transferFunctionGeneratorShader->SetUint("colorPointsCount", (unsigned int)size);
 
-    Renderer::GetInstance().DispatchComputeShader(1, 1, 1);
-    Renderer::GetInstance().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+    Application::GetRenderer().DispatchComputeShader(1, 1, 1);
+    Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
     
     m_transferFunctionTexture->Unbind();
 
@@ -86,7 +86,7 @@ void TransferFunctionRenderer::GenerateTransferFunction()
 
 void TransferFunctionRenderer::Init()
 {
-    auto& shaderManager = Renderer::GetInstance().GetShaderManager();
+    auto& shaderManager = Application::GetRenderer().GetShaderManager();
     m_transferFunctionGeneratorShader = shaderManager.GetShader(ShaderTag::TRANSFER_FUNCTION_GENERATOR);
     
     m_transferFunctionTexture = Texture1D::Create();

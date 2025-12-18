@@ -7,7 +7,7 @@ namespace Ull
     class UiToggle : public UiBasicControl
     {
     public:
-        UiToggle(std::string name, glm::uvec2 position, glm::uvec2 size);
+        UiToggle(std::string name, glm::vec2 position, glm::vec2 size);
         ~UiToggle() {}
 
         bool IsEnabled() const { return m_state; }

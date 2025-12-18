@@ -1,28 +1,9 @@
 #include <Ullpch.h>
 #include "EventQueue.h"
-#include "EventAggregator.h"
 
 #include "Logger/Logger.h"
 
 using namespace Ull;
-
-EventQueue::EventQueue()
-{
-    EventAggregator::Sbuscribe(EventType::FileLoaded, [this](const std::shared_ptr<Event>& event) {
-        PushEvent(event);
-    });
-
-    EventAggregator::Sbuscribe(EventType::ExaminationThresholdChanged, [this](const std::shared_ptr<Event>& event) {
-        PushEvent(event);
-    });
-
-    EventAggregator::Sbuscribe(EventType::CuttingSettingsChanged, [this](const std::shared_ptr<Event>& event) {
-        PushEvent(event);
-    });
-    EventAggregator::Sbuscribe(EventType::GradientUpdated, [this](const std::shared_ptr<Event>& event) {
-        PushEvent(event);
-    });
-}
 
 EventQueue::~EventQueue()
 {

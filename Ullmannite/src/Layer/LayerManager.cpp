@@ -1,7 +1,7 @@
 #include "Ullpch.h"
 #include "Layer/LayerManager.h"
-
 #include "Logger/Logger.h"
+#include "Layer/Layer.h"
 
 using namespace Ull;
 
@@ -17,19 +17,12 @@ LayerManager::~LayerManager()
 
 void LayerManager::PushLayer(std::shared_ptr<Layer> newLayer)
 {
-    m_layers.push_back(newLayer);
+    m_layers.emplace_back(newLayer);
 }
 
-void LayerManager::PopLayer()
+void LayerManager::DropAllLayers()
 {
-    m_layers.pop_back();
-}
-
-std::shared_ptr<Layer> LayerManager::GetTopLayer()
-{
-    UASSERT(m_layers.size() != 0, "Layer queue is empty");
-
-    return m_layers.back();
+    m_layers.clear();
 }
 
 unsigned int LayerManager::GetSize() const
@@ -42,11 +35,10 @@ void LayerManager::HandleEvent(Event* event)
     if(event->IsHandeled())
         return;
 
-    for(auto & layer : m_layers)
-    {
-        layer->HandleEvent(event);
 
-        if(event->IsHandeled())
-            break;
-    }
+    for (auto layerItr = m_layers.rbegin(); layerItr != m_layers.rend(); layerItr++)
+        (*layerItr)->HandleEvent(event);
+
+    //for(auto & layer : m_layers)
+      //  layer->HandleEvent(event);
 }

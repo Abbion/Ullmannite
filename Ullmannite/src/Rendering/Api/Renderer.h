@@ -17,12 +17,14 @@ namespace Ull
             OPEN_GL = 1u
         };
 
-        enum class ClearBits : uint8_t
+        enum ClearBits : uint8_t
         {
             COLOR = 1 << 0u,
             DEPTH = 1 << 1u,
             SETNCIL = 1 << 2u
         };
+
+        typedef uint8_t ClearMask;
 
         enum class State
         {
@@ -56,8 +58,6 @@ namespace Ull
         
         ~Renderer();
 
-        static Renderer& GetInstance();
-
         inline API GetApi() { return m_api; }
         void SetApi(API api);
         void Init();
@@ -71,19 +71,18 @@ namespace Ull
         void SetDepth(State state);
         void SetFaceCulling(FaceCulling culling);
         void SetFaceWinding(FaceWinding winding);
+        void SetBlending(const State state);
 
         void SetPixelPackWidth(unsigned int width);
         void SetPixelUnpackWidth(unsigned int width);
 
         void SetClearColor(glm::vec4 color);
-        void Clear(ClearBits clearBits);
+        void Clear(ClearMask clearBits);
         void DrawElements(GraphicsRenderPrimitives primitive, unsigned int count, GraphicsDataType type = GraphicsDataType::UINT, unsigned int skip = 0);
         void DrawArrays(GraphicsRenderPrimitives primitive, unsigned int count, unsigned int skip = 0);
         void DispatchComputeShader(unsigned int groupSizeX, unsigned int groupSizeY, unsigned int groupSizeZ);
         void FlushContext();
         void Barrier(BarrierType barrier);
-
-        void SetBlending(const bool enableState);
 
     protected:
         Renderer() = default;
@@ -95,6 +94,8 @@ namespace Ull
         bool m_apiLocked{ false };
 
         ShaderManager m_shaderManager;
+
+        friend class Application;
     };
 
     inline Renderer::ClearBits operator|(Renderer::ClearBits flagA, Renderer::ClearBits flagB)

@@ -217,6 +217,10 @@ void ShaderOpenGL::SetInt2(std::string uniformName, glm::ivec2 value) const
     glUniform2i(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.x, value.y);
 }
 
+void ShaderOpenGL::SetUint2(std::string uniformName, glm::uvec2 value) const
+{
+    glUniform2ui(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.x, value.y);
+}
 void ShaderOpenGL::SetUint3(std::string uniformName, glm::uvec3 value) const
 {
     glUniform3ui(glGetUniformLocation(m_shaderID, uniformName.c_str()), value.x, value.y, value.z);
@@ -227,6 +231,11 @@ void ShaderOpenGL::SetFloat(std::string uniformName, float value) const
     glUniform1f(glGetUniformLocation(m_shaderID, uniformName.c_str()), value);
 }
 
+void ShaderOpenGL::SetFloat2(std::string uniformName, glm::vec2 value) const
+{
+    auto locator = glGetUniformLocation(m_shaderID, uniformName.c_str());
+    glUniform2f(locator, value.x, value.y);
+}
 void ShaderOpenGL::SetFloat4(std::string uniformName, glm::vec4 value) const
 {
     auto locator = glGetUniformLocation(m_shaderID, uniformName.c_str());

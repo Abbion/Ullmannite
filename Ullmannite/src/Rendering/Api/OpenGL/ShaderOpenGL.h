@@ -16,10 +16,12 @@ namespace Ull
 
         void SetInt(std::string uniformName, int value) const override;
         void SetUint(std::string uniformName, unsigned int value) const override;
-        void SetInt3(std::string uniformName, glm::ivec3 value) const override;
         void SetInt2(std::string uniformName, glm::ivec2 value) const override;
+        void SetInt3(std::string uniformName, glm::ivec3 value) const override;
+        void SetUint2(std::string uniformName, glm::uvec2 value) const override;
         void SetUint3(std::string uniformName, glm::uvec3 value) const override;
         void SetFloat(std::string uniformName, float value) const override;
+        void SetFloat2(std::string uniformName, glm::vec2 value) const override;
         void SetFloat4(std::string uniformName, glm::vec4 value) const override;
         void SetFloat3(std::string uniformName, glm::vec3 value) const override;
         void SetFloat4x4(std::string uniformName, glm::mat4x4 value) const override;

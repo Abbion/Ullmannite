@@ -6,6 +6,8 @@
 
 namespace Ull
 {
+    class UllWindow;
+
     class Mouse
     {
     public:
@@ -17,6 +19,12 @@ namespace Ull
             MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE
         };
 
+        enum class Mode : uint16_t
+        {
+            POINTER,
+            IBEAM
+        };
+
         struct ButtonState 
         {
             Button button = Button::NONE;
@@ -25,32 +33,33 @@ namespace Ull
 
     public:
         NON_COPYABLE(Mouse);
-
         ~Mouse();
-
-        static Mouse& GetInstance();
         
+        void SetCursorMode(const Mode mode);
+
         bool IsButtonPressed(Button button) const;
         glm::ivec2 GetMousePosition() const { return m_mousePosition; }
         glm::ivec2 GetMousePositionDelta() const { return m_mousePositionDelta; }
         int GetScrollDelta() const { return m_scroll; }
 
     protected:
+        void UpdateCursorMode(UllWindow& window);
+
+    private:
         Mouse();
-
-        static Mouse m_mouseInstance;
-
-    private:
-        std::map<Button, bool> m_buttonMap;
-        glm::ivec2 m_mousePosition{ 0, 0 };
-        glm::ivec2 m_mousePositionDelta{ 0, 0 };
-        int m_scroll;
-
-    private:
         void UpdatePosition(const glm::ivec2& position); 
         void UpdateScroll(int scroll) { m_scroll = scroll; }
         void UpdateButtonMap(const ButtonState buttonState);
         void InitButtonMap();
+
+        bool m_changeCursor{ true };
+        Mode m_cursorMode{ Mode::POINTER };
+        GLFWcursor* m_cursor{ nullptr };
+
+        std::map<Button, bool> m_buttonMap;
+        glm::ivec2 m_mousePosition{ 0, 0 };
+        glm::ivec2 m_mousePositionDelta{ 0, 0 };
+        int m_scroll;
 
         friend class Application;
     };

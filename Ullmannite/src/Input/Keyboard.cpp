@@ -3,13 +3,6 @@
 
 using namespace Ull;
 
-Keyboard Keyboard::m_keyboardInstance;
-
-Keyboard& Keyboard::GetInstance()
-{
-    return m_keyboardInstance;
-}
-
 Keyboard::Keyboard()
 {
     InitKeyMap();

@@ -1,10 +1,10 @@
 #include "Ullpch.h"
 #include "UiToggle.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
 
 using namespace Ull;
 
-UiToggle::UiToggle(std::string name, glm::uvec2 position, glm::uvec2 size) :
+UiToggle::UiToggle(std::string name, glm::vec2 position, glm::vec2 size) :
 	UiBasicControl(name, position, size, UiControlType::UiToggle),
     m_buttonText{ std::make_shared<UiText>(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Toggle") }
 {
@@ -65,7 +65,10 @@ void UiToggle::Update()
 
 void UiToggle::Render()
 {
-    Renderer::GetInstance().SetBlending(true);
+    if (!IsVisible())
+        return;
+
+    Application::GetRenderer().SetBlending(Renderer::State::ENABLE);
     UiBasicControl::Render();
-    Renderer::GetInstance().SetBlending(false);
+    Application::GetRenderer().SetBlending(Renderer::State::DISABLE);
 }

@@ -46,15 +46,8 @@ namespace {
     }
 }
 
-Renderer Renderer::m_rendererInstance;
-
 Renderer::~Renderer()
 {
-}
-
-Renderer& Renderer::GetInstance()
-{
-    return m_rendererInstance;
 }
 
 void Renderer::SetApi(API api)
@@ -140,6 +133,20 @@ void Renderer::SetFaceWinding(FaceWinding winding)
     }
 }
 
+void Renderer::SetBlending(const State state)
+{
+    if (m_api == API::OPEN_GL)
+    {
+        if (state == State::ENABLE)
+        {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        else
+            glDisable(GL_BLEND);
+    }
+}
+
 void Renderer::SetPixelPackWidth(unsigned int width)
 {
     glPixelStorei(GL_PACK_ALIGNMENT, width);
@@ -158,7 +165,7 @@ void Renderer::SetClearColor(glm::vec4 color)
     }
 }
 
-void Renderer::Clear(ClearBits clearBits)
+void Renderer::Clear(ClearMask clearBits)
 {
     if (m_api == API::OPEN_GL)
     {
@@ -205,21 +212,5 @@ void Renderer::Barrier(BarrierType barrier)
     if (m_api == API::OPEN_GL)
     {
         glMemoryBarrier(ConvertBarrierTypeOpenGL(barrier));
-    }
-}
-
-void Renderer::SetBlending(const bool blendState)
-{
-    if (m_api == API::OPEN_GL)
-    {
-        if (blendState)
-        {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-        else
-        {
-            glDisable(GL_BLEND);
-        }
     }
 }

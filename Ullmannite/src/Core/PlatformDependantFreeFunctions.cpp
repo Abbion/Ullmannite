@@ -35,7 +35,7 @@ std::optional<std::wstring> Ull::CreateFileOpenDialog(FileExtentions fileExtenti
         pFileOpen->SetOkButtonLabel(L"load");
 
         auto filterVec = GetFilters(fileExtentions);
-        pFileOpen->SetFileTypes(filterVec.size(), filterVec.data());
+        pFileOpen->SetFileTypes(static_cast<UINT>(filterVec.size()), filterVec.data());
 
         if (SUCCEEDED(hr))
         {

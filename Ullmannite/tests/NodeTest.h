@@ -550,3 +550,101 @@ TEST(NODE_TEST, INSERT_NODE_WITH_EXISTING_ID_ABOVE)
 
 	EXPECT_EQ(rootNode2->GetChildren().size(), 0);
 }
+
+TEST(NODE_TEST, ADD_AND_REMOVE_CHILD)
+{
+	auto rootNode = std::make_shared<TestNode>("RootNode");
+	auto childNode = std::make_shared<TestNode>("ChildNode");
+
+	rootNode->AddChildNode(childNode);
+	const auto wasRemoved = rootNode->RemoveChildNode(childNode);
+
+	EXPECT_TRUE(rootNode->GetChildren().empty() && wasRemoved);
+}
+
+TEST(NODE_TEST, REMOVE_CHILD_WITHOUT_ADDING)
+{
+	auto rootNode = std::make_shared<TestNode>("RootNode");
+	auto childNode = std::make_shared<TestNode>("ChildNode");
+
+	const auto wasRemoved = rootNode->RemoveChildNode(childNode);
+
+	EXPECT_TRUE(rootNode->GetChildren().empty() && !wasRemoved);
+}
+
+TEST(NODE_TEST, ADD_THREE_CHILDREN_AND_REMOVE_TWO)
+{
+	auto rootNode = std::make_shared<TestNode>("RootNode");
+	auto childNode1 = std::make_shared<TestNode>("ChildNode1");
+	auto childNode2 = std::make_shared<TestNode>("ChildNode2");
+	auto childNode3 = std::make_shared<TestNode>("ChildNode3");
+
+	rootNode->AddChildNode(childNode1);
+	rootNode->AddChildNode(childNode2);
+	rootNode->AddChildNode(childNode3);
+
+	const auto wasRemoved1 = rootNode->RemoveChildNode(childNode1);
+	const auto wasRemoved3 = rootNode->RemoveChildNode(childNode3);
+
+	EXPECT_TRUE(rootNode->GetChildren().size() == 1 && wasRemoved1 && wasRemoved3);
+}
+
+TEST(NODE_TEST, ADD_CHILD_REMOVE_CHILD_AND_ADD_IT_BACK)
+{
+	auto rootNode = std::make_shared<TestNode>("RootNode");
+	auto childNode = std::make_shared<TestNode>("ChildNode");
+
+	rootNode->AddChildNode(childNode);
+	const auto wasRemoved = rootNode->RemoveChildNode(childNode);
+	rootNode->AddChildNode(childNode);
+
+	EXPECT_TRUE(rootNode->GetChildren().size() == 1 && wasRemoved);
+}
+
+TEST(NODE_TEST, ATTACH_BRANCH_AND_REMOVE_IT)
+{
+	auto rootNode = std::make_shared<TestNode>("RootNode");
+	auto oneDeepNode = std::make_shared<TestNode>("OneDeepRootNode");
+	auto oneDeepChild = std::make_shared<TestNode>("ChildNode");
+
+	rootNode->AddChildNode(oneDeepNode);
+	oneDeepNode->AddChildNode(oneDeepChild);
+	const auto wasRemoved = rootNode->RemoveChildNode(oneDeepNode);
+
+	EXPECT_TRUE(rootNode->GetChildren().empty() && wasRemoved && oneDeepNode->GetParent() == nullptr);
+}
+
+TEST(NODE_TEST, GET_PARENT_AND_REMOVE_CHILDREN_FROM_IT)
+{
+	auto rootNode = std::make_shared<TestNode>("RootNode");
+	auto childNode1 = std::make_shared<TestNode>("ChildNode1");
+	auto childNode2 = std::make_shared<TestNode>("ChildNode2");
+	auto childNode3 = std::make_shared<TestNode>("ChildNode3");
+
+	rootNode->AddChildNode(childNode1);
+	rootNode->AddChildNode(childNode2);
+	rootNode->AddChildNode(childNode3);
+
+	const auto wasRemoved1 = childNode1->GetParent()->RemoveChildNode(childNode1);
+	const auto wasRemoved3 = childNode3->GetParent()->RemoveChildNode(childNode3);
+
+	EXPECT_TRUE(rootNode->GetChildren().size() == 1 && wasRemoved1 && wasRemoved3 &&
+				childNode1->GetParent() == nullptr && childNode3->GetParent() == nullptr);
+}
+
+TEST(NODE_TEST, SWITCH_PARENTS)
+{
+	auto rootNode = std::make_shared<TestNode>("RootNode");
+	auto oneDeepNode = std::make_shared<TestNode>("OneDeepRootNode");
+	auto oneDeepChild = std::make_shared<TestNode>("ChildNode");
+
+	rootNode->AddChildNode(oneDeepNode);
+	oneDeepNode->AddChildNode(oneDeepChild);
+
+	const auto wasRemoved = rootNode->RemoveChildNode(oneDeepNode);
+
+	rootNode->AddChildNode(oneDeepChild);
+
+	EXPECT_TRUE(rootNode->GetChildren().size() == 1 && oneDeepNode->GetChildren().empty() && wasRemoved &&
+		oneDeepChild->GetParent() == rootNode.get() && oneDeepNode->GetParent() == nullptr);
+}

@@ -7,13 +7,13 @@ namespace Ull
     class UiButton : public UiBasicControl
     {
     public:
-        UiButton(std::string name, glm::uvec2 position, glm::uvec2 size);
+        UiButton(std::string name, glm::vec2 position, glm::vec2 size);
 
         std::shared_ptr<UiText> GetTextControl() { return m_buttonText; }
 
         void SetOnClickFunction(std::function<void(UiButton& buttonElement)> onClick) { m_onClick = onClick; }
 
-        void SetSize(const glm::uvec2 size);
+        void SetSize(const glm::vec2 size);
 
         void HandleEvent(Event* event);
         void Update() override;

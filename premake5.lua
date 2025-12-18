@@ -197,14 +197,14 @@ project "IMGUI"
 
 
     filter "system:windows"
-        cppdialect "C++17"
+        cppdialect "C++20"
 		systemversion "latest"
         staticruntime "On"
 
 	filter "system:linux"
         pic "On"
         systemversion "latest"
-        cppdialect "C++17"
+        cppdialect "C++20"
         staticruntime "On"
 
     filter "configurations:Debug or configurations:Tests"
@@ -328,13 +328,13 @@ project "GoogleTest"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
+        cppdialect "C++20"
 		systemversion "latest"
 
 	filter "system:linux"
         pic "On"
         systemversion "latest"
-        cppdialect "C++17"
+        cppdialect "C++20"
 
     filter "configurations:Debug or configurations:Tests"
         runtime "Debug"
@@ -395,7 +395,7 @@ project "Ullmannite"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
+        cppdialect "C++20"
         staticruntime "On"
         systemversion "latest"
 
@@ -411,7 +411,7 @@ project "Ullmannite"
 
     filter "system:linux"
     	flags { "NoPCH" }
-        cppdialect "C++17"
+        cppdialect "C++20"
         staticruntime "On"
         systemversion "latest"
 

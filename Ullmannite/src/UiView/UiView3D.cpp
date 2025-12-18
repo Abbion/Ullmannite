@@ -1,11 +1,12 @@
 #include "Ullpch.h"
 #include "UiView3D.h"
+#include "Application/Application.h"
 #include "UiMenuView.h"
 #include "Rendering/Objects/Cube.h"
 #include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
+#include "Rendering/Utils/RenderHelper.h"
 #include "Scene/SceneObjects/Camera.h"
-#include "Rendering/Api/Renderer.h"
 #include "Utilities/CollisionCheckers.h"
 #include <string>
 
@@ -42,8 +43,7 @@ namespace {
 
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiRenderArea(name, position, size, true),
-    m_scene("Scene 3D"),
-    m_titleText{ std::make_shared<UiText>("testText", glm::uvec2(100, 100), glm::uvec2(size.y, size.y), L"ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n\n\nUllmanite") }
+    m_scene("Scene 3D")
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
 
@@ -81,12 +81,9 @@ void UiView3D::Init()
 
     auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
     root->AddNode(cubeMarch);
-
-    m_titleText->CreateResources();
-    AddChildNode(m_titleText);
 }
 
-void UiView3D:: HandleEvent(Event* event)
+void UiView3D::HandleEvent(Event* event)
 {
     switch (event->GetType())
     {
@@ -107,7 +104,7 @@ void UiView3D:: HandleEvent(Event* event)
     case EventType::MouseUp:
     case EventType::MouseScroll:
     {
-        if(!PointInStaticRect<glm::ivec2>(Mouse::GetInstance().GetMousePosition(), GetPosition(), GetSize()) && !m_window->IsCursorLocked())
+        if(!PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()) && !m_window->IsCursorLocked())
             return;
     }
     break;
@@ -139,8 +136,10 @@ void UiView3D:: HandleEvent(Event* event)
     }
 
     m_scene.HandleEvent(event);
+    UiRenderArea::HandleEvent(event);
 }
 
+#include <imgui.h>
 void UiView3D::Update()
 {
     m_scene.Update();
@@ -150,6 +149,8 @@ void UiView3D::Update()
         m_areaUpdated = true;
         m_scene.SetUpdated(false);
     }
+
+    UiRenderArea::Update();
 }
 
 void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
@@ -162,54 +163,10 @@ void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
         camera->SetWindow(m_window);
     }
 }
-#include <imgui.h>
+
 void UiView3D::Render()
 {
-    ImGui::Text("Text settings");
-
-    auto fontSize = static_cast<int>(m_titleText->GetFontSize());
-    auto spaceing = m_titleText->GetSpaceing();
-    auto leading = m_titleText->GetLeading();
-    auto smoothing = m_titleText->GetEdgeSmoothing();
-    auto threshold = m_titleText->GetSampleThreshold();
-    auto color = m_titleText->GetColor();
-
-    ImGui::SliderInt("fontSize", &fontSize, 1, 256);
-    ImGui::SliderFloat("spaceing", &spaceing, -10.0f, 100.0f);
-    ImGui::SliderFloat("leading", &leading, -2.0f, 5.0f);
-    ImGui::SliderFloat("smoothing", &smoothing, 0.0f, 20.0f);
-    ImGui::SliderFloat("threshold", &threshold, -10.0f, 50.0f);
-    ImGui::SliderFloat4("color", (float*)&color, 0.0f, 1.0f);
-
-    m_titleText->SetFontSize(static_cast<unsigned>(fontSize));
-    m_titleText->SetSpaceing(spaceing);
-    m_titleText->SetLeading(leading);
-    m_titleText->SetEdgeSmoothing(smoothing);
-    m_titleText->SetSampleThreshold(threshold);
-    m_titleText->SetColor(color);
-    m_titleText->CreateResources();
-
     m_areaUpdated = true;
-
-    if(m_areaUpdated)
-    {
-        m_frameBuffer->Bind();
-
-		RenderBackground();
-
-
-        Renderer::GetInstance().SetDepth(Renderer::State::ENABLE);
-        Renderer::GetInstance().Clear(Renderer::ClearBits::DEPTH);
-
-        //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::BACK);
-        //Renderer::GetInstance().SetFaceWinding(Renderer::FaceWinding::COUNTER_CLOCKWISE);
-        m_scene.Render();
-        //Renderer::GetInstance().SetFaceCulling(Renderer::FaceCulling::NONE);
-        //Renderer::GetInstance().SetDepth(Renderer::State::DISABLE);
-
-		m_frameBuffer->Unbind();
-
-		m_areaUpdated = false;
-    }
-
+    
+    UiRenderArea::Render();
 }

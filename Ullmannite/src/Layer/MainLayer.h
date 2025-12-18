@@ -12,22 +12,21 @@ namespace Ull
     class MainLayer : public Layer
     {
     public:
-        MainLayer(glm::uvec2 size);
+        MainLayer(const glm::uvec2 size, const NotOwner<LayerManager>& layerManager);
 
         void SetWindow(const NotOwner<UllWindow>& window);
 
-        void HandleEvent(Event* event) override;
-        void Update();
-        void Render();
+        virtual void RenderLayerComponents() override;
 
     private:
-        glm::mat4 m_viewMatrix;
+        virtual void CreateLayout() override;
+        virtual void ResizeLayout() override;
 
-    private:
-        void CreateLayout();
-        void Resize(const glm::uvec2& size);
+        NotOwner<UllWindow> m_window{ nullptr };
 
         std::shared_ptr<UiTitleBar> m_titleBar;
+        std::shared_ptr<UiRenderArea> m_titleBarView;
+
         std::shared_ptr<UiMenuView> m_menuView;
         std::shared_ptr<UiView3D> m_3DView;
     };

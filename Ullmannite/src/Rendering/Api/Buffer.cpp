@@ -1,14 +1,15 @@
 #include "Ullpch.h"
 #include "Buffer.h"
-#include "Renderer.h"
 #include "OpenGL/BufferOpenGL.h"
 #include "Logger/Logger.h"
+#include "Application/Application.h"
 
 using namespace Ull;
 
+//TODO: Change size to uint
 VertexBuffer* VertexBuffer::Create(int size, float* data, GraphicsBufferType type)
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
         case Renderer::API::OPEN_GL:
             return new VertexBufferOpenGL(size, data, type);
@@ -21,7 +22,7 @@ VertexBuffer* VertexBuffer::Create(int size, float* data, GraphicsBufferType typ
 
 IndexBuffer* IndexBuffer::Create(int size, unsigned int* data, GraphicsBufferType type)
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new IndexBufferOpenGL(size, data, type);
@@ -34,7 +35,7 @@ IndexBuffer* IndexBuffer::Create(int size, unsigned int* data, GraphicsBufferTyp
 
 VertexLayout* VertexLayout::Create(std::initializer_list<LayoutElement> initList)
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new VertexLayoutOpenGL(initList);
@@ -47,7 +48,7 @@ VertexLayout* VertexLayout::Create(std::initializer_list<LayoutElement> initList
 
 RenderBuffer* RenderBuffer::Create(glm::uvec2 size, Format format)
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new RenderBufferOpenGL(size, format);
@@ -60,7 +61,7 @@ RenderBuffer* RenderBuffer::Create(glm::uvec2 size, Format format)
 
 FrameBuffer* FrameBuffer::Create(glm::uvec2 size, bool enableDepth)
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new FrameBufferOpenGL(size, enableDepth);
@@ -73,7 +74,7 @@ FrameBuffer* FrameBuffer::Create(glm::uvec2 size, bool enableDepth)
 
 FrameBuffer* FrameBuffer::Create(Texture2D* attachedTexture)
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new FrameBufferOpenGL(attachedTexture);
@@ -86,7 +87,7 @@ FrameBuffer* FrameBuffer::Create(Texture2D* attachedTexture)
 
 StorageBuffer* StorageBuffer::Create(void* data, size_t size)
 {    
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new StorageBufferOpenGL(data, size);
@@ -99,7 +100,7 @@ StorageBuffer* StorageBuffer::Create(void* data, size_t size)
 
 AtomicCounterBuffer* AtomicCounterBuffer::Create(uint32_t* data, uint16_t size)
 {
-    switch (Renderer::GetInstance().GetApi())
+    switch (Application::GetRenderer().GetApi())
     {
     case Renderer::API::OPEN_GL:
         return new AtomicCounterBufferOpenGL(data, size);

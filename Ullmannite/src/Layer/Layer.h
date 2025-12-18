@@ -1,31 +1,45 @@
 #pragma once
-#include "Event/Event.h"
-#include "Event/EventHandler.h"
-#include "UiElement/UiLayout.h"
+#include "UiElement/UiRenderArea.h"
+
+//Create a macro that takes mayer names and adds the classes predefiniton and friends them
 
 namespace Ull
 {
-    class Layer : public EventHandler
+    namespace LayerNames
+    {
+        constexpr auto mainLayer = "MainLayer";
+        constexpr auto toolLayer = "ToolLayer";
+    }
+
+    class LayerManager;
+    class MainLayer;
+    class ToolLayer;
+
+    class Layer : protected UiRenderArea
     {
     public:
-        NON_COPYABLE(Layer)
-        
-        virtual ~Layer();
-        
-        inline std::string GetName() const { return m_name; }
-        const std::shared_ptr<UiLayout> GetLayout() const { return m_layout; }
+        Layer(const std::string& name, const glm::uvec2 position, const glm::uvec2 size, const bool usesDepth, const NotOwner<LayerManager>& layerManager);
 
-        virtual void Update() = 0;
-        virtual void Render() = 0;
+        void HandleEvent(Event* event) override;
+
+        UiRenderArea::Update;
+        virtual void Render() override final;
+        virtual void RenderLayerComponents() = 0;
+
+        UiRenderArea::GetName;
+        UiRenderArea::GetChildren;
+        UiRenderArea::RemoveChildNode;
 
     protected:
-        std::shared_ptr<UiLayout> m_layout;
-        unsigned int m_focusedElement { 0 };
-    
-    protected:
-        Layer(const std::string& name, const glm::uvec2& size);     //Constructor
+        virtual void CreateLayout() = 0;
+        virtual void ResizeLayout() = 0;
+        void CreateRenderArea(const glm::vec2 position, const glm::vec2 size);
+        NotOwner<LayerManager> m_layerManager;
 
     private:
-        std::string m_name;
+        glm::mat4 m_viewMatrix;
+
+        friend MainLayer;
+        friend ToolLayer;
     };
 };

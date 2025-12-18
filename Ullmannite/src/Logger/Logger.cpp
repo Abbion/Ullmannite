@@ -1,7 +1,6 @@
 #include "Ullpch.h"
 #include "Logger.h"
 #include "Layer/Layer.h"
-#include "UiElement/UiLayout.h"
 #include "UiElement/UiRenderArea.h"
 #include "UiElement/UiElement.h"
 
@@ -47,19 +46,17 @@ void Ull::ClearLogs()
 #endif
 }
 
-void Ull::LogLayerTree(const Ull::Layer& layer)
+void Ull::LogLayerTree(Ull::Layer& layer)
 {
     std::stringstream ss;
-    ss << "\nLayer " << layer.GetName() << "\n\t+ "
-       << layer.GetLayout()->GetName() << "\n";
+    ss << "\nLayer " << layer.GetName() << "\n";
 
-    LogElements(ss, layer.GetLayout()->GetChildren(), 2);
-    
+   LogElements(ss, layer.GetChildren(), 1);
 
    ULOGD(ss.str().c_str());
 }
 
-void Ull::LogElements(std::stringstream& ss, const std::vector<std::shared_ptr<Ull::UiElement>> elements, unsigned int tabs)
+void Ull::LogElements(std::stringstream& ss, const std::vector<std::shared_ptr<Ull::UiElement>>& elements, unsigned int tabs)
 {
     std::string depthStr;
     depthStr.resize(tabs);

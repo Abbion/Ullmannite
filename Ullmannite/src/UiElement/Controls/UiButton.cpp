@@ -1,21 +1,21 @@
 #include "Ullpch.h"
 #include "UiButton.h"
-#include "Rendering/Api/Renderer.h"
+#include "Application/Application.h"
+
 
 using namespace Ull;
 
-UiButton::UiButton(std::string name, glm::uvec2 position, glm::uvec2 size) :
+UiButton::UiButton(std::string name, glm::vec2 position, glm::vec2 size) :
     UiBasicControl(name, position, size, UiControlType::UiButton),
-    m_buttonText{ std::make_shared<UiText>(std::string(name + "Text"), glm::uvec2(0, 0), size, L"Button") }
+    m_buttonText{ std::make_shared<UiText>(std::string(name + "Text"), glm::vec2(0, 0), size, L"Button") }
 {
     m_buttonText->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
     m_buttonText->SetSampleThreshold(1.5f);
-    //m_buttonText.SetSampleThreshold(100.f);
 
     AddChildNode(m_buttonText);
 }
 
-void UiButton::SetSize(const glm::uvec2 size)
+void UiButton::SetSize(const glm::vec2 size)
 {
     UiBasicControl::SetSize(size);
     m_buttonText->SetSize(size);
@@ -55,7 +55,10 @@ void UiButton::Update()
 
 void UiButton::Render()
 {
-    Renderer::GetInstance().SetBlending(true);
+    if (!IsVisible())
+        return;
+
+    Application::GetRenderer().SetBlending(Renderer::State::ENABLE);
     UiBasicControl::Render();
-    Renderer::GetInstance().SetBlending(false);
+    Application::GetRenderer().SetBlending(Renderer::State::DISABLE);
 }
