@@ -139,7 +139,6 @@ void UiView3D::HandleEvent(Event* event)
     UiRenderArea::HandleEvent(event);
 }
 
-#include <imgui.h>
 void UiView3D::Update()
 {
     m_scene.Update();
