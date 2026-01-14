@@ -1,86 +1,77 @@
 #include "Ullpch.h"
 #include "VolumeLoader.h"
-#include "Exceptions/Exceptions.h"
 #include "Logger/Logger.h"
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <algorithm>
+
+#define PY_SSIZE_T_CLEAN
+#ifdef _DEBUG
+#undef _DEBUG
+#include <python.h>
+#define _DEBUG
+#else
+#include <python.h>
+#endif
 
 using namespace Ull;
 
-namespace 
-{
-	constexpr size_t readThreads = 8;
-}
-
 std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 {
-	std::ifstream volumeFile;
-	std::shared_ptr<VolumeData> volumeData = nullptr;
+	Py_Initialize();
 
-	volumeFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	PyRun_SimpleString("import sys; sys.path.append('.')");
+	PyObject* program = PyUnicode_FromString("Tools.dicom_loader");
+	PyObject* module = PyImport_Import(program);
+	Py_DECREF(program);
 
-	try
+	if (!module) 
 	{
-		volumeFile.open(filePath.c_str(), std::ios::binary);
-
-		uint16_t width, height, depth;
-
-		volumeFile.read((char*)&width, sizeof(uint16_t));
-		volumeFile.read((char*)&height, sizeof(uint16_t));
-		volumeFile.read((char*)&depth, sizeof(uint16_t));
-
-		if (width < 0 || height < 0 || depth < 0)
-			throw NegativeDimensionsException("File width, height or depth is negative");
-
-		size_t bufferSize = (size_t)width * (size_t)height * (size_t)depth;
-		volumeData = std::make_shared<VolumeData>(VolumeData(width, height, depth, bufferSize));
-		
-		size_t chunkSize = bufferSize / (readThreads - 1);
-		size_t lastChunkSize = bufferSize % (readThreads - 1);
-		size_t dataStartPosition = (size_t)volumeFile.tellg();
-
-		volumeFile.close();
-
-		//=============================
-
-		std::thread* readingThreads[readThreads];
-
-		for (size_t i = 0; i < readThreads; ++i)
-		{
-			readingThreads[i] = new std::thread([&volumeData, filePath, i, dataStartPosition, chunkSize, lastChunkSize](){
-				if (chunkSize == 0 || lastChunkSize == 0)
-					return;
-
-				std::ifstream volumeFile(filePath, std::ios::binary);
-
-				UASSERT(volumeFile.good(), "Can't open file");
-
-				volumeFile.seekg(dataStartPosition + (i * chunkSize * sizeof(uint16_t)), std::ios::beg);
-
-				if (i == readThreads - 1)
-					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * lastChunkSize);
-				else
-					volumeFile.read((char*)&volumeData->dataBuffer[i * chunkSize], sizeof(uint16_t) * chunkSize);
-
-				volumeFile.close();
-			});
-		}
-
-		for (size_t i = 0; i < readThreads; ++i)
-		{
-			readingThreads[i]->join();
-			delete readingThreads[i];
-		}
-	}
-	catch (const std::exception& e)
-	{
-		ULOGF("File loading error: " << e.what());
+		PyErr_Print();
+		ULOGE("Loading volume data failed. Module not imported.");
+		return nullptr;
 	}
 
-	volumeData->maxValue = *(std::max_element(volumeData->dataBuffer.begin(), volumeData->dataBuffer.end()));
+	PyObject* function = PyObject_GetAttrString(module, "load_dicom_folder");
+
+	if (!function || !PyCallable_Check(function))
+	{
+		PyErr_Print();
+		ULOGE("Loading volume data failed. Function not found.");
+		return nullptr;
+	}
+
+	PyObject* args = PyTuple_Pack(1, PyUnicode_FromString(filePath.c_str()));
+	PyObject* output = PyObject_CallObject(function, args);
+
+	if (!output)
+	{
+		PyErr_Print();
+		ULOGE("Loading volume data failed. Function did not return.");
+		return nullptr;
+	}
+
+	std::shared_ptr<VolumeData> volumeData = std::make_shared<VolumeData>();
+	PyObject* pArray;
+
+	PyArg_ParseTuple(output, "HHHO", &volumeData->width, &volumeData->height, &volumeData->depth, &pArray);
+
+	Py_buffer view;
+	PyObject_GetBuffer(pArray, &view, PyBUF_CONTIG_RO);
+
+	const size_t bufferSize = static_cast<size_t>(volumeData->width) *
+							  static_cast<size_t>(volumeData->height) *
+							  static_cast<size_t>(volumeData->depth);
+	volumeData->dataBuffer.resize(bufferSize);
+	std::memcpy(volumeData->dataBuffer.data(), view.buf, bufferSize);
+
+	PyBuffer_Release(&view);
+	Py_DECREF(output);
+	Py_DECREF(args);
+	Py_DECREF(function);
+	Py_DECREF(module);
+	Py_Finalize();
+
+	const auto elements = std::minmax_element(volumeData->dataBuffer.begin(), volumeData->dataBuffer.end());
+	volumeData->minValue = *(elements.first);
+	volumeData->maxValue = *(elements.second);
 
 	return volumeData;
 }

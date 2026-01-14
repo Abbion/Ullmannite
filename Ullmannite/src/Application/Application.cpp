@@ -9,7 +9,6 @@
 #include "Event/Event.h"
 #include "Input/Mouse.h"
 
-#include "Application/Application.h"
 #include "Rendering/Api/ShaderManager.h"
 
 #include "Layer/Layer.h"
@@ -22,6 +21,8 @@
 #include FT_FREETYPE_H  
 
 #include "Output/Image2DWriter.h"
+
+#include "DataLoaders/VolumeLoader.h"
 
 using namespace Ull;
 
@@ -48,6 +49,8 @@ Application::~Application()
 
 void Application::Run()
 {    
+    const auto a = LoadVolumeData("C:/Users/Amadeusz/Documents/DicomData/body");
+
     while (m_window.IsOpen())
     {        
         if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::ESCAPE))

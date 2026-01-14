@@ -5,7 +5,10 @@
 
 using namespace Ull;
 
-#define OPENGL_SHADDER_PATH "Resources/Fonts/"
+namespace
+{
+	constexpr auto FontFolder = "Resources/Fonts/";
+}
 
 FontManager::~FontManager()
 {
@@ -20,7 +23,7 @@ void FontManager::LoadFont(const std::string& fontName, const FontTag fontTag, c
 		return;
 	}
 
-	std::string fontPath = OPENGL_SHADDER_PATH + fontName;
+	std::string fontPath = FontFolder + fontName;
 
 	m_fontMap.emplace(std::pair<FontTag, std::unique_ptr<Font>>(fontTag, std::make_unique<Font>(fontPath, m_fontLibrary, 0, size, start, end, size / 4)));
 }

@@ -112,7 +112,7 @@ void UiView3D::HandleEvent(Event* event)
     case EventType::FileLoaded:
     {
         auto path = static_cast<DataLoadEvent*>(event)->GetVal();
-        path = ConvertDcmToDat(path);
+        //path = ConvertDcmToDat(path);
         auto dataSet = LoadVolumeData(path);
         auto cubeMarchRenderer = m_scene.GetNodeByName("Cube march");
         if (cubeMarchRenderer != nullptr)

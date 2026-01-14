@@ -19,3 +19,6 @@
 [submodule "Ullmannite/ThirdPartyLibs/googleTest"]
 	path = Ullmannite/ThirdPartyLibs/googleTest
 	url = https://github.com/google/googletest.git
+[submodule "Ullmannite/ThirdPartyLibs/libdicom"]
+	path = Ullmannite/ThirdPartyLibs/libdicom
+	url = https://github.com/ImagingDataCommons/libdicom
