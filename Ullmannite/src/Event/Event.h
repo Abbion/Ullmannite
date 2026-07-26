@@ -35,7 +35,8 @@ namespace Ull
         UiScaledUp,
         UiScaledDown,
 
-        FileLoaded,
+        DataFolderSelected,
+        VolumeLoaded,
         CuttingSettingsChanged,
         TransferFunctionChanged,
         ExaminationThresholdChanged,
@@ -103,11 +104,12 @@ namespace Ull
     typedef ValueEvent<float> UiScaledUpEvent;
     typedef ValueEvent<float> UiScaledDownEvent;
 
-    typedef ValueEvent<std::string> DataLoadEvent;
+    typedef ValueEvent<std::wstring> DataFolderSelectedEvent;
     typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;
     typedef ValueEvent<CuttingSettings> CuttingSettingsChangedEvent;
 
     typedef Event RenderAreaSizeChanged;
+    typedef Event VolumeLoadedEvent;
 
     typedef ValueEvent<ToolSetup> OpenToolEvent;
 };

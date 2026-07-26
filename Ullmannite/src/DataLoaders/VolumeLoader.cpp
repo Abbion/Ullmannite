@@ -1,6 +1,6 @@
 #include "Ullpch.h"
-#include "VolumeLoader.h"
 #include "Logger/Logger.h"
+#include "VolumeLoader.h"
 
 #define PY_SSIZE_T_CLEAN
 #ifdef _DEBUG
@@ -13,7 +13,7 @@
 
 using namespace Ull;
 
-std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
+VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
 {
 	Py_Initialize();
 
@@ -26,7 +26,7 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 	{
 		PyErr_Print();
 		ULOGE("Loading volume data failed. Module not imported.");
-		return nullptr;
+		return {};
 	}
 
 	PyObject* function = PyObject_GetAttrString(module, "load_dicom_folder");
@@ -35,32 +35,32 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 	{
 		PyErr_Print();
 		ULOGE("Loading volume data failed. Function not found.");
-		return nullptr;
+		return {};
 	}
 
-	PyObject* args = PyTuple_Pack(1, PyUnicode_FromString(filePath.c_str()));
+	PyObject* args = PyTuple_Pack(1, PyUnicode_FromWideChar(folderPath.data(), folderPath.length()));
 	PyObject* output = PyObject_CallObject(function, args);
 
 	if (!output)
 	{
 		PyErr_Print();
 		ULOGE("Loading volume data failed. Function did not return.");
-		return nullptr;
+		return {};
 	}
 
-	std::shared_ptr<VolumeData> volumeData = std::make_shared<VolumeData>();
+	VolumeData volumeData;
 	PyObject* pArray;
 
-	PyArg_ParseTuple(output, "HHHO", &volumeData->width, &volumeData->height, &volumeData->depth, &pArray);
+	PyArg_ParseTuple(output, "HHHO", &volumeData.width, &volumeData.height, &volumeData.depth, &pArray);
 
 	Py_buffer view;
 	PyObject_GetBuffer(pArray, &view, PyBUF_CONTIG_RO);
 
-	const size_t bufferSize = static_cast<size_t>(volumeData->width) *
-							  static_cast<size_t>(volumeData->height) *
-							  static_cast<size_t>(volumeData->depth);
-	volumeData->dataBuffer.resize(bufferSize);
-	std::memcpy(volumeData->dataBuffer.data(), view.buf, bufferSize);
+	const size_t bufferSize = static_cast<size_t>(volumeData.width) *
+							  static_cast<size_t>(volumeData.height) *
+							  static_cast<size_t>(volumeData.depth);
+	volumeData.dataBuffer.resize(bufferSize);
+	std::memcpy(volumeData.dataBuffer.data(), view.buf, bufferSize);
 
 	PyBuffer_Release(&view);
 	Py_DECREF(output);
@@ -69,9 +69,9 @@ std::shared_ptr<VolumeData> Ull::LoadVolumeData(const std::string filePath)
 	Py_DECREF(module);
 	Py_Finalize();
 
-	const auto elements = std::minmax_element(volumeData->dataBuffer.begin(), volumeData->dataBuffer.end());
-	volumeData->minValue = *(elements.first);
-	volumeData->maxValue = *(elements.second);
+	const auto elements = std::minmax_element(volumeData.dataBuffer.begin(), volumeData.dataBuffer.end());
+	volumeData.minValue = *(elements.first);
+	volumeData.maxValue = *(elements.second);
 
 	return volumeData;
 }

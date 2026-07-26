@@ -155,7 +155,7 @@ void UiText::CreateResources()
 	if (m_layout != nullptr)
 		delete m_layout;
 
-	auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
+	auto& fontManager = Application::GetResourceManager().GetFontMnager();
 	const auto characters = fontManager.GetFont(m_fontTag)->GenerateDictionary(m_text);
 	const auto loadedFontSize = fontManager.GetFont(m_fontTag)->GetLoadedHeight();
 	const auto spaceWidth = fontManager.GetFont(m_fontTag)->GetCharacter(AdvanceCharacter).advance;
@@ -330,7 +330,7 @@ void UiText::Render()
 	m_shader->SetFloat2("renderAreaPosition", position);
 	m_shader->SetFloat2("renderAreaSize", GetSize());
 
-	auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
+	auto& fontManager = Application::GetResourceManager().GetFontMnager();
 	const auto texture = fontManager.GetFont(m_fontTag)->GetTexture();
 	texture->Bind();
 

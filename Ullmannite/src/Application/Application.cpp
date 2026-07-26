@@ -15,14 +15,10 @@
 #include "Layer/MainLayer.h"
 #include "Layer/ToolLayer.h"
 
-#include "Resources/ResourceManager.h"
-
 #include <ft2build.h>
 #include FT_FREETYPE_H  
 
 #include "Output/Image2DWriter.h"
-
-#include "DataLoaders/VolumeLoader.h"
 
 using namespace Ull;
 
@@ -48,9 +44,7 @@ Application::~Application()
 }
 
 void Application::Run()
-{    
-    const auto a = LoadVolumeData("C:/Users/Amadeusz/Documents/DicomData/body");
-
+{
     while (m_window.IsOpen())
     {        
         if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::ESCAPE))
@@ -141,7 +135,7 @@ void Application::InitApplciation()
     //shaderManager.LoadShader(ShaderTag::CHANGE_VALUE_IF_GREATHER_THAN_UIIMAGE_2D, "ChangeValueInUIImage2DIfGreaterThan");
 
     //Resources
-    auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
+    auto& fontManager = m_resourceManager.GetFontMnager();
     fontManager.InitLoader();
     fontManager.LoadFont("segoeui.ttf", FontTag::UI_FONT, 128, 33, 126);
     fontManager.LoadFont("UllIcon.ttf", FontTag::UI_ICON, 256, 61440, 61449);
@@ -192,12 +186,6 @@ void Application::HandleEvents()
         case EventType::KeyDown:
             keyState.key = static_cast<KeyDownEvent*>(currentEvent.get())->GetVal();
             keyState.state = true;
-
-            if (keyState.key == Keyboard::Key::P)
-            {
-                //const auto colorPickerData = ColorPickerData{ glm::vec4(1.0f, 0.0f, 1.0f, 1.0f) };
-                //EventAggregator::Publish(std::make_shared<OpenToolEvent>(EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25), colorPickerData }));
-            }
             break;
 
         case EventType::KeyUp:
@@ -224,6 +212,23 @@ void Application::HandleEvents()
             break;
 
         default:
+            break;
+        case EventType::DataFolderSelected:
+            const auto event = static_cast<DataFolderSelectedEvent*>(currentEvent.get());
+            const auto folderPath = event->GetVal();
+
+            if (m_loaderThread.joinable())
+                m_loaderThread.join();
+
+            m_loaderThread = std::thread([this](const std::wstring& path) {
+                const auto success = m_resourceManager.GetVolumeManager().LoadVolumeFromFolder(path);
+                if (success)
+                    m_eventQueue.PushEvent(std::make_shared<VolumeLoadedEvent>(EventType::VolumeLoaded));
+            }, folderPath);
+            m_loaderThread.detach();
+
+            event->IsHandeled();
+                
             break;
         }
 

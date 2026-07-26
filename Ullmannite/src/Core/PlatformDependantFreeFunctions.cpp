@@ -31,11 +31,29 @@ std::optional<std::wstring> Ull::CreateFileOpenDialog(FileExtentions fileExtenti
         IFileOpenDialog* pFileOpen;
 
         hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
-        pFileOpen->SetTitle(L"Open examination");
         pFileOpen->SetOkButtonLabel(L"load");
 
-        auto filterVec = GetFilters(fileExtentions);
-        pFileOpen->SetFileTypes(static_cast<UINT>(filterVec.size()), filterVec.data());
+        if (fileExtentions & FileExtentions::FOLDER) 
+        {
+            pFileOpen->SetTitle(L"Select examination folder");
+
+            DWORD dwFlags;
+            hr = pFileOpen->GetOptions(&dwFlags);
+            if (SUCCEEDED(hr))
+                pFileOpen->SetOptions(dwFlags | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
+            else
+            {
+                CoUninitialize();
+                pFileOpen->Release();
+                return std::nullopt;
+            }
+        }
+        else
+        {
+            pFileOpen->SetTitle(L"Select examination file");
+            const auto filterVec = GetFilters(fileExtentions);
+            pFileOpen->SetFileTypes(static_cast<UINT>(filterVec.size()), filterVec.data());
+        }
 
         if (SUCCEEDED(hr))
         {

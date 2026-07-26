@@ -1,5 +1,4 @@
 #pragma once
-#include "DataStructures/VolumeData.h"
 #include "Scene/Nodes/Node3D.h"
 #include "Rendering/Api/Shader.h"
 #include "Rendering/Api/Texture.h"
@@ -16,17 +15,16 @@ namespace Ull
         MarchCubeRenderer(const std::string& name, NotOwner<Scene> scene);
         ~MarchCubeRenderer();
 
-        void SetVolumeData(const std::shared_ptr<VolumeData> volumeData);
         void SetTransferTexture(NotOwner<Texture1D> transferTexture);
-
-        void GenerateMesh();
 
         void HandleEvent(Event* event) override;
         void Update() override;
         void Render() override;
 
     private:
-        std::shared_ptr<VolumeData> m_volumeData{ nullptr };
+        void GenerateMesh();
+        void CreateVolumeResources();
+
         bool updateMesh{ false };
 
         glm::vec2 m_thresholds{ 0.0f, 0.0f };   //TODO: change to ivec2

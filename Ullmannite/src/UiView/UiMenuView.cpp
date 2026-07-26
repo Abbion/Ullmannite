@@ -37,11 +37,7 @@ UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
 void UiMenuView::HandleEvent(Event* event)
 {
     switch (event->GetType())
-    {
-    case EventType::FileLoaded:
-        m_newDataLoaded = true;
-    break;
-    
+    {    
     case EventType::ExaminationThresholdChanged:
         if(m_newDataLoaded)
         {
@@ -111,6 +107,7 @@ void UiMenuView::HandleEvent(Event* event)
     break;
 
     case EventType::MouseUp:
+    {
         const auto isRightPressed = reinterpret_cast<MouseDoubleUp*>(event)->GetVal() == Mouse::Button::RIGHT;
 
         if (isRightPressed == false || m_transferMarkers.size() < 3)
@@ -129,7 +126,16 @@ void UiMenuView::HandleEvent(Event* event)
 
             itr++;
         }
+    }
+    break;
 
+    case EventType::VolumeLoaded:
+    {
+        const auto& volume = Application::GetResourceManager().GetVolumeManager().GetVolume();
+        m_loadFileText->SetString(std::format(L"Loaded files from {}", volume.name).c_str());
+        m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
+        m_newDataLoaded = true;
+    }
     break;
     }
 
@@ -446,7 +452,29 @@ void UiMenuView::CreateLoadPanel()
     m_loadFileButton->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
     m_loadFileButton->CreateResources();
     m_loadFileButton->SetOnClickFunction([this](UiButton& buttonElement) {
-        m_loadFileText->SetString(std::wstring(L"File loaded: Test"));
+        const auto folderPathOpt = CreateFileOpenDialog(FileExtentions::FOLDER);
+        if (folderPathOpt.has_value())
+        {
+            const auto folderPath = folderPathOpt.value();
+            const auto folderName = ExtractDestinationFolderFromPath(folderPath);
+            if (folderName.has_value())
+            {
+                m_loadFileText->SetString(std::format(L"Loading files from {} ...", folderName.value()).c_str());
+                m_loadFileText->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                Application::GetEventQueue().PushEvent(std::make_shared<DataFolderSelectedEvent>(EventType::DataFolderSelected, folderPath));
+            }
+            else
+            {
+                m_loadFileText->SetString(L"Failed to extract folder");
+                m_loadFileText->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            }
+        }
+        else
+        {
+            m_loadFileText->SetString(L"Failed to open folder");
+            m_loadFileText->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        }
+
         m_loadFileText->SetVisibility(true);
     });
 
@@ -459,7 +487,7 @@ void UiMenuView::CreateLoadPanel()
 
     AddChildNode(m_loadFileButton);
 
-    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"File loaded:"));
+    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L""));
     m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
     m_loadFileText->SetFontSize(MENU_TEXT_SIZE);
     m_loadFileText->SetEdgeSmoothing(3.5f);

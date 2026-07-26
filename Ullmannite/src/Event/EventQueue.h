@@ -1,6 +1,7 @@
 #pragma once
 #include "Event.h"
 #include <deque>
+#include <mutex>
 
 namespace Ull
 {
@@ -24,5 +25,6 @@ namespace Ull
 
     private:
         std::deque<std::shared_ptr<Event>> m_events;
+        std::mutex m_mutex;
     };
 };

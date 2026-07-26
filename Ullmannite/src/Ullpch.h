@@ -16,6 +16,7 @@
 #include "Exceptions/Exceptions.h"
 #include "Utilities/PointerHelper.h"
 #include "Utilities/FloatHelper.h"
+#include "Utilities/PathHelper.h"
 #include "Utilities/NonCopyable.h"
 #include "Logger/Logger.h"
 #include "Core/Constants.h"

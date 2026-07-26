@@ -9,10 +9,6 @@
 #include "Scene/SceneObjects/Camera.h"
 #include "Utilities/CollisionCheckers.h"
 #include <string>
-
-#include "DataLoaders/VolumeLoader.h"
-#include "DataStructures/VolumeData.h"
-
 #include <algorithm>
 #include "Core/PlatformDependantFreeFunctions.h"
 #include <codecvt>
@@ -20,7 +16,8 @@
 
 using namespace Ull;
 
-namespace {
+namespace 
+{
     std::string ConvertDcmToDat(std::string str)
     {
         auto pos = str.find_last_of('.');
@@ -46,7 +43,6 @@ UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     m_scene("Scene 3D")
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
-
     Init();
 }
 
@@ -108,23 +104,6 @@ void UiView3D::HandleEvent(Event* event)
             return;
     }
     break;
-
-    case EventType::FileLoaded:
-    {
-        auto path = static_cast<DataLoadEvent*>(event)->GetVal();
-        //path = ConvertDcmToDat(path);
-        auto dataSet = LoadVolumeData(path);
-        auto cubeMarchRenderer = m_scene.GetNodeByName("Cube march");
-        if (cubeMarchRenderer != nullptr)
-        {
-            auto renderer = static_cast<MarchCubeRenderer*>(cubeMarchRenderer);
-            renderer->SetVolumeData(dataSet);
-            renderer->GenerateMesh();
-            m_scene.SetUpdated(true);
-        }
-    }
-    break;
-
     case EventType::GradientUpdated:
     {
         m_scene.SetUpdated(true);
@@ -166,6 +145,5 @@ void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
 void UiView3D::Render()
 {
     m_areaUpdated = true;
-    
     UiRenderArea::Render();
 }

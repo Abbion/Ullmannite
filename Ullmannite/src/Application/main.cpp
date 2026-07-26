@@ -24,8 +24,6 @@ int main()
 
 	delete app;
 
-	Ull::ResourceManager::GetInstance().Terminate();
-
 	return 0;
 }
 #endif

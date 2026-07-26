@@ -48,23 +48,23 @@ MarchCubeRenderer::~MarchCubeRenderer()
 	delete m_volumeTexture;
 }
 
-void MarchCubeRenderer::SetVolumeData(const std::shared_ptr<VolumeData> volumeData)
+void MarchCubeRenderer::CreateVolumeResources()
 {
-	m_volumeData = volumeData;
+	const auto& volumeData = Application::GetResourceManager().GetVolumeManager().GetVolume();
 	m_volumeTexture = Texture3D::Create();
 
 	Application::GetRenderer().SetPixelUnpackWidth(1);
-	m_volumeTexture->SetData(glm::vec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth), InternalDataFormat::R_16UI, PixelDataFormat::R_I, GraphicsDataType::USHORT, (void*)volumeData->dataBuffer.data());
+	m_volumeTexture->SetData(glm::vec3(volumeData.width, volumeData.height, volumeData.depth), InternalDataFormat::R_16UI, PixelDataFormat::R_I, GraphicsDataType::USHORT, (void*)volumeData.dataBuffer.data());
 	m_volumeTexture->SetSampling(Sampling::NEAREST, Sampling::NEAREST);
 	Application::GetRenderer().SetPixelUnpackWidth(4);
 
-	glm::uvec2 initThresholds((unsigned int)(InitialMinThresholdRate * (float)m_volumeData->maxValue), m_volumeData->maxValue);
+	glm::uvec2 initThresholds((unsigned int)(InitialMinThresholdRate * (float)volumeData.maxValue), volumeData.maxValue);
 	
 	if(initThresholds.x < 1)
 		initThresholds.x = 1;
 
 	m_thresholds = initThresholds;
-	m_cuttingSettingsInt = glm::ivec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth);
+	m_cuttingSettingsInt = glm::ivec3(volumeData.width, volumeData.height, volumeData.depth);
 
 	Application::GetEventQueue().PushEvent(std::make_shared<ExaminationThresholdChangedEvent>(EventType::ExaminationThresholdChanged, initThresholds));
 	m_thresholdInitEventShip = true;
@@ -77,9 +77,7 @@ void MarchCubeRenderer::SetTransferTexture(NotOwner<Texture1D> transferTexture)
 
 void MarchCubeRenderer::GenerateMesh()
 {	
-	if (m_volumeData == nullptr)
-		return;
-
+	const auto& volumeData = Application::GetResourceManager().GetVolumeManager().GetVolume();
 	m_vertexCount = CalculateVertexCountGPU();
 	const uint16_t amountOfTextures = (uint16_t)std::ceil((double)m_vertexCount / (vertexPositionTextureSize * vertexPositionTextureSize));
 
@@ -101,19 +99,20 @@ void MarchCubeRenderer::GenerateMesh()
 	m_cubeMarchShader->Bind();
 
 	//Add one because we need an offset of zeros from every side. In the compute shader we start from -1, -1, -1 so thats the other side
-	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
+	m_cubeMarchShader->SetUint3("CMsettings.size", glm::uvec3(volumeData.width, volumeData.height, volumeData.depth));
 	m_cubeMarchShader->SetUint("CMsettings.minSampleVal", (unsigned)m_thresholds.x);
 	m_cubeMarchShader->SetUint("CMsettings.maxSampleVal", (unsigned)m_thresholds.y);
-	m_cubeMarchShader->SetFloat("CMsettings.maxDataValue", static_cast<float>(m_volumeData->maxValue));
+	m_cubeMarchShader->SetFloat("CMsettings.maxDataValue", static_cast<float>(volumeData.maxValue));
 	m_cubeMarchShader->SetInt3("cuttingPlanes", m_cuttingSettingsInt);
 
-	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)(m_volumeData->width + 2) / (vertexCounterLocalSize * 2));
-	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(m_volumeData->height + 2) / vertexCounterLocalSize);
-	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(m_volumeData->depth + 2) / vertexCounterLocalSize);
+	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)(volumeData.width + 2) / (vertexCounterLocalSize * 2));
+	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(volumeData.height + 2) / vertexCounterLocalSize);
+	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(volumeData.depth + 2) / vertexCounterLocalSize);
 
-	Application::GetRenderer().DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
-	Application::GetRenderer().Barrier(Renderer::BarrierType::ATOMIC_COUNTER_BARRIER);
-	Application::GetRenderer().Barrier(Renderer::BarrierType::IMAGE_BARRIER);
+	auto& renderer = Application::GetRenderer();
+	renderer.DispatchComputeShader(vertexLocalSizeX, vertexLocalSizeY, vertexLocalSizeZ);
+	renderer.Barrier(Renderer::BarrierType::ATOMIC_COUNTER_BARRIER);
+	renderer.Barrier(Renderer::BarrierType::IMAGE_BARRIER);
 
 	atomicCounter->Unbind();
 
@@ -145,20 +144,26 @@ void MarchCubeRenderer::HandleEvent(Event* event)
 		break;
 	
 	case EventType::CuttingSettingsChanged:
+	{
 		auto cuttingSettings = static_cast<CuttingSettingsChangedEvent*>(event)->GetVal();
-
-		if (m_volumeData != nullptr)
-		{
-			m_cuttingSettingsInt = { (cuttingSettings.cuttingPositions.x / 100.0f) * m_volumeData->width, (cuttingSettings.cuttingPositions.y / 100.0f) * m_volumeData->height, (cuttingSettings.cuttingPositions.z / 100.0f) * m_volumeData->depth };
-			m_cuttingSettingsInt.x = cuttingSettings.invertedAxis[0] ? -m_cuttingSettingsInt.x : m_cuttingSettingsInt.x;
-			m_cuttingSettingsInt.y = cuttingSettings.invertedAxis[1] ? -m_cuttingSettingsInt.y : m_cuttingSettingsInt.y;
-			m_cuttingSettingsInt.z = cuttingSettings.invertedAxis[2] ? -m_cuttingSettingsInt.z : m_cuttingSettingsInt.z;
-		}
-
+		const auto& volumeData = Application::GetResourceManager().GetVolumeManager().GetVolume();
+		m_cuttingSettingsInt = { (cuttingSettings.cuttingPositions.x / 100.0f) * volumeData.width,
+								 (cuttingSettings.cuttingPositions.y / 100.0f) * volumeData.height,
+								 (cuttingSettings.cuttingPositions.z / 100.0f) * volumeData.depth };
+		m_cuttingSettingsInt.x = cuttingSettings.invertedAxis[0] ? -m_cuttingSettingsInt.x : m_cuttingSettingsInt.x;
+		m_cuttingSettingsInt.y = cuttingSettings.invertedAxis[1] ? -m_cuttingSettingsInt.y : m_cuttingSettingsInt.y;
+		m_cuttingSettingsInt.z = cuttingSettings.invertedAxis[2] ? -m_cuttingSettingsInt.z : m_cuttingSettingsInt.z;
+		
 		GenerateMesh();
 		event->MarkHandeled(true);
 		m_scene->SetUpdated(true);
+	}
 	break;
+
+	case EventType::VolumeLoaded:
+		CreateVolumeResources();
+		GenerateMesh();
+		break;
 	}
 }
 
@@ -169,9 +174,6 @@ void MarchCubeRenderer::Update()
 
 void MarchCubeRenderer::Render()
 {
-	if (m_volumeData == nullptr)
-		return;
-
 	auto mainCamera = GetScene()->GetMainCamera();
 
 	m_vertexPosTexture->BindImage(InternalDataFormat::RGBA_32F, ReadWriteRights::READ, 0);
@@ -198,9 +200,10 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	TriangulationTable::GetInstance().GetVertexCountTexture()->BindImage(InternalDataFormat::R_8UI, ReadWriteRights::READ, 1);
 
 	//Add two because we need an offset of zeros from every side. In the compute shader we start from -1, -1, -1
-	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)(m_volumeData->width + 2) / (vertexCounterLocalSize * 2));
-	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(m_volumeData->height + 2) / vertexCounterLocalSize);
-	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(m_volumeData->depth + 2) / vertexCounterLocalSize);
+	const auto& volumeData = Application::GetResourceManager().GetVolumeManager().GetVolume();
+	const unsigned int vertexLocalSizeX = (unsigned int)std::ceil((double)(volumeData.width + 2) / (vertexCounterLocalSize * 2));
+	const unsigned int vertexLocalSizeY = (unsigned int)std::ceil((double)(volumeData.height + 2) / vertexCounterLocalSize);
+	const unsigned int vertexLocalSizeZ = (unsigned int)std::ceil((double)(volumeData.depth + 2) / vertexCounterLocalSize);
 
 	const unsigned int totalSize = vertexLocalSizeX * vertexLocalSizeY * vertexLocalSizeZ;
 
@@ -211,10 +214,12 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 	m_cubeMarchVertexCounter->Bind();
 	storageBuff->Bind(2);
 
-	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(m_volumeData->width, m_volumeData->height, m_volumeData->depth));
+	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(volumeData.width, volumeData.height, volumeData.depth));
+	m_cubeMarchVertexCounter->SetUint3("CMsettings.size", glm::uvec3(0.0f, 0.0f, 0.0f));
 	m_cubeMarchVertexCounter->SetUint("CMsettings.minSampleVal", (unsigned)m_thresholds.x);
 	m_cubeMarchVertexCounter->SetUint("CMsettings.maxSampleVal", (unsigned)m_thresholds.y);
-	m_cubeMarchVertexCounter->SetFloat("CMsettings.maxDataValue", static_cast<float>(m_volumeData->maxValue));
+	m_cubeMarchVertexCounter->SetFloat("CMsettings.maxDataValue", static_cast<float>(volumeData.maxValue));
+	m_cubeMarchVertexCounter->SetFloat("CMsettings.maxDataValue", static_cast<float>(0.0f));
 	m_cubeMarchVertexCounter->SetInt3("cuttingPlanes", m_cuttingSettingsInt);
 
 	//Run shader
