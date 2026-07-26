@@ -15,7 +15,7 @@ using namespace Ull;
 
 VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
 {
-	Py_Initialize();
+	PyGILState_STATE gstate = PyGILState_Ensure();
 
 	PyRun_SimpleString("import sys; sys.path.append('.')");
 	PyObject* program = PyUnicode_FromString("Tools.dicom_loader");
@@ -26,6 +26,7 @@ VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
 	{
 		PyErr_Print();
 		ULOGE("Loading volume data failed. Module not imported.");
+		PyGILState_Release(gstate);
 		return {};
 	}
 
@@ -35,6 +36,8 @@ VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
 	{
 		PyErr_Print();
 		ULOGE("Loading volume data failed. Function not found.");
+		Py_DECREF(module);
+		PyGILState_Release(gstate);
 		return {};
 	}
 
@@ -45,6 +48,10 @@ VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
 	{
 		PyErr_Print();
 		ULOGE("Loading volume data failed. Function did not return.");
+		Py_DECREF(args);
+		Py_DECREF(function);
+		Py_DECREF(module);
+		PyGILState_Release(gstate);
 		return {};
 	}
 
@@ -67,7 +74,8 @@ VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
 	Py_DECREF(args);
 	Py_DECREF(function);
 	Py_DECREF(module);
-	Py_Finalize();
+
+	PyGILState_Release(gstate);
 
 	const auto elements = std::minmax_element(volumeData.dataBuffer.begin(), volumeData.dataBuffer.end());
 	volumeData.minValue = *(elements.first);

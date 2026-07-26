@@ -19,6 +19,7 @@
 #include FT_FREETYPE_H  
 
 #include "Output/Image2DWriter.h"
+#include "Core/PythonHelper.h"
 
 using namespace Ull;
 
@@ -38,8 +39,12 @@ Application::Application()
 
 Application::~Application()
 {
+    if (m_loaderThread.joinable())
+        m_loaderThread.join();
+
     m_layerManager.DropAllLayers();
     GetRenderer().Terminate();
+    FinalizePython();
     ULOGD("Application terminated");
 }
 
@@ -83,6 +88,8 @@ void Application::UpdateAndRenderLayers()
 
 void Application::InitApplciation()
 {
+    InitializePython();
+
     auto& renderer = GetRenderer();
     renderer.SetApi(Ull::Renderer::API::OPEN_GL);
 
@@ -225,7 +232,6 @@ void Application::HandleEvents()
                 if (success)
                     m_eventQueue.PushEvent(std::make_shared<VolumeLoadedEvent>(EventType::VolumeLoaded));
             }, folderPath);
-            m_loaderThread.detach();
 
             event->IsHandeled();
                 
