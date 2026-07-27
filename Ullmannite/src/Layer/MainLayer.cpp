@@ -24,12 +24,6 @@ MainLayer::MainLayer(const glm::uvec2 size, const NotOwner<LayerManager>& layerM
     CreateLayout();
 }
 
-void MainLayer::SetWindow(const NotOwner<UllWindow>& window)
-{
-    m_window = window;
-    m_3DView->SetWindow(window);
-}
-
 void MainLayer::RenderLayerComponents()
 {
     //ImGui_ImplOpenGL3_NewFrame();
@@ -61,10 +55,22 @@ void MainLayer::CreateLayout()
     m_titleBar->SetTitleBarFunctionality(UiTitleBar::TitleBarFunctionality::TITLE, State::Enable);
     m_titleBar->SetTitleText(L"Ullmannite");
 
-    m_titleBar->SetCloseFunction([this] { m_window->Close(); });
-    m_titleBar->SetMinimizeFunction([this] { m_window->Minimize(); });
-    m_titleBar->SetMaximizeFunction([this] { m_window->Maximize(); });
-    m_titleBar->SetRestoreFunction([this] { m_window->Restore(); });
+    m_titleBar->SetCloseFunction([this] { 
+        auto& window = Application::GetWindow();
+        window.Close();
+    });
+    m_titleBar->SetMinimizeFunction([this] { 
+        auto& window = Application::GetWindow();
+        window.Minimize();
+    });
+    m_titleBar->SetMaximizeFunction([this] {
+        auto& window = Application::GetWindow();
+        window.Maximize();
+    });
+    m_titleBar->SetRestoreFunction([this] { 
+        auto& window = Application::GetWindow();
+        window.Restore(); 
+    });
 
     m_titleBarView->AddChildNode(m_titleBar);
     AddChildNode(m_titleBarView);
@@ -80,13 +86,14 @@ void MainLayer::ResizeLayout()
 {
     const auto size = GetSize();
     const auto scale = GetScale();
+    auto& window = Application::GetWindow();
     
     m_titleBarView->SetSize(glm::vec2(size.x, TitleBarHeight * scale));
     m_titleBar->SetSize(m_titleBarView->GetSize());
     m_titleBar->ResizeControls();
 
     const auto grabArea = m_titleBar->GetGrabArea();
-    m_window->SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(grabArea.width, grabArea.height));
+    window.SetDragArea(glm::uvec2(0u, 0u), glm::uvec2(grabArea.width, grabArea.height));
     for (auto layer : m_layerManager->GetLayers())
     {
         if (layer->GetName() == LayerNames::toolLayer)

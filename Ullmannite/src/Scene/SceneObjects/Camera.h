@@ -26,7 +26,6 @@ namespace Ull
 		Camera(const std::string& name, NotOwner<Scene> scene, glm::uvec2 renderAreaSuze);
 		~Camera() {}
 
-		void SetWindow(const NotOwner<UllWindow>& window) { m_window = window; }
 		void SetDistanceToTarget(float distance) { m_distanceToTarget = distance; }
 
 		glm::mat4 GetProjectionMatrix() const { return m_projection; }
@@ -82,7 +81,5 @@ namespace Ull
 
 		const float m_maxFov{ 75.0f };
 		const float m_minFov{ 10.0f };
-
-		NotOwner<UllWindow> m_window{ nullptr };
 	};
 }

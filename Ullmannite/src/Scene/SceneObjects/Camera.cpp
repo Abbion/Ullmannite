@@ -67,7 +67,8 @@ void Camera::HandleEvent(Event* event)
 	}
 	else if(event->GetType() == EventType::MouseMove)
 	{
-		if(m_cameraType == CameraType::FREE && m_window->IsCursorLocked())
+		auto& window = Application::GetWindow();
+		if(m_cameraType == CameraType::FREE && window.IsCursorLocked())
 		{
 			CalculatePitchAndYaw();
 			UpdateVectors();
@@ -112,7 +113,8 @@ void Camera::HandleEvent(Event* event)
 
 void Camera::Update()
 {
-	 if(m_cameraType == CameraType::FREE && m_window->IsCursorLocked())
+	auto& window = Application::GetWindow();
+	 if(m_cameraType == CameraType::FREE && window.IsCursorLocked())
 	{
 		if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::W))
 		{

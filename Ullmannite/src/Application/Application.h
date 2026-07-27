@@ -25,9 +25,10 @@ namespace Ull
 		static Renderer& GetRenderer() { return m_renderer; }
 		static EventQueue& GetEventQueue() { return m_eventQueue; }
 		static ResourceManager& GetResourceManager() { return m_resourceManager; }
+		static UllWindow& GetWindow() { return m_window; }
 
 	private:
-		UllWindow m_window;
+		inline static UllWindow m_window;
 		LayerManager m_layerManager;
 		std::thread m_loaderThread;
 

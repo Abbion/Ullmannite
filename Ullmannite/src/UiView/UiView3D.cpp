@@ -100,7 +100,8 @@ void UiView3D::HandleEvent(Event* event)
     case EventType::MouseUp:
     case EventType::MouseScroll:
     {
-        if(!PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()) && !m_window->IsCursorLocked())
+        auto& window = Application::GetWindow();
+        if(!PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()) && !window.IsCursorLocked())
             return;
     }
     break;
@@ -129,17 +130,6 @@ void UiView3D::Update()
     }
 
     UiRenderArea::Update();
-}
-
-void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
-{
-    m_window = window;
-    auto cameraNode = m_scene.GetNodeByName("Main camera");
-    if(cameraNode != nullptr)
-    {
-        auto camera = static_cast<Camera*>(cameraNode);
-        camera->SetWindow(m_window);
-    }
 }
 
 void UiView3D::Render()

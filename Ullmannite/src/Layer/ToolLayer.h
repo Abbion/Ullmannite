@@ -14,7 +14,6 @@ namespace Ull
         void Update() override;
         void HandleEvent(Event* event) override;
 
-        void SetWindow(const NotOwner<UllWindow>& window);
         void RenderLayerComponents() override;
 
     private:
@@ -25,6 +24,5 @@ namespace Ull
         virtual void ResizeLayout() override;
     
         std::shared_ptr<UiPickerView> m_pickerView;
-        NotOwner<UllWindow> m_window{ nullptr };
     };
 }

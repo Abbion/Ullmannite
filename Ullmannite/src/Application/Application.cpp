@@ -149,12 +149,11 @@ void Application::InitApplciation()
     fontManager.ReleaseLoader();
 
     //Layers
-    auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
-    mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));
+    auto& window = Application::GetWindow();
+    auto mainLayer = std::make_shared<MainLayer>(window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
     m_layerManager.PushLayer(mainLayer);
 
-    auto toolLayer = std::make_shared<ToolLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
-    toolLayer->SetWindow(NotOwner<UllWindow>(&m_window));
+    auto toolLayer = std::make_shared<ToolLayer>(window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
     m_layerManager.PushLayer(toolLayer);
 
     //First resizeEvent to inform components of the initial window size

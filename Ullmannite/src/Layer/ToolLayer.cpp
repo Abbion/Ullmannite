@@ -45,11 +45,6 @@ void ToolLayer::HandleEvent(Event* event)
     Layer::HandleEvent(event);
 }
 
-void ToolLayer::SetWindow(const NotOwner<UllWindow>& window)
-{
-    m_window = window;
-}
-
 void ToolLayer::RenderLayerComponents()
 {
     UiRenderArea::Render();
