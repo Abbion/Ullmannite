@@ -3,5 +3,5 @@
 
 namespace Ull
 {
-	VolumeData LoadVolumeData(const std::wstring folderPath);
+	VolumeDataI LoadVolumeData(const std::wstring folderPath);
 }

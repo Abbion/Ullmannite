@@ -10,6 +10,7 @@
 #include "Input/Mouse.h"
 
 #include "Rendering/Api/ShaderManager.h"
+#include "Rendering/TriangulationTable/TriangulationTable.h"
 
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
@@ -84,6 +85,14 @@ void Application::UpdateAndRenderLayers()
 
         m_window.SwapBuffers();
     }
+    //static int s = 1;
+    //
+    //if (s != 0)
+    //{
+    //    m_resourceManager.GetVolumeManager().CreateTestData();
+    //    m_eventQueue.PushEvent(std::make_shared<VolumeLoadedEvent>(EventType::VolumeLoaded));
+    //    s = 0;
+    //}
 }
 
 void Application::InitApplciation()
@@ -147,6 +156,9 @@ void Application::InitApplciation()
     fontManager.LoadFont("segoeui.ttf", FontTag::UI_FONT, 128, 33, 126);
     fontManager.LoadFont("UllIcon.ttf", FontTag::UI_ICON, 256, 61440, 61449);
     fontManager.ReleaseLoader();
+
+    TriangulationTable::GetInstance().CreateTriangulationTable();
+    TriangulationTable::GetInstance().CreateVectexCountTable();
 
     //Layers
     auto& window = Application::GetWindow();

@@ -38,9 +38,8 @@ namespace Ull
         DataFolderSelected,
         VolumeLoaded,
         CuttingSettingsChanged,
-        TransferFunctionChanged,
         ExaminationThresholdChanged,
-        GradientUpdated,
+        TransferFunctionUpdated,
 
         RenderAreaSizeChanged,
         
@@ -88,7 +87,7 @@ namespace Ull
     typedef Event WindowClosedEvent;
     typedef Event WindowMinimized;
     typedef Event WindowRestored;
-    typedef Event GradientUpdatedEvent;
+    typedef Event TransferFunctionUpdatedEvent;
     typedef Event MouseEnteredWindowEvent;
     typedef Event MouseExitedWindowEvent;
 
@@ -105,7 +104,6 @@ namespace Ull
     typedef ValueEvent<float> UiScaledDownEvent;
 
     typedef ValueEvent<std::wstring> DataFolderSelectedEvent;
-    typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;
     typedef ValueEvent<CuttingSettings> CuttingSettingsChangedEvent;
 
     typedef Event RenderAreaSizeChanged;

@@ -39,9 +39,6 @@ void MainLayer::RenderLayerComponents()
 
 void MainLayer::CreateLayout()
 {
-    //Assuming we are working with a 1280 x 720 pixel window
-    //Then we can scale content up and down
-
     const auto initSize = GetSize();
     const auto initScale = GetScale();
 

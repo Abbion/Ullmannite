@@ -18,6 +18,8 @@ namespace
     constexpr unsigned TOOL_TAB_ICON_SIZE = 24;
     constexpr unsigned MENU_TEXT_SIZE = 14;
     constexpr float MARKER_SIZE = 10.0f;
+    constexpr float BOTTOM_THRESHILD_DEFAULT_RATE = 0.25f;
+    constexpr float TOP_THRESHILD_DEFAULT_RATE = 0.8f;
 }
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
@@ -27,9 +29,6 @@ UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     
     CreateControls();
 
-    m_cubeMarchTresholds.x = 0;
-    m_cubeMarchTresholds.y = maxUint16;
-
     m_cuttingSettings.cuttingPositions = glm::vec3(100.0f, 100.0f, 100.0f);
     m_cuttingSettings.invertedAxis = { false, false, false };
 }
@@ -38,16 +37,6 @@ void UiMenuView::HandleEvent(Event* event)
 {
     switch (event->GetType())
     {    
-    case EventType::ExaminationThresholdChanged:
-        if(m_newDataLoaded)
-        {
-            auto newThresholds = static_cast<ExaminationThresholdChangedEvent*>(event)->GetVal();
-            m_cubeMarchTresholds.x = newThresholds.x;
-            m_cubeMarchTresholds.y = newThresholds.y;
-            m_newDataLoaded = false;
-        }
-    break;
-
     case EventType::MouseMove:
         if (m_transferLinearGradient->IsVisible())
         {
@@ -90,10 +79,11 @@ void UiMenuView::HandleEvent(Event* event)
             const auto normalizedPosition = (mousePosition.x - linearGradientPosition.x) / linearGradientSize.x;
             const auto initColor = m_transferLinearGradient->GetColorForRatio(normalizedPosition);
 
-            m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ normalizedPosition, initColor });
+            m_transferLinearGradient->AddColor(GradientColorData{ normalizedPosition, initColor });
             m_transferLinearGradient->CreateResources();
             CreateMarkersForTransferFunction();
             event->MarkHandeled(true);
+            //Application::GetEventQueue().PushEvent(std::make_shared<Ull::TransferFunctionUpdatedEvent>());
         }
 
         for (auto marker : m_transferMarkers)
@@ -135,6 +125,16 @@ void UiMenuView::HandleEvent(Event* event)
         m_loadFileText->SetString(std::format(L"Loaded files from {}", volume.name).c_str());
         m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
         m_newDataLoaded = true;
+
+        m_minExaminationThresholdValue->SetString(std::format(L"{}", volume.minValue));
+        m_maxExaminationThresholdValue->SetString(std::format(L"{}", volume.maxValue));
+
+        m_thresholdSlider->SetMinLimitValue(volume.minValue);
+        m_thresholdSlider->SetMaxLimitValue(volume.maxValue);
+
+        const auto valueRange = volume.maxValue - volume.minValue;
+        m_thresholdSlider->SetMaxValue(volume.minValue + TOP_THRESHILD_DEFAULT_RATE * valueRange);
+        m_thresholdSlider->SetMinValue(volume.minValue + BOTTOM_THRESHILD_DEFAULT_RATE * valueRange);
     }
     break;
     }
@@ -154,10 +154,11 @@ void UiMenuView::Update()
         {
             const auto colorRatio = marker->GetPositionRatio();
             const auto color = marker->GetColor();
-            m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ colorRatio, color });
+            m_transferLinearGradient->AddColor(GradientColorData{ colorRatio, color });
         }
 
         m_transferLinearGradient->CreateResources();
+        Application::GetEventQueue().PushEvent(std::make_shared<Ull::TransferFunctionUpdatedEvent>(EventType::TransferFunctionUpdated));
     }
 
 	UiRenderArea::Update();
@@ -705,9 +706,9 @@ void UiMenuView::CreateColorTransformPanel()
     AddChildNode(m_transferSettingsText);
 
     m_transferLinearGradient = std::make_shared<UiLinearColorGradient>("colorTransferLinearGradient", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), UiLinearColorGradient::GradientDirection::HORIZONTAL);
-    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 0.0f,     glm::vec4(0.9f, 0.75f, 0.45f, 1.0f) });
-    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 0.5f,   glm::vec4(0.33f, 0.47f, 0.16f, 1.0f) });
-    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 1.0f,     glm::vec4(0.25f, 0.46f, 0.5f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.0f,     glm::vec4(0.9f, 0.75f, 0.45f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.5f,   glm::vec4(0.33f, 0.47f, 0.16f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 1.0f,     glm::vec4(0.25f, 0.46f, 0.5f, 1.0f) });
     m_transferLinearGradient->CreateResources();
 
     AddChildNode(m_transferLinearGradient);
@@ -765,7 +766,7 @@ void UiMenuView::CreateSettingsPanel()
 
     AddChildNode(m_minExaminationThresholdText);
 
-    m_minExaminationThresholdValue = std::make_shared<UiText>("minExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"-100");
+    m_minExaminationThresholdValue = std::make_shared<UiText>("minExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"0");
     m_minExaminationThresholdValue->SetFontSize(MENU_TEXT_SIZE);
     m_minExaminationThresholdValue->SetEdgeSmoothing(3.5f);
     m_minExaminationThresholdValue->SetSampleThreshold(1.0f);
@@ -784,7 +785,7 @@ void UiMenuView::CreateSettingsPanel()
 
     AddChildNode(m_maxExaminationThresholdText);
 
-    m_maxExaminationThresholdValue = std::make_shared<UiText>("maxExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"500");
+    m_maxExaminationThresholdValue = std::make_shared<UiText>("maxExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"1");
     m_maxExaminationThresholdValue->SetFontSize(MENU_TEXT_SIZE);
     m_maxExaminationThresholdValue->SetEdgeSmoothing(3.5f);
     m_maxExaminationThresholdValue->SetSampleThreshold(1.0f);
@@ -794,7 +795,7 @@ void UiMenuView::CreateSettingsPanel()
 
     AddChildNode(m_maxExaminationThresholdValue);
 
-    m_thresholdSlider = std::make_shared<UiTwoSideSlider>("thresholdSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 15.0f), -120, 513);
+    m_thresholdSlider = std::make_shared<UiTwoSideSlider>("volumeThresholdSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 15.0f));
     m_thresholdSlider->CreateResources();
     auto thresholdMainSlider = m_thresholdSlider->GetMainSliderHandle();
     thresholdMainSlider->SetBackgroundColor(glm::vec4(0.02f, 0.5f, 0.98f, 1.0f));

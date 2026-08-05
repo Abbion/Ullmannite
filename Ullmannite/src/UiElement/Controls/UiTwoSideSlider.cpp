@@ -11,14 +11,12 @@ namespace
     constexpr auto SLIDER_ACTIVE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-UiTwoSideSlider::UiTwoSideSlider(const std::string& name, const glm::vec2 position, const glm::vec2 size, const float limitMinValue, const float limitMaxValue) :
-    m_limitMinValue{ limitMinValue },
-    m_limitMaxValue{ limitMaxValue },
+UiTwoSideSlider::UiTwoSideSlider(const std::string& name, const glm::vec2 position, const glm::vec2 size) :
 	UiBasicControl(name, position, size, UiControlType::UiTwoWaySlider),
 	m_minSlider{ std::make_shared<UiSpace>(name + "MinSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, size.y)) },
 	m_maxSlider{ std::make_shared<UiSpace>(name + "MaxSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, size.y)) },
     m_mainSlider{ std::make_shared<UiSpace>(name + "MainSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, size.y)) },
-    m_minSliderValueText{ std::make_shared<UiText>(name + "MinText", glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), L"-1") },
+    m_minSliderValueText{ std::make_shared<UiText>(name + "MinText", glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), L"0") },
     m_maxSliderValueText{ std::make_shared<UiText>(name + "MaxText", glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), L"1") }
 {
 	CreateControls();
@@ -27,12 +25,12 @@ UiTwoSideSlider::UiTwoSideSlider(const std::string& name, const glm::vec2 positi
 
 float UiTwoSideSlider::GetMinSliderValue() const
 {
-    return 0.0f;
+    return m_minValue;
 }
 
 float UiTwoSideSlider::GetMaxSliderValue() const
 {
-    return 0.0f;
+    return m_maxValue;
 }
 
 void UiTwoSideSlider::SetSize(const glm::vec2 size)
@@ -86,6 +84,30 @@ void UiTwoSideSlider::SetMaxValue(const float max)
 
     m_minDragBounderies.y = m_maxSlider->GetPosition().x - m_maxSlider->GetSize().x;
     UpdateSliderValues();
+}
+
+void UiTwoSideSlider::SetMinLimitValue(const float min)
+{
+    if (min > m_minValue)
+    {
+        ULOGE("New min limit value greather than current min value");
+        return;
+    }
+
+    m_limitMinValue = min;
+    SetMinValue(m_minValue);
+}
+
+void UiTwoSideSlider::SetMaxLimitValue(const float max)
+{
+    if (max < m_maxValue)
+    {
+        ULOGE("New max limit value lesser than current max value");
+        return;
+    }
+
+    m_limitMaxValue = max;
+    SetMaxValue(m_maxValue);
 }
 
 void UiTwoSideSlider::HandleEvent(Event* event)

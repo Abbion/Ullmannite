@@ -77,8 +77,10 @@ void UiRenderArea::Render()
 
 void UiRenderArea::Clear()
 {
+    const uint8_t clearDepthBit = m_usesDepth ? Renderer::ClearBits::DEPTH : 0u;
+
     Application::GetRenderer().SetClearColor(m_color);
-    Application::GetRenderer().Clear(Renderer::ClearBits::COLOR);
+    Application::GetRenderer().Clear(Renderer::ClearBits::COLOR | clearDepthBit);
     Application::GetRenderer().SetViewPort(glm::ivec2(0, 0), GetSize());
 }
 

@@ -27,7 +27,7 @@ namespace
 Scene::Scene(std::string name) :
     m_name(name)
 {
-    m_root = new Node("3D scene", this);
+    m_root = new Node("scene tree", this);
     m_root->SetParent(nullptr);
 }
 

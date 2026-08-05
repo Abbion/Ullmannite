@@ -26,6 +26,7 @@ namespace Ull
         R_8I,
         R_8UI,
 
+        R_16I,
         R_16UI,
         RG_16UI,
         RGB_16UI,

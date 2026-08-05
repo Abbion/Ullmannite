@@ -13,7 +13,7 @@
 
 using namespace Ull;
 
-VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
+VolumeDataI Ull::LoadVolumeData(const std::wstring folderPath)
 {
 	PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -55,7 +55,7 @@ VolumeData Ull::LoadVolumeData(const std::wstring folderPath)
 		return {};
 	}
 
-	VolumeData volumeData;
+	VolumeDataI volumeData;
 	PyObject* pArray;
 
 	PyArg_ParseTuple(output, "HHHO", &volumeData.width, &volumeData.height, &volumeData.depth, &pArray);

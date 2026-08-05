@@ -1,7 +1,6 @@
 #pragma once
 #include "UiElement/UiRenderArea.h"
-#include "Scene/Scene.h"
-#include "Window/UllWindow.h"
+#include "UiElement/UiSceneView.h"
 #include "Utilities/PointerHelper.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
 #include <memory>
@@ -12,7 +11,6 @@ namespace Ull
 	{
 	public:
 		UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size);
-		void SetTransferFunction(const NotOwner<TransferFunctionRenderer>& transferFunction);
 
 		void HandleEvent(Event* event) override;
 		void Update() override;
@@ -21,7 +19,7 @@ namespace Ull
 	private:
 		void Init();
 
-		Scene m_scene;
-		NotOwner<TransferFunctionRenderer> m_transferFunction{ nullptr };
+		std::shared_ptr<UiSceneView> m_sceneview{ nullptr };
+		std::unique_ptr<TransferFunctionRenderer> m_transferFunction{ nullptr };
 	};
 }

@@ -6,12 +6,6 @@ namespace Ull
     class UiLinearColorGradient : public UiBasicControl
     {
     public:
-        struct GradientColorData
-        {
-            float position;
-            glm::vec4 color;
-        };
-
         enum class GradientDirection
         {
             HORIZONTAL,

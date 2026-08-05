@@ -14,9 +14,11 @@ namespace Ull
 
 		VolumeData& GetVolume();
 		bool LoadVolumeFromFolder(const std::wstring& folderPath);
+		void CreateTestData();
 
 	private:
 		VolumeManager() = default;
+		VolumeData ConvertToUnsignedRange(const VolumeDataI& input);
 
 		VolumeData m_data;
 		std::mutex m_mutex;

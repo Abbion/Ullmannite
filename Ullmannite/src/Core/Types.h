@@ -19,6 +19,11 @@ namespace Ull
         std::variant<ColorPickerData> toolData;
     };
 
+    struct GradientColorData {
+        float position;
+        glm::vec4 color;
+    };
+
     template<typename T>
     struct Rect {
         constexpr Rect() noexcept = default;

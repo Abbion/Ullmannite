@@ -45,7 +45,6 @@ namespace Ull
         bool m_newDataLoaded{ false };
         bool m_renderTransferEditor{ false };
 
-        glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
         CuttingSettings m_cuttingSettings;
         std::unordered_map<ToolTypes, std::shared_ptr<UiToggle>> m_toolTabs;
         std::shared_ptr<UiSpace> m_toolTabsLine;

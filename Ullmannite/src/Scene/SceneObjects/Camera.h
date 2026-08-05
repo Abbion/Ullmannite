@@ -31,6 +31,8 @@ namespace Ull
 		glm::mat4 GetProjectionMatrix() const { return m_projection; }
 		glm::mat4 GetViewMatrix() const { return m_view; }
 
+		glm::vec3 GetForward() const { return m_front; }
+
 		void HandleEvent(Event* event) override;
 		void Update() override;
 
