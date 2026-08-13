@@ -177,8 +177,8 @@ void Application::HandleEvents()
 {
     m_eventQueue.MakeEventUnique(EventType::WindowResize);
 
-    Keyboard::KeyState keyState{};
-    Mouse::ButtonState buttonState{};
+    std::vector<Keyboard::KeyState> newKeyStates{};
+    std::vector<Mouse::ButtonState> newButtonStates{};
     int scroll = 0;
 
     while (m_eventQueue.HasPenddingEvents())
@@ -202,25 +202,37 @@ void Application::HandleEvents()
             break;
 
         case EventType::KeyDown:
+        {
+            Keyboard::KeyState keyState;
             keyState.key = static_cast<KeyDownEvent*>(currentEvent.get())->GetVal();
             keyState.state = true;
+            newKeyStates.push_back(keyState);
             break;
-
+        }
         case EventType::KeyUp:
+        {
+            Keyboard::KeyState keyState;
             keyState.key = static_cast<KeyUpEvent*>(currentEvent.get())->GetVal();
             keyState.state = false;
+            newKeyStates.push_back(keyState);
             break;
-
+        }
         case EventType::MouseDown:
+        {
+            Mouse::ButtonState buttonState;
             buttonState.button = static_cast<MouseDownEvent*>(currentEvent.get())->GetVal();
             buttonState.state = true;
+            newButtonStates.push_back(buttonState);
             break;
-
+        }
         case EventType::MouseUp:
+        {
+            Mouse::ButtonState buttonState;
             buttonState.button = static_cast<MouseDownEvent*>(currentEvent.get())->GetVal();
             buttonState.state = false;
+            newButtonStates.push_back(buttonState);
             break;
-
+        }
         case EventType::MouseMove:
             GetMouse().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
             break;
@@ -253,8 +265,12 @@ void Application::HandleEvents()
          m_layerManager.HandleEvent(currentEvent.get());
     }
 
-    GetKeyboard().UpdateKeyMap(keyState);
-    GetMouse().UpdateButtonMap(buttonState);
+    for (const auto keyState : newKeyStates)
+        GetKeyboard().UpdateKeyMap(keyState);
+
+    for (const auto buttonState : newButtonStates)
+        GetMouse().UpdateButtonMap(buttonState);
+
     GetMouse().UpdateScroll(scroll);
 }
 

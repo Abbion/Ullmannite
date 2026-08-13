@@ -276,8 +276,8 @@ void MarchCubeRenderer::SetUpLight()
 	if(dirLightNode == nullptr)
 	{
 		m_vertexRendererShader->SetFloat3("lightSettings.lightDir", glm::vec3(1.0f, -1.0f, 0.0f));
-		m_vertexRendererShader->SetFloat3("lightSettings.lightColor", glm::vec3(0.2f, 0.2f, 0.2f));
-		m_vertexRendererShader->SetFloat("lightSettings.ambientStrength", 0.5f);
+		m_vertexRendererShader->SetFloat3("lightSettings.lightColor", glm::vec3(0.5f, 0.5f, 0.5f));
+		m_vertexRendererShader->SetFloat("lightSettings.ambientStrength", 0.75f);
 	}
 	else
 	{

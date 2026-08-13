@@ -91,6 +91,9 @@ namespace Ull
         {
         case EventType::MouseMove:
         {
+            if (IsVisible() == false)
+                return;
+
             if (m_grabbed)
             {
                 const auto currentMousePositon = Application::GetMouse().GetMousePosition();
@@ -105,20 +108,30 @@ namespace Ull
         }
 
         case EventType::MouseDown:
+            if (IsVisible() == false)
+                return;
+
             CheckHover();
             if (m_hover)
             {
                 m_grabbed = true;
                 m_grabPoint = Application::GetMouse().GetMousePosition() - glm::ivec2(GetPosition());
+                event->MarkHandeled(true);
             }
             break;
 
         case EventType::MouseUp:
+            if (IsVisible() == false)
+                return;
+
             CheckHover();
             m_grabbed = false;
             break;
 
         case EventType::MouseDoubleUp:
+            if (IsVisible() == false)
+                return;
+
             if (m_hover)
             {
                 const auto colorPickerData = ColorPickerData{ m_markerColor->GetBackgroundColor(), 
@@ -127,6 +140,7 @@ namespace Ull
                     EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25), colorPickerData }));
 
                 m_grabbed = false;
+                event->MarkHandeled(true);
             }
             break;
 

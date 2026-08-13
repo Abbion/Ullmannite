@@ -29,15 +29,27 @@ void UiButton::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::MouseDown:
+        if (IsVisible() == false)
+            return;
+
         CheckHover();
         if (m_hover)
+        {
             m_pressed = true;
+            event->MarkHandeled(true);
+        }
     break;
 
     case EventType::MouseUp:
+        if (IsVisible() == false)
+            return;
+
         CheckHover();
         if (m_pressed && m_hover)
+        {
             m_onClick(*this);
+            event->MarkHandeled(true);
+        }
         m_pressed = false;
     break;
 

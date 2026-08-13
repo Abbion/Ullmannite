@@ -16,28 +16,6 @@
 
 using namespace Ull;
 
-namespace 
-{
-    std::string ConvertDcmToDat(std::string str)
-    {
-        auto pos = str.find_last_of('.');
-        if (pos != std::string::npos)
-        {
-            auto extension = str.substr(pos);
-
-            if (extension == ".dcm")
-            {
-                using convert_t = std::codecvt_utf8<wchar_t>;
-                std::wstring_convert<convert_t, wchar_t> strconverter;
-                CreateDataFromDicom(strconverter.from_bytes(str));
-                return "Assets/VolumetricData/DICOM.dat";
-            }
-        }
-
-        return str;
-    }
-}
-
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
     UiRenderArea(name, position, size, true)
 {
@@ -115,27 +93,6 @@ void UiView3D::HandleEvent(Event* event)
             return;
     }
     break;
-    case EventType::TransferFunctionUpdated:
-    {
-        auto& scene = m_sceneview->GetScene();
-        auto cubeMarchNode = scene.GetNodeByName("march cube");
-
-        if (cubeMarchNode == nullptr)
-            return;
-
-        auto cubeMarch = static_cast<MarchCubeRenderer*>(cubeMarchNode);
-
-        const auto colorTransferNode = GetRoot()->GetNodeByName("colorTransferLinearGradient");
-        if (colorTransferNode)
-        {
-            const auto colorTransfer = static_cast<UiLinearColorGradient*>(colorTransferNode.value().Get());
-            const auto transferPoints = colorTransfer->GetGradientColors();
-            m_transferFunction = std::make_unique<TransferFunctionRenderer>(transferPoints);
-            m_transferFunction->GenerateTransferFunction();
-            cubeMarch->SetTransferFunction(m_transferFunction->GetTransferFunctionTexture());
-        }
-    }
-    break;
     case EventType::VolumeLoaded:
     {
         auto& scene = m_sceneview->GetScene();
@@ -164,13 +121,14 @@ void UiView3D::HandleEvent(Event* event)
 
 void UiView3D::Update()
 {
-    if (const auto volumeThresholdSliderNode = GetRoot()->GetNodeByName("volumeThresholdSlider"))
-    {
-        auto& scene = m_sceneview->GetScene();
-        if (auto marchCubeRendererNode = scene.GetNodeByName("march cube"))
-        {
-            auto marchCubeRenderer = static_cast<MarchCubeRenderer*>(marchCubeRendererNode);
+    auto& scene = m_sceneview->GetScene();
 
+    if (auto marchCubeRendererNode = scene.GetNodeByName("march cube"))
+    {
+        auto marchCubeRenderer = static_cast<MarchCubeRenderer*>(marchCubeRendererNode);
+
+        if (const auto volumeThresholdSliderNode = GetRoot()->GetNodeByName("volumeThresholdSlider"))
+        {
             const auto volumeThresholdSlider = static_cast<UiTwoSideSlider*>(volumeThresholdSliderNode->Get());
             const auto minValue = volumeThresholdSlider->GetMinSliderValue();
             const auto maxValue = volumeThresholdSlider->GetMaxSliderValue();
@@ -178,8 +136,15 @@ void UiView3D::Update()
             marchCubeRenderer->SetThresholdValues(static_cast<glm::uint>(std::round(minValue)), static_cast<glm::uint>(std::round(maxValue)));
         }
 
+        if (const auto colorTransferNode = GetRoot()->GetNodeByName("colorTransferLinearGradient"))
+        {
+            const auto colorTransfer = static_cast<UiLinearColorGradient*>(colorTransferNode.value().Get());
+            const auto transferPoints = colorTransfer->GetGradientColors();
+            m_transferFunction = std::make_unique<TransferFunctionRenderer>(transferPoints);
+            m_transferFunction->GenerateTransferFunction();
+            marchCubeRenderer->SetTransferFunction(m_transferFunction->GetTransferFunctionTexture());
+        }
     }
-
 
     UiRenderArea::Update();
 }

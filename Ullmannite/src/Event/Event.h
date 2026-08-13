@@ -38,8 +38,6 @@ namespace Ull
         DataFolderSelected,
         VolumeLoaded,
         CuttingSettingsChanged,
-        ExaminationThresholdChanged,
-        TransferFunctionUpdated,
 
         RenderAreaSizeChanged,
         
@@ -87,7 +85,6 @@ namespace Ull
     typedef Event WindowClosedEvent;
     typedef Event WindowMinimized;
     typedef Event WindowRestored;
-    typedef Event TransferFunctionUpdatedEvent;
     typedef Event MouseEnteredWindowEvent;
     typedef Event MouseExitedWindowEvent;
 

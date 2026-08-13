@@ -137,6 +137,9 @@ void UiLinearColorGradient::HandleEvent(Event *event)
     switch (event->GetType())
     {
     case EventType::MouseUp:
+        if (IsVisible() == false)
+            return;
+
         InteractWithMouse();
         break;
     }

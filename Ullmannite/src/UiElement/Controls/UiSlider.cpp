@@ -70,20 +70,28 @@ void UiSlider::HandleEvent(Event* event)
     switch (event->GetType())
     {
     case EventType::MouseDown:
+        if (IsVisible() == false)
+            return;
+
         if (!m_handleActive && m_sliderHandle->IsHover())
         {
             m_handleActive = true;
             m_handleGrabPosition = m_sliderHandle->GetGlobalPosition() - glm::vec2(Application::GetMouse().GetMousePosition());
             m_sliderBackgroundColorState = m_sliderHandle->GetBackgroundColor();
             m_sliderHandle->SetBackgroundColor(m_sliderHandle->GetHoverColor());
+            event->MarkHandeled(true);
         }
         break;
 
     case EventType::MouseUp:
+        if (IsVisible() == false)
+            return;
+
         if (m_handleActive)
         {
             m_handleActive = false;
             m_sliderHandle->SetBackgroundColor(m_sliderBackgroundColorState);
+            event->MarkHandeled(true);
         }
     break;
     }

@@ -52,17 +52,6 @@ void Camera::HandleEvent(Event* event)
 				ResetCamera();
 				m_scene->SetUpdated(true);
 			}
-			else if(key == Keyboard::Key::Q)
-			{
-				auto dirLightNode = m_scene->GetNodeByName("dirLight");
-				
-				if(dirLightNode == nullptr)
-					return; 
-
-				auto dirLight = static_cast<DirectionalLight*>(dirLightNode);
-				dirLight->SetDirection(m_front);
-				m_scene->SetUpdated(true);
-			}
 		}
 	}
 	else if(event->GetType() == EventType::MouseMove)
@@ -75,7 +64,7 @@ void Camera::HandleEvent(Event* event)
 
 			m_scene->SetUpdated(true);
 		}
-		else if( m_cameraType == CameraType::LOCKED)
+		else if(m_cameraType == CameraType::LOCKED)
 		{
 			if(Application::GetMouse().IsButtonPressed(Mouse::Button::RIGHT))
 			{

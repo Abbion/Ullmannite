@@ -83,7 +83,6 @@ void UiMenuView::HandleEvent(Event* event)
             m_transferLinearGradient->CreateResources();
             CreateMarkersForTransferFunction();
             event->MarkHandeled(true);
-            //Application::GetEventQueue().PushEvent(std::make_shared<Ull::TransferFunctionUpdatedEvent>());
         }
 
         for (auto marker : m_transferMarkers)
@@ -158,7 +157,6 @@ void UiMenuView::Update()
         }
 
         m_transferLinearGradient->CreateResources();
-        Application::GetEventQueue().PushEvent(std::make_shared<Ull::TransferFunctionUpdatedEvent>(EventType::TransferFunctionUpdated));
     }
 
 	UiRenderArea::Update();
@@ -716,10 +714,12 @@ void UiMenuView::CreateColorTransformPanel()
 
 void UiMenuView::CreateMarkersForTransferFunction()
 {
-    for (int i = 0; i < m_transferMarkers.size(); ++i)
-        RemoveChildNode(m_transferMarkers[i]);
-
-    m_transferMarkers.clear();
+    while (m_transferMarkers.size() > 0)
+    {
+        auto marker = m_transferMarkers.back();
+        m_transferMarkers.pop_back();
+        RemoveChildNode(std::move(marker));
+    }
 
     auto areaSizeChangedEvent = std::make_shared<RenderAreaSizeChanged>(EventType::RenderAreaSizeChanged);
     const auto& colors = m_transferLinearGradient->GetGradientColors();
