@@ -38,30 +38,6 @@ bool VolumeManager::LoadVolumeFromFolder(const std::wstring& folderPath)
 	return true;
 }
 
-void VolumeManager::CreateTestData()
-{
-	auto data = VolumeDataI{};
-	data.width = 3;
-	data.height = 3;
-	data.depth = 3;
-	data.name = L"Test 3x3";
-	data.minValue = -50;
-	data.maxValue = 50;
-	data.dataBuffer = {	-50, -50, -50,
-						-50, -50, -50,
-						-50, -50, -50,
-		
-						-50, -50, -50,
-						-50, +50, +25,
-						-50, -50, -50,
-		
-						-50, -50, -50,
-						-50, -50, -50, 
-						-50, -50, -50, };
-
-	m_data = ConvertToUnsignedRange(data);
-}
-
 VolumeData VolumeManager::ConvertToUnsignedRange(const VolumeDataI& input)
 {
 	VolumeData output;

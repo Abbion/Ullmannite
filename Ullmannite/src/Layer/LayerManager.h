@@ -11,7 +11,6 @@ namespace Ull
     class LayerManager : public EventHandler
     {
     public:
-        LayerManager();
         ~LayerManager();
 
         void PushLayer(std::shared_ptr<Layer> newLayer);

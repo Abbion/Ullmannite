@@ -4,7 +4,6 @@
 #include "Rendering/Api/Texture.h"
 #include "Rendering/Api/Buffer.h"
 #include "Utilities/PointerHelper.h"
-#include "DataStructures/CuttingSettings.h"
 #include <memory>
 
 namespace Ull

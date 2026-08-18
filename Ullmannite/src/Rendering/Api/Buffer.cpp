@@ -6,7 +6,6 @@
 
 using namespace Ull;
 
-//TODO: Change size to uint
 VertexBuffer* VertexBuffer::Create(int size, float* data, GraphicsBufferType type)
 {
     switch (Application::GetRenderer().GetApi())

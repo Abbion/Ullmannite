@@ -1,8 +1,8 @@
 #pragma once
 #include "UiElement/UiRenderArea.h"
 #include "UiElement/Controls/AllControls.h"
-#include "DataStructures/CuttingSettings.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
+#include "Core/Types.h"
 #include <array>
 #include <optional>
 

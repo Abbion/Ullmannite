@@ -34,7 +34,7 @@ void ToolLayer::HandleEvent(Event* event)
         if (toolData.toolType == ToolType::ColorPicker)
         {
             const auto colorPickerData = std::get<ColorPickerData>(toolData.toolData);
-            m_pickerView = std::make_shared<UiPickerView>("colorPicker", toolData.spawnPoint, colorPickerData.initialColor, std::move(colorPickerData.onColorChange));
+            m_pickerView = std::make_shared<UiPickerView>("colorPicker", toolData.spawnPoint, colorPickerData.initialColor, colorPickerData.onColorChange);
             AddChildNode(m_pickerView);
         }
 
@@ -48,14 +48,4 @@ void ToolLayer::HandleEvent(Event* event)
 void ToolLayer::RenderLayerComponents()
 {
     UiRenderArea::Render();
-}
-
-void ToolLayer::CreateLayout()
-{
-
-}
-
-void ToolLayer::ResizeLayout()
-{
-    //Do nothing
 }

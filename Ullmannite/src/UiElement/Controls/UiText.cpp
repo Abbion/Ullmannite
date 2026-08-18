@@ -279,7 +279,7 @@ void UiText::CreateResources()
 
 	m_layout->Bind();
 
-	m_vertexBuffer = VertexBuffer::Create(sizeof(GpuLetterData) * vertices.size(), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
+	m_vertexBuffer = VertexBuffer::Create(sizeof(GpuLetterData) * static_cast<int>(vertices.size()), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
 	m_indexBuffer = IndexBuffer::Create(static_cast<int>(sizeof(unsigned int) * indices.size()), indices.data(), GraphicsBufferType::STATIC_DRAW);
 
 	m_layout->Build();

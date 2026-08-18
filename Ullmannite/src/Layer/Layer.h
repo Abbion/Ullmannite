@@ -1,8 +1,6 @@
 #pragma once
 #include "UiElement/UiRenderArea.h"
 
-//Create a macro that takes mayer names and adds the classes predefiniton and friends them
-
 namespace Ull
 {
     namespace LayerNames

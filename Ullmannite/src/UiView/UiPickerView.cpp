@@ -136,7 +136,7 @@ void UiPickerView::HandleEvent(Event* event)
         if (m_isSubWindowGrabbed)
         {
             const auto viewSize = GetSize();
-            auto newViewPosition = mousePositionI - m_grabStartPosition;
+            glm::vec2 newViewPosition = glm::vec2{ mousePositionI - m_grabStartPosition };
 
             const auto toolLayer = GetParent();
             const auto layerSize = toolLayer->GetSize();
@@ -323,7 +323,7 @@ void UiPickerView::CreateControls()
     m_confirmButton->CreateResources();
 
     auto confirmButtonTextControl = m_confirmButton->GetTextControl();
-    confirmButtonTextControl->SetFontSize(13.0f);
+    confirmButtonTextControl->SetFontSize(13);
     confirmButtonTextControl->SetString(std::wstring(L"OK"));
     confirmButtonTextControl->SetEdgeSmoothing(2.5f);
     confirmButtonTextControl->SetSampleThreshold(2.0f);
@@ -349,7 +349,7 @@ void UiPickerView::CreateControls()
     });
 
     auto restoreButtonTextControl = m_restoreButton->GetTextControl();
-    restoreButtonTextControl->SetFontSize(13.0f);
+    restoreButtonTextControl->SetFontSize(13);
     restoreButtonTextControl->SetString(std::wstring(L"Restore"));
     restoreButtonTextControl->SetEdgeSmoothing(2.5f);
     restoreButtonTextControl->SetSampleThreshold(2.0f);
@@ -405,7 +405,7 @@ void UiPickerView::CreateControls()
     m_greenValueFieldLabel->SetPosition(m_redValueFieldLabel->GetPosition() + glm::vec2(0.0f, m_redValueNumberField->GetSize().y + MARGIN / 2.0f));
     m_greenValueFieldLabel->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
     m_greenValueFieldLabel->SetSize(glm::vec2(MARGIN, 20.0f));
-    m_greenValueFieldLabel->SetFontSize(13.0f);
+    m_greenValueFieldLabel->SetFontSize(13);
     m_greenValueFieldLabel->SetEdgeSmoothing(2.5f);
     m_greenValueFieldLabel->SetSampleThreshold(2.0f);
     m_greenValueFieldLabel->CreateResources();
@@ -430,7 +430,7 @@ void UiPickerView::CreateControls()
     m_blueValueFieldLabel->SetPosition(m_greenValueFieldLabel->GetPosition() + glm::vec2(0.0f, m_greenValueNumberField->GetSize().y + MARGIN / 2.0f));
     m_blueValueFieldLabel->SetAlignment(UiText::HorizontalAlignment::CENTER, UiText::VerticalAlignment::CENTER);
     m_blueValueFieldLabel->SetSize(glm::vec2(MARGIN, 20.0f));
-    m_blueValueFieldLabel->SetFontSize(13.0f);
+    m_blueValueFieldLabel->SetFontSize(13);
     m_blueValueFieldLabel->SetEdgeSmoothing(2.5f);
     m_blueValueFieldLabel->SetSampleThreshold(2.0f);
     m_blueValueFieldLabel->CreateResources();

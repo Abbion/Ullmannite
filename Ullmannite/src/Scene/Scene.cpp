@@ -58,7 +58,6 @@ void Scene::Render()
 {
     for (auto node : m_root->GetChildren())
     {
-        //TODO: Put renderable in Node and static_cast
         auto renderNode = dynamic_cast<RenderableNode*>(node);
 
         if(renderNode != nullptr)

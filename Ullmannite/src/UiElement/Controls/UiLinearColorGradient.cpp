@@ -124,8 +124,8 @@ void UiLinearColorGradient::CreateResources()
     m_layout->Bind();
 
 
-    m_vertexBuffer = VertexBuffer::Create(sizeof(VertexDesc) * vertices.size(), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
-    m_indexBuffer = IndexBuffer::Create(sizeof(unsigned) * indices.size(), indices.data(), GraphicsBufferType::STATIC_DRAW);
+    m_vertexBuffer = VertexBuffer::Create(sizeof(VertexDesc) * static_cast<int>(vertices.size()), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
+    m_indexBuffer = IndexBuffer::Create(sizeof(unsigned) * static_cast<int>(indices.size()), indices.data(), GraphicsBufferType::STATIC_DRAW);
 
     m_layout->Build();
     m_vertexBuffer->Unbind();

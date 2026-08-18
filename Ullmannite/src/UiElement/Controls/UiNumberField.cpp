@@ -151,7 +151,7 @@ void UiNumberField::HandleEvent(Event* event)
 				break;
 
 			if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::L_CONTROL))
-				m_cursorPosition = m_numberText->GetString().length();
+				m_cursorPosition = static_cast<unsigned int>(m_numberText->GetString().length());
 			else
 				m_cursorPosition++;
 
@@ -187,7 +187,7 @@ void UiNumberField::HandleEvent(Event* event)
 		else if (key == Keyboard::Key::END)
 		{
 			const auto numberString = m_numberText->GetString();
-			m_cursorPosition = numberString.length();
+			m_cursorPosition = static_cast<unsigned int>(numberString.length());
 			UpdateCursorPosition();
 		}
 		else if (key == Keyboard::Key::ENTER)
@@ -298,7 +298,7 @@ bool UiNumberField::CreateHightlightBox()
 	}
 
 	const auto firstletterPosition = m_numberText->GetLetterPositionAtIndex(0);
-	const auto lastLetterPosition = m_numberText->GetLetterPositionAtIndex(numberString.length());
+	const auto lastLetterPosition = m_numberText->GetLetterPositionAtIndex(static_cast<unsigned int>(numberString.length()));
 	const auto cursorSize = m_numberText->GetFontSize();
 
 	m_selectedHighlight->SetPosition(firstletterPosition - glm::vec2(0.0f, cursorSize * 0.85f));

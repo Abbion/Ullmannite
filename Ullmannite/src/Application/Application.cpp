@@ -140,7 +140,6 @@ void Application::InitApplciation()
     shaderManager.LoadShader(ShaderTag::INVERSE_2D_BIT_MAP, "Inverse2DBitMapCS");
     shaderManager.LoadShader(ShaderTag::MEREGE_INNSER_OUTER_SDF, "MergeInnerOuterSdfCS");
     shaderManager.LoadShader(ShaderTag::SDF_TEXT, "SdfTextVS", "SdfTextPS");
-    //shaderManager.LoadShader(ShaderTag::CHANGE_VALUE_IF_GREATHER_THAN_UIIMAGE_2D, "ChangeValueInUIImage2DIfGreaterThan");
 
     //Resources
     auto& fontManager = m_resourceManager.GetFontMnager();

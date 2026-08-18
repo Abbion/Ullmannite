@@ -260,11 +260,7 @@ uint64_t MarchCubeRenderer::CalculateVertexCountGPU()
 		}
 	}
 
-	auto stop = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	//ULOGD("Triangle count GPU TIME: " << duration.count() << " microseconds");
-
-	//m_volumeTexture->Unbind()
+	m_volumeTexture->Unbind();
 
 	return totalVertexCount;
 }

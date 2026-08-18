@@ -26,15 +26,7 @@ MainLayer::MainLayer(const glm::uvec2 size, const NotOwner<LayerManager>& layerM
 
 void MainLayer::RenderLayerComponents()
 {
-    //ImGui_ImplOpenGL3_NewFrame();
-    //ImGui_ImplGlfw_NewFrame();
-
-    //ImGui::NewFrame();
-
     UiRenderArea::Render();
-
-    //ImGui::EndFrame();
-    //ImGui::Render();
 }
 
 void MainLayer::CreateLayout()

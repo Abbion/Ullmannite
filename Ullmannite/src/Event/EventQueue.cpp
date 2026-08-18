@@ -1,6 +1,5 @@
 #include <Ullpch.h>
 #include "EventQueue.h"
-
 #include "Logger/Logger.h"
 
 using namespace Ull;
@@ -25,10 +24,6 @@ std::shared_ptr<Event> EventQueue::PopEvent()
     return lastEvent;
 }
 
-void EventQueue::CheckPublishedEvents()
-{
-}
-
 bool EventQueue::HasPenddingEvents() const
 {
     return m_events.size() > 0u;
@@ -36,7 +31,7 @@ bool EventQueue::HasPenddingEvents() const
 
 unsigned int EventQueue::GetSize() const
 {
-    return (unsigned int)m_events.size();
+    return static_cast<unsigned int>(m_events.size());
 }
 
 void EventQueue::MakeEventUnique(EventType eventType)

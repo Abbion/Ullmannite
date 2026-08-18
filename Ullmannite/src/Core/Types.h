@@ -1,9 +1,11 @@
 #pragma once
 #include <variant>
-#include "ToolsData.h"
+#include <array>
 
 namespace Ull
 {
+    typedef std::function<void(glm::vec4)> onColorChangeCallback;
+
     enum class State {
         Enable,
         Disable
@@ -11,6 +13,11 @@ namespace Ull
 
     enum class ToolType {
         ColorPicker
+    };
+
+    struct ColorPickerData {
+        glm::vec4 initialColor;
+        onColorChangeCallback onColorChange;
     };
 
     struct ToolSetup {
@@ -30,10 +37,10 @@ namespace Ull
         constexpr Rect(T x, T y, T width, T height) noexcept
             : x{ x }, y{ y }, width{ width }, height{ height } {}
 
-        T x = 0.0f;
-        T y = 0.0f;
-        T width = 0.0f;
-        T height = 0.0f;
+        T x = 0;
+        T y = 0;
+        T width = 0;
+        T height = 0;
 
         [[nodiscard]] inline bool IsPointInside(T pointX, T pointY) const noexcept {
             return (pointX >= x) && (pointX <= x + width) && (pointY >= y) && (pointY <= y + height);
@@ -46,4 +53,20 @@ namespace Ull
 
     typedef Rect<float> RectF;
     typedef Rect<unsigned> RectU;
+
+    struct CuttingSettings
+    {
+        glm::vec3 cuttingPositions;
+        std::array<bool, 3> invertedAxis;
+
+        bool operator==(const CuttingSettings& cuttingSetting)
+        {
+            return (this->cuttingPositions == cuttingSetting.cuttingPositions && this->invertedAxis == cuttingSetting.invertedAxis);
+        }
+
+        bool operator!=(const CuttingSettings& cuttingSetting)
+        {
+            return !((*this) == cuttingSetting);
+        }
+    };
 }

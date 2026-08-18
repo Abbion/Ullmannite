@@ -5,10 +5,6 @@
 
 using namespace Ull;
 
-LayerManager::LayerManager()
-{
-}
-
 LayerManager::~LayerManager()
 {
     m_layers.clear();

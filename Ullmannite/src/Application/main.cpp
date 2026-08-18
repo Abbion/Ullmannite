@@ -1,7 +1,6 @@
 ﻿#include "Ullpch.h"
 
 #ifdef GTEST
-#include <iostream>
 #include <gtest/gtest.h>
 #include "allTests.h"
 

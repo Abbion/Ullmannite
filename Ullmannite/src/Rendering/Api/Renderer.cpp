@@ -181,7 +181,7 @@ void Renderer::DrawElements(GraphicsRenderPrimitives primitive, unsigned int cou
     if (m_api == API::OPEN_GL)
     {
         glPolygonMode(GL_FRONT_AND_BACK, ConvertFillType(primitive));
-        glDrawElements(ConvertPrimitive(primitive), count, ConvetDataType(type), (void*)skip);
+        glDrawElements(ConvertPrimitive(primitive), count, ConvetDataType(type), reinterpret_cast<void*>(skip));
     }
 }
 

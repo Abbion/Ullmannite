@@ -81,7 +81,7 @@ void VertexLayoutOpenGL::Build()
         uint16_t index = 0;
         for (const auto& element : m_elementList)
         {
-            glVertexAttribPointer(index, element.amount, ConvetDataType(element.dataType), element.normalized ? GL_TRUE : GL_FALSE, m_totalSize, (void*)element.offset);
+            glVertexAttribPointer(index, element.amount, ConvetDataType(element.dataType), element.normalized ? GL_TRUE : GL_FALSE, m_totalSize, reinterpret_cast<void*>(element.offset));
             glEnableVertexAttribArray(index);
             ++index;
         }

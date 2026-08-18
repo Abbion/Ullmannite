@@ -2,7 +2,7 @@
 #include "Logger/Logger.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
-#include "DataStructures/CuttingSettings.h"
+#include "Core/Types.h"
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -49,7 +49,7 @@ namespace Ull
     {
     public:
         Event(EventType eventType) : m_type(eventType) {}
-        virtual ~Event() { /*ULOGD("event " << (int)m_type << " terminated");*/ }
+        virtual ~Event() { }
 
         void MarkHandeled(const bool handeled) { m_handeled = handeled; } 
 

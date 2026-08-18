@@ -11,7 +11,6 @@ namespace Ull
 	};
 
 	std::optional<std::wstring> CreateFileOpenDialog(FileExtentions fileExtentions);
-	void CreateDataFromDicom(std::wstring filePath);
 
 	inline FileExtentions operator|(FileExtentions flagA, FileExtentions flagB)
 	{

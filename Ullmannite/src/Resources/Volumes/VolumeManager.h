@@ -14,7 +14,6 @@ namespace Ull
 
 		VolumeData& GetVolume();
 		bool LoadVolumeFromFolder(const std::wstring& folderPath);
-		void CreateTestData();
 
 	private:
 		VolumeManager() = default;
