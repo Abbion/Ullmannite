@@ -31,6 +31,10 @@ bool VolumeManager::LoadVolumeFromFolder(const std::wstring& folderPath)
 
 	m_data = std::move(ConvertToUnsignedRange(data));
 	m_data.name = folderName.value();
+
+	if (m_data.name.empty())
+		m_data.name = L"UnnamedDataSet";
+
 	return true;
 }
 

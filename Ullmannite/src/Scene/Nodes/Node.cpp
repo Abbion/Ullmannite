@@ -28,6 +28,17 @@ void Node::SetParent(NotOwner<Node> node)
     m_parent = node;
 }
 
+Node* Node::GetNodeByName(const std::string& name)
+{
+    for (auto node : m_children)
+    {
+        if (node->GetName() == name)
+            return node;
+    }
+
+    return nullptr;
+}
+
 void Node::AddNode(Node* node)
 {
     m_children.push_back(std::move(node));

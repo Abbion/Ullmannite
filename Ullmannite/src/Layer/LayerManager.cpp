@@ -25,6 +25,17 @@ void LayerManager::DropAllLayers()
     m_layers.clear();
 }
 
+std::shared_ptr<Layer> LayerManager::GetLayerByName(const std::string& layerName)
+{
+    for (auto& layer : m_layers)
+    {
+        if (layer->GetName() == layerName)
+            return layer;
+    }
+
+    return nullptr;
+}
+
 unsigned int LayerManager::GetSize() const
 {
     return static_cast<unsigned int>(m_layers.size());

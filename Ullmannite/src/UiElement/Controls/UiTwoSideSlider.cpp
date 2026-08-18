@@ -299,11 +299,10 @@ void UiTwoSideSlider::ResizeControls()
     const auto range = m_limitMaxValue - m_limitMinValue;
     const auto startFrom = m_minValue / range;
     const auto endAt = m_maxValue / range;
-    const auto endAtRange = (m_maxValue - m_minValue) / range;
 
     const auto mainSliderWidth = sliderSize.x - SLIDER_WIDTH * 2.0f;
     m_mainSlider->SetPosition(glm::vec2(SLIDER_WIDTH + (mainSliderWidth * startFrom), 0.0f));
-    m_mainSlider->SetSize(glm::vec2(mainSliderWidth * endAtRange, sliderSize.y));
+    m_mainSlider->SetSize(glm::vec2(mainSliderWidth * (endAt - startFrom), sliderSize.y));
 
     m_minSlider->SetSize(glm::vec2(SLIDER_WIDTH, sliderSize.y));
     m_minSlider->SetPosition(glm::vec2(mainSliderWidth * startFrom, 0.0f));

@@ -29,7 +29,7 @@ UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     
     CreateControls();
 
-    m_cuttingSettings.cuttingPositions = glm::vec3(100.0f, 100.0f, 100.0f);
+    m_cuttingSettings.cuttingPositions = glm::vec3(0.0f, 0.0f, 0.0f);
     m_cuttingSettings.invertedAxis = { false, false, false };
 }
 
@@ -157,6 +157,36 @@ void UiMenuView::Update()
         }
 
         m_transferLinearGradient->CreateResources();
+    }
+    else if (m_toolTabs[ToolTypes::Cut]->IsEnabled())
+    {
+        auto cuttingSettingDirty = false;
+
+        const auto cutX = m_cutSettingsCutxSlider->GetValue();
+        const auto cutY = m_cutSettingsCutySlider->GetValue();
+        const auto cutZ = m_cutSettingsCutzSlider->GetValue();
+
+        const auto invertCutX = m_cutSettingsCutxInvertToggle->IsEnabled();
+        const auto invertCutY = m_cutSettingsCutyInvertToggle->IsEnabled();
+        const auto invertCutZ = m_cutSettingsCutzInvertToggle->IsEnabled();
+
+        const auto compareAndMarkDirty = [&cuttingSettingDirty]<typename T>(T& lparam, const T rparam) {
+            if (lparam != rparam)
+            {
+                lparam = rparam;
+                cuttingSettingDirty = true;
+            }
+        };
+
+        compareAndMarkDirty(m_cuttingSettings.cuttingPositions.x, cutX);
+        compareAndMarkDirty(m_cuttingSettings.cuttingPositions.y, cutY);
+        compareAndMarkDirty(m_cuttingSettings.cuttingPositions.z, cutZ);
+
+        compareAndMarkDirty(m_cuttingSettings.invertedAxis[0], invertCutX);
+        compareAndMarkDirty(m_cuttingSettings.invertedAxis[1], invertCutY);
+        compareAndMarkDirty(m_cuttingSettings.invertedAxis[2], invertCutZ);
+
+        Application::GetEventQueue().PushEvent(std::make_shared<CuttingSettingsChangedEvent>(EventType::CuttingSettingsChanged, m_cuttingSettings));
     }
 
 	UiRenderArea::Update();

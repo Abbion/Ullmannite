@@ -85,14 +85,6 @@ void Application::UpdateAndRenderLayers()
 
         m_window.SwapBuffers();
     }
-    //static int s = 1;
-    //
-    //if (s != 0)
-    //{
-    //    m_resourceManager.GetVolumeManager().CreateTestData();
-    //    m_eventQueue.PushEvent(std::make_shared<VolumeLoadedEvent>(EventType::VolumeLoaded));
-    //    s = 0;
-    //}
 }
 
 void Application::InitApplciation()
@@ -255,8 +247,6 @@ void Application::HandleEvents()
                 if (success)
                     m_eventQueue.PushEvent(std::make_shared<VolumeLoadedEvent>(EventType::VolumeLoaded));
             }, folderPath);
-
-            event->IsHandeled();
                 
             break;
         }

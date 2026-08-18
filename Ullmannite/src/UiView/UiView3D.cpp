@@ -93,6 +93,18 @@ void UiView3D::HandleEvent(Event* event)
             return;
     }
     break;
+    case EventType::DataFolderSelected:
+    {
+        auto& scene = m_sceneview->GetScene();
+        auto marchCubeNode = scene.GetNodeByName("march cube");
+        if (marchCubeNode)
+        {
+            scene.GetRootNode()->RemoveNode(marchCubeNode);
+            delete marchCubeNode;
+        }
+    }
+    break;
+
     case EventType::VolumeLoaded:
     {
         auto& scene = m_sceneview->GetScene();
@@ -151,7 +163,6 @@ void UiView3D::Update()
 
 void UiView3D::Render()
 {
-    Application::GetRenderer().SetFaceCulling(Renderer::FaceCulling::BACK);
     Application::GetRenderer().SetDepth(Renderer::State::ENABLE);
 
     m_frameBuffer->Bind();

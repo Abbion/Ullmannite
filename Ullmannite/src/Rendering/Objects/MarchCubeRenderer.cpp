@@ -133,9 +133,9 @@ void MarchCubeRenderer::HandleEvent(Event* event)
 	{
 		auto cuttingSettings = static_cast<CuttingSettingsChangedEvent*>(event)->GetVal();
 		const auto& volumeData = Application::GetResourceManager().GetVolumeManager().GetVolume();
-		m_cuttingSettingsInt = { (cuttingSettings.cuttingPositions.x / 100.0f) * volumeData.width,
-								 (cuttingSettings.cuttingPositions.y / 100.0f) * volumeData.height,
-								 (cuttingSettings.cuttingPositions.z / 100.0f) * volumeData.depth };
+		m_cuttingSettingsInt = { (1.0f - (cuttingSettings.cuttingPositions.x / 100.0f)) * volumeData.width,
+								 (1.0f - (cuttingSettings.cuttingPositions.y / 100.0f)) * volumeData.height,
+								 (1.0f - (cuttingSettings.cuttingPositions.z / 100.0f)) * volumeData.depth };
 		m_cuttingSettingsInt.x = cuttingSettings.invertedAxis[0] ? -m_cuttingSettingsInt.x : m_cuttingSettingsInt.x;
 		m_cuttingSettingsInt.y = cuttingSettings.invertedAxis[1] ? -m_cuttingSettingsInt.y : m_cuttingSettingsInt.y;
 		m_cuttingSettingsInt.z = cuttingSettings.invertedAxis[2] ? -m_cuttingSettingsInt.z : m_cuttingSettingsInt.z;
