@@ -79,7 +79,7 @@ void Application::UpdateAndRenderLayers()
             layer->RenderLayerComponents();
         
         m_window.Clear();
-        
+
         for (auto layer : layers)
             layer->Render();
 

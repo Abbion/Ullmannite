@@ -168,7 +168,6 @@ void UiText::CreateResources()
 	const glm::vec2 scale{ static_cast<float>(m_fontSize) / static_cast<float>(size.x) / static_cast<float>(loadedFontSize),
 					 static_cast<float>(m_fontSize) / static_cast<float>(size.y) / static_cast<float>(loadedFontSize) };
 
-	//TODO: Subtract whitespaces form the text length
 	std::vector<GpuLetterData> vertices((m_text.length()) * 4);
 	std::vector<unsigned int> indices(m_text.length() * 6);
 
@@ -339,11 +338,6 @@ void UiText::Render()
 	Application::GetRenderer().SetBlending(Renderer::State::ENABLE);
 	Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 	Application::GetRenderer().SetBlending(Renderer::State::DISABLE);
-}
-
-void UiText::UpdateDisplayTextSize()
-{
-
 }
 
 void UiText::RealignText()

@@ -26,7 +26,6 @@ namespace Ull
         void CreateFrameBuffer();
 
         FrameBuffer* m_frameBuffer{ nullptr };
-        bool m_areaUpdated{ false };
         bool m_inArea{ false };
         glm::vec4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };
 

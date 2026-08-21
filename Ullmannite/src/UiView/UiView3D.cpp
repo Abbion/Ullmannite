@@ -5,14 +5,9 @@
 #include "Rendering/Objects/Cube.h"
 #include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
-#include "Rendering/Utils/RenderHelper.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Utilities/CollisionCheckers.h"
-#include <string>
 #include <algorithm>
-#include "Core/PlatformDependantFreeFunctions.h"
-#include <codecvt>
-#include <locale>
 
 using namespace Ull;
 
@@ -165,9 +160,7 @@ void UiView3D::Render()
 {
     Application::GetRenderer().SetDepth(Renderer::State::ENABLE);
 
-    m_frameBuffer->Bind();
     UiRenderArea::Render();
-    m_frameBuffer->Unbind();
 
     Application::GetRenderer().SetDepth(Renderer::State::DISABLE);
     Application::GetRenderer().SetFaceCulling(Renderer::FaceCulling::NONE);

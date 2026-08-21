@@ -52,6 +52,9 @@ void Scene::HandleEvent(Event* event)
 void Scene::Update()
 {
     m_mainCamera->Update();
+
+    for (auto node : m_root->GetChildren())
+        node->Update();
 }
 
 void Scene::Render()

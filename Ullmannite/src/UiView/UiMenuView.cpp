@@ -38,6 +38,7 @@ void UiMenuView::HandleEvent(Event* event)
     switch (event->GetType())
     {    
     case EventType::MouseMove:
+    {
         if (m_transferLinearGradient->IsVisible())
         {
             bool mouseOverMarker = false;
@@ -65,9 +66,11 @@ void UiMenuView::HandleEvent(Event* event)
         {
             m_cursorIndicatorText->SetVisibility(false);
         }
+    }
     break;
 
     case EventType::MouseDoubleUp:
+    {
         if (m_transferLinearGradient->IsVisible() == false)
             break;
 
@@ -93,6 +96,7 @@ void UiMenuView::HandleEvent(Event* event)
                 break;
             }
         }
+    }
     break;
 
     case EventType::MouseUp:
@@ -143,8 +147,6 @@ void UiMenuView::HandleEvent(Event* event)
 
 void UiMenuView::Update()
 {
-    //m_areaUpdated = true;
-
     if (m_toolTabs[ToolTypes::Transfer]->IsEnabled())
     {
         m_transferLinearGradient->ClearColorData();
@@ -194,21 +196,7 @@ void UiMenuView::Update()
 
 void UiMenuView::Render()
 {
-    if(m_areaUpdated)
-    {
-        m_frameBuffer->Bind();
-        Clear();
-        m_frameBuffer->Unbind();
-
-        m_areaUpdated = false;
-    }
-
-	RenderUI();
-}
-
-void UiMenuView::RenderUI()
-{
-	UiRenderArea::Render();
+    UiRenderArea::Render();
 }
 
 void UiMenuView::CreateControls()
@@ -734,9 +722,11 @@ void UiMenuView::CreateColorTransformPanel()
     AddChildNode(m_transferSettingsText);
 
     m_transferLinearGradient = std::make_shared<UiLinearColorGradient>("colorTransferLinearGradient", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), UiLinearColorGradient::GradientDirection::HORIZONTAL);
-    m_transferLinearGradient->AddColor(GradientColorData{ 0.0f,     glm::vec4(0.9f, 0.75f, 0.45f, 1.0f) });
-    m_transferLinearGradient->AddColor(GradientColorData{ 0.5f,   glm::vec4(0.33f, 0.47f, 0.16f, 1.0f) });
-    m_transferLinearGradient->AddColor(GradientColorData{ 1.0f,     glm::vec4(0.25f, 0.46f, 0.5f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.0f,     glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.51f,    glm::vec4(0.7f, 0.59f, 0.33f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.6f,     glm::vec4(0.82f, 0.2f, 0.2f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.7f,     glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 1.0f,     glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) });
     m_transferLinearGradient->CreateResources();
 
     AddChildNode(m_transferLinearGradient);

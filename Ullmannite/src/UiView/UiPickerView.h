@@ -16,8 +16,6 @@ namespace Ull
 		void Update() override;
 		void Render() override;
 
-        virtual void OnPositionChange() override;
-
     private:
         UiRenderArea::SetSize;
 

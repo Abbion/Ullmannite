@@ -61,7 +61,6 @@ void UiLinearColorGradient::CreateResources()
     std::vector<unsigned> indices;
     unsigned index = 0;
 
-    //DOTO: Check those reserve calls
     vertices.reserve((m_gradientColors.size() + 1) * 2);
     indices.reserve((m_gradientColors.size() + 2) * 4);
 

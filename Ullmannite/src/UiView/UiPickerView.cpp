@@ -227,11 +227,6 @@ void UiPickerView::Render()
     UiRenderArea::Render();
 }
 
-void UiPickerView::OnPositionChange()
-{
-    
-}
-
 void UiPickerView::CreateControls()
 {
     const auto size = GetSize();

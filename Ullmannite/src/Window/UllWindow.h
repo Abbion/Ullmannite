@@ -65,6 +65,7 @@ namespace Ull
         bool m_cursorLocked{ false };
 
         GLFWwindow* m_window{ nullptr };
+        GLFWimage m_icon;
 
         std::chrono::time_point<std::chrono::steady_clock> m_lastRefresh;
 

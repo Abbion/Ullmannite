@@ -200,12 +200,12 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	if (startName == std::string::npos)
 		startName = 0;
 
-	const auto endName = fontPath.find_last_of('.');
-	const auto fontName = fontPath.substr(startName + 1u, endName - startName - 1u) + "SDF";
-
-	Image2DWriter imageWriter(glm::uvec2(FontTextureDimensions, FontTextureDimensions), Image2DWriter::Channels::MONO);
-	imageWriter.AddImageData(glm::uvec2(0, 0), glm::uvec2(FontTextureDimensions, FontTextureDimensions), sdfImage, 256.0f);
-	imageWriter.SaveToFile(fontName);
+	//const auto endName = fontPath.find_last_of('.');
+	//const auto fontName = fontPath.substr(startName + 1u, endName - startName - 1u) + "SDF";
+	//
+	//Image2DWriter imageWriter(glm::uvec2(FontTextureDimensions, FontTextureDimensions), Image2DWriter::Channels::MONO);
+	//imageWriter.AddImageData(glm::uvec2(0, 0), glm::uvec2(FontTextureDimensions, FontTextureDimensions), sdfImage, /256.0f);
+	//imageWriter.SaveToFile(fontName);
 }
 
 std::map<wchar_t, Font::Character> Font::GenerateDictionary(const std::wstring& text)

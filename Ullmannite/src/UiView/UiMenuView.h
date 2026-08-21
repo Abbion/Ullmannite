@@ -38,7 +38,6 @@ namespace Ull
         void CreateSettingsPanel();
 
 		void Init();
-        void RenderUI();
 
         std::optional<std::wstring> m_filePath;
         bool m_firstDataLoaded{ false };

@@ -61,7 +61,6 @@ namespace Ull
         void Render() override;
 
     private:
-        void UpdateDisplayTextSize();
         void RealignText();
 
         std::wstring        m_text;

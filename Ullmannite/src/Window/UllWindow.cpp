@@ -18,14 +18,11 @@
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
-#pragma comment(lib, "dwmapi.lib") // ADD THIS TO THE BUILDER
+#pragma comment(lib, "dwmapi.lib")
 #endif
 
-#ifdef PLATFORM_LINUX
-#include <X11/Xlib.h>
-#define GLFW_EXPOSE_NATIVE_X11
-#include <GLFW/glfw3native.h>
-#endif
+#define RPNG_IMPLEMENTATION
+#include "rpng.h"
 
 using namespace Ull;
 
@@ -94,6 +91,16 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
         MARGINS margins = { 8, 8, 8, 8 }; // Extend the border area by 8 pixels
         DwmExtendFrameIntoClientArea(hwnd, &margins);
     }
+
+    int iconWidth = 0;
+    int iconHeight = 0;
+    int colorChannels = 0;
+    int bitDepth = 0;
+    const auto a = rpng_load_image("Assets/Icons/AppIcon.png", &iconWidth, &iconHeight, &colorChannels, &bitDepth);
+    m_icon.pixels = reinterpret_cast<unsigned char*>(a);
+    m_icon.width = iconWidth;
+    m_icon.height = iconHeight;
+    //glfwSetWindowIcon(m_window, 1, &m_icon);
 
     m_lastRefresh = std::chrono::steady_clock::now();
 }
