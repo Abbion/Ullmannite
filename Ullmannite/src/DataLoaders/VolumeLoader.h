@@ -1,7 +1,7 @@
 #pragma once
-#include "DataStructures/VolumeData.h"
+#include "Resources/Volumes/VolumeData.h"
 
 namespace Ull
 {
-	std::shared_ptr<VolumeData> LoadVolumeData(const std::string filePath);
+	VolumeDataI LoadVolumeData(const std::wstring folderPath);
 }

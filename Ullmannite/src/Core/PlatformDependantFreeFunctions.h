@@ -6,11 +6,11 @@ namespace Ull
 	enum class FileExtentions
 	{
 		DAT = 1 << 0,
-		DICOM = 1 << 1
+		DICOM = 1 << 1,
+		FOLDER = 1 << 2
 	};
 
 	std::optional<std::wstring> CreateFileOpenDialog(FileExtentions fileExtentions);
-	void CreateDataFromDicom(std::wstring filePath);
 
 	inline FileExtentions operator|(FileExtentions flagA, FileExtentions flagB)
 	{

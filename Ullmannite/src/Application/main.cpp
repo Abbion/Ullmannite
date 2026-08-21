@@ -1,7 +1,6 @@
 ﻿#include "Ullpch.h"
 
 #ifdef GTEST
-#include <iostream>
 #include <gtest/gtest.h>
 #include "allTests.h"
 
@@ -23,8 +22,6 @@ int main()
 		app->Run();
 
 	delete app;
-
-	Ull::ResourceManager::GetInstance().Terminate();
 
 	return 0;
 }

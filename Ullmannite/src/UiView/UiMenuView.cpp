@@ -18,6 +18,8 @@ namespace
     constexpr unsigned TOOL_TAB_ICON_SIZE = 24;
     constexpr unsigned MENU_TEXT_SIZE = 14;
     constexpr float MARKER_SIZE = 10.0f;
+    constexpr float BOTTOM_THRESHILD_DEFAULT_RATE = 0.25f;
+    constexpr float TOP_THRESHILD_DEFAULT_RATE = 0.8f;
 }
 
 UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
@@ -27,32 +29,16 @@ UiMenuView::UiMenuView(std::string name, glm::uvec2 position, glm::uvec2 size) :
     
     CreateControls();
 
-    m_cubeMarchTresholds.x = 0;
-    m_cubeMarchTresholds.y = maxUint16;
-
-    m_cuttingSettings.cuttingPositions = glm::vec3(100.0f, 100.0f, 100.0f);
+    m_cuttingSettings.cuttingPositions = glm::vec3(0.0f, 0.0f, 0.0f);
     m_cuttingSettings.invertedAxis = { false, false, false };
 }
 
 void UiMenuView::HandleEvent(Event* event)
 {
     switch (event->GetType())
-    {
-    case EventType::FileLoaded:
-        m_newDataLoaded = true;
-    break;
-    
-    case EventType::ExaminationThresholdChanged:
-        if(m_newDataLoaded)
-        {
-            auto newThresholds = static_cast<ExaminationThresholdChangedEvent*>(event)->GetVal();
-            m_cubeMarchTresholds.x = newThresholds.x;
-            m_cubeMarchTresholds.y = newThresholds.y;
-            m_newDataLoaded = false;
-        }
-    break;
-
+    {    
     case EventType::MouseMove:
+    {
         if (m_transferLinearGradient->IsVisible())
         {
             bool mouseOverMarker = false;
@@ -80,9 +66,11 @@ void UiMenuView::HandleEvent(Event* event)
         {
             m_cursorIndicatorText->SetVisibility(false);
         }
+    }
     break;
 
     case EventType::MouseDoubleUp:
+    {
         if (m_transferLinearGradient->IsVisible() == false)
             break;
 
@@ -94,7 +82,7 @@ void UiMenuView::HandleEvent(Event* event)
             const auto normalizedPosition = (mousePosition.x - linearGradientPosition.x) / linearGradientSize.x;
             const auto initColor = m_transferLinearGradient->GetColorForRatio(normalizedPosition);
 
-            m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ normalizedPosition, initColor });
+            m_transferLinearGradient->AddColor(GradientColorData{ normalizedPosition, initColor });
             m_transferLinearGradient->CreateResources();
             CreateMarkersForTransferFunction();
             event->MarkHandeled(true);
@@ -108,9 +96,11 @@ void UiMenuView::HandleEvent(Event* event)
                 break;
             }
         }
+    }
     break;
 
     case EventType::MouseUp:
+    {
         const auto isRightPressed = reinterpret_cast<MouseDoubleUp*>(event)->GetVal() == Mouse::Button::RIGHT;
 
         if (isRightPressed == false || m_transferMarkers.size() < 3)
@@ -129,7 +119,26 @@ void UiMenuView::HandleEvent(Event* event)
 
             itr++;
         }
+    }
+    break;
 
+    case EventType::VolumeLoaded:
+    {
+        const auto& volume = Application::GetResourceManager().GetVolumeManager().GetVolume();
+        m_loadFileText->SetString(std::format(L"Loaded files from {}", volume.name).c_str());
+        m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
+        m_newDataLoaded = true;
+
+        m_minExaminationThresholdValue->SetString(std::format(L"{}", volume.minValue));
+        m_maxExaminationThresholdValue->SetString(std::format(L"{}", volume.maxValue));
+
+        m_thresholdSlider->SetMinLimitValue(volume.minValue);
+        m_thresholdSlider->SetMaxLimitValue(volume.maxValue);
+
+        const auto valueRange = volume.maxValue - volume.minValue;
+        m_thresholdSlider->SetMaxValue(volume.minValue + TOP_THRESHILD_DEFAULT_RATE * valueRange);
+        m_thresholdSlider->SetMinValue(volume.minValue + BOTTOM_THRESHILD_DEFAULT_RATE * valueRange);
+    }
     break;
     }
 
@@ -138,8 +147,6 @@ void UiMenuView::HandleEvent(Event* event)
 
 void UiMenuView::Update()
 {
-    //m_areaUpdated = true;
-
     if (m_toolTabs[ToolTypes::Transfer]->IsEnabled())
     {
         m_transferLinearGradient->ClearColorData();
@@ -148,10 +155,40 @@ void UiMenuView::Update()
         {
             const auto colorRatio = marker->GetPositionRatio();
             const auto color = marker->GetColor();
-            m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ colorRatio, color });
+            m_transferLinearGradient->AddColor(GradientColorData{ colorRatio, color });
         }
 
         m_transferLinearGradient->CreateResources();
+    }
+    else if (m_toolTabs[ToolTypes::Cut]->IsEnabled())
+    {
+        auto cuttingSettingDirty = false;
+
+        const auto cutX = m_cutSettingsCutxSlider->GetValue();
+        const auto cutY = m_cutSettingsCutySlider->GetValue();
+        const auto cutZ = m_cutSettingsCutzSlider->GetValue();
+
+        const auto invertCutX = m_cutSettingsCutxInvertToggle->IsEnabled();
+        const auto invertCutY = m_cutSettingsCutyInvertToggle->IsEnabled();
+        const auto invertCutZ = m_cutSettingsCutzInvertToggle->IsEnabled();
+
+        const auto compareAndMarkDirty = [&cuttingSettingDirty]<typename T>(T& lparam, const T rparam) {
+            if (lparam != rparam)
+            {
+                lparam = rparam;
+                cuttingSettingDirty = true;
+            }
+        };
+
+        compareAndMarkDirty(m_cuttingSettings.cuttingPositions.x, cutX);
+        compareAndMarkDirty(m_cuttingSettings.cuttingPositions.y, cutY);
+        compareAndMarkDirty(m_cuttingSettings.cuttingPositions.z, cutZ);
+
+        compareAndMarkDirty(m_cuttingSettings.invertedAxis[0], invertCutX);
+        compareAndMarkDirty(m_cuttingSettings.invertedAxis[1], invertCutY);
+        compareAndMarkDirty(m_cuttingSettings.invertedAxis[2], invertCutZ);
+
+        Application::GetEventQueue().PushEvent(std::make_shared<CuttingSettingsChangedEvent>(EventType::CuttingSettingsChanged, m_cuttingSettings));
     }
 
 	UiRenderArea::Update();
@@ -159,21 +196,7 @@ void UiMenuView::Update()
 
 void UiMenuView::Render()
 {
-    if(m_areaUpdated)
-    {
-        m_frameBuffer->Bind();
-        Clear();
-        m_frameBuffer->Unbind();
-
-        m_areaUpdated = false;
-    }
-
-	RenderUI();
-}
-
-void UiMenuView::RenderUI()
-{
-	UiRenderArea::Render();
+    UiRenderArea::Render();
 }
 
 void UiMenuView::CreateControls()
@@ -446,7 +469,29 @@ void UiMenuView::CreateLoadPanel()
     m_loadFileButton->SetHoverColor(glm::vec4(0.33f, 0.33f, 0.33f, 1.0f));
     m_loadFileButton->CreateResources();
     m_loadFileButton->SetOnClickFunction([this](UiButton& buttonElement) {
-        m_loadFileText->SetString(std::wstring(L"File loaded: Test"));
+        const auto folderPathOpt = CreateFileOpenDialog(FileExtentions::FOLDER);
+        if (folderPathOpt.has_value())
+        {
+            const auto folderPath = folderPathOpt.value();
+            const auto folderName = ExtractDestinationFolderFromPath(folderPath);
+            if (folderName.has_value())
+            {
+                m_loadFileText->SetString(std::format(L"Loading files from {} ...", folderName.value()).c_str());
+                m_loadFileText->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                Application::GetEventQueue().PushEvent(std::make_shared<DataFolderSelectedEvent>(EventType::DataFolderSelected, folderPath));
+            }
+            else
+            {
+                m_loadFileText->SetString(L"Failed to extract folder");
+                m_loadFileText->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            }
+        }
+        else
+        {
+            m_loadFileText->SetString(L"Failed to open folder");
+            m_loadFileText->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        }
+
         m_loadFileText->SetVisibility(true);
     });
 
@@ -459,7 +504,7 @@ void UiMenuView::CreateLoadPanel()
 
     AddChildNode(m_loadFileButton);
 
-    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L"File loaded:"));
+    m_loadFileText = std::make_shared<UiText>("menuLoadFileText", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), std::wstring(L""));
     m_loadFileText->SetColor(glm::vec4(0.33f, 0.58f, 0.4f, 1.0f));
     m_loadFileText->SetFontSize(MENU_TEXT_SIZE);
     m_loadFileText->SetEdgeSmoothing(3.5f);
@@ -677,9 +722,11 @@ void UiMenuView::CreateColorTransformPanel()
     AddChildNode(m_transferSettingsText);
 
     m_transferLinearGradient = std::make_shared<UiLinearColorGradient>("colorTransferLinearGradient", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), UiLinearColorGradient::GradientDirection::HORIZONTAL);
-    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 0.0f,     glm::vec4(0.9f, 0.75f, 0.45f, 1.0f) });
-    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 0.5f,   glm::vec4(0.33f, 0.47f, 0.16f, 1.0f) });
-    m_transferLinearGradient->AddColor(UiLinearColorGradient::GradientColorData{ 1.0f,     glm::vec4(0.25f, 0.46f, 0.5f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.0f,     glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.51f,    glm::vec4(0.7f, 0.59f, 0.33f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.6f,     glm::vec4(0.82f, 0.2f, 0.2f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 0.7f,     glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) });
+    m_transferLinearGradient->AddColor(GradientColorData{ 1.0f,     glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) });
     m_transferLinearGradient->CreateResources();
 
     AddChildNode(m_transferLinearGradient);
@@ -687,10 +734,12 @@ void UiMenuView::CreateColorTransformPanel()
 
 void UiMenuView::CreateMarkersForTransferFunction()
 {
-    for (int i = 0; i < m_transferMarkers.size(); ++i)
-        RemoveChildNode(m_transferMarkers[i]);
-
-    m_transferMarkers.clear();
+    while (m_transferMarkers.size() > 0)
+    {
+        auto marker = m_transferMarkers.back();
+        m_transferMarkers.pop_back();
+        RemoveChildNode(std::move(marker));
+    }
 
     auto areaSizeChangedEvent = std::make_shared<RenderAreaSizeChanged>(EventType::RenderAreaSizeChanged);
     const auto& colors = m_transferLinearGradient->GetGradientColors();
@@ -737,7 +786,7 @@ void UiMenuView::CreateSettingsPanel()
 
     AddChildNode(m_minExaminationThresholdText);
 
-    m_minExaminationThresholdValue = std::make_shared<UiText>("minExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"-100");
+    m_minExaminationThresholdValue = std::make_shared<UiText>("minExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"0");
     m_minExaminationThresholdValue->SetFontSize(MENU_TEXT_SIZE);
     m_minExaminationThresholdValue->SetEdgeSmoothing(3.5f);
     m_minExaminationThresholdValue->SetSampleThreshold(1.0f);
@@ -756,7 +805,7 @@ void UiMenuView::CreateSettingsPanel()
 
     AddChildNode(m_maxExaminationThresholdText);
 
-    m_maxExaminationThresholdValue = std::make_shared<UiText>("maxExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"500");
+    m_maxExaminationThresholdValue = std::make_shared<UiText>("maxExaminationThresholdValue", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), L"1");
     m_maxExaminationThresholdValue->SetFontSize(MENU_TEXT_SIZE);
     m_maxExaminationThresholdValue->SetEdgeSmoothing(3.5f);
     m_maxExaminationThresholdValue->SetSampleThreshold(1.0f);
@@ -766,7 +815,7 @@ void UiMenuView::CreateSettingsPanel()
 
     AddChildNode(m_maxExaminationThresholdValue);
 
-    m_thresholdSlider = std::make_shared<UiTwoSideSlider>("thresholdSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 15.0f), -120, 513);
+    m_thresholdSlider = std::make_shared<UiTwoSideSlider>("volumeThresholdSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 15.0f));
     m_thresholdSlider->CreateResources();
     auto thresholdMainSlider = m_thresholdSlider->GetMainSliderHandle();
     thresholdMainSlider->SetBackgroundColor(glm::vec4(0.02f, 0.5f, 0.98f, 1.0f));

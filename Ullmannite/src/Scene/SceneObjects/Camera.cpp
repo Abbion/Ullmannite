@@ -52,29 +52,19 @@ void Camera::HandleEvent(Event* event)
 				ResetCamera();
 				m_scene->SetUpdated(true);
 			}
-			else if(key == Keyboard::Key::Q)
-			{
-				auto dirLightNode = m_scene->GetNodeByName("dirLight");
-				
-				if(dirLightNode == nullptr)
-					return; 
-
-				auto dirLight = static_cast<DirectionalLight*>(dirLightNode);
-				dirLight->SetDirection(m_front);
-				m_scene->SetUpdated(true);
-			}
 		}
 	}
 	else if(event->GetType() == EventType::MouseMove)
 	{
-		if(m_cameraType == CameraType::FREE && m_window->IsCursorLocked())
+		auto& window = Application::GetWindow();
+		if(m_cameraType == CameraType::FREE && window.IsCursorLocked())
 		{
 			CalculatePitchAndYaw();
 			UpdateVectors();
 
 			m_scene->SetUpdated(true);
 		}
-		else if( m_cameraType == CameraType::LOCKED)
+		else if(m_cameraType == CameraType::LOCKED)
 		{
 			if(Application::GetMouse().IsButtonPressed(Mouse::Button::RIGHT))
 			{
@@ -112,7 +102,8 @@ void Camera::HandleEvent(Event* event)
 
 void Camera::Update()
 {
-	 if(m_cameraType == CameraType::FREE && m_window->IsCursorLocked())
+	auto& window = Application::GetWindow();
+	 if(m_cameraType == CameraType::FREE && window.IsCursorLocked())
 	{
 		if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::W))
 		{

@@ -1,6 +1,7 @@
 #pragma once
 #include "Event.h"
 #include <deque>
+#include <mutex>
 
 namespace Ull
 {
@@ -12,11 +13,8 @@ namespace Ull
 
         void PushEvent(const std::shared_ptr<Event>& newEvent);
         std::shared_ptr<Event> PopEvent();
-        
-        void CheckPublishedEvents();
 
         bool HasPenddingEvents() const;
-
         unsigned int GetSize() const;
         
         void MakeEventUnique(EventType eventType);
@@ -24,5 +22,6 @@ namespace Ull
 
     private:
         std::deque<std::shared_ptr<Event>> m_events;
+        std::mutex m_mutex;
     };
 };

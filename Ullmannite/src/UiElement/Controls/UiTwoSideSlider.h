@@ -17,15 +17,19 @@ namespace Ull
     class UiTwoSideSlider : public UiBasicControl
     {
     public:
-        UiTwoSideSlider(const std::string& name, const glm::vec2 position, const glm::vec2 size, const float limitMinValue, const float limitMaxValue);
+        UiTwoSideSlider(const std::string& name, const glm::vec2 position, const glm::vec2 size);
 
         float GetMinSliderValue() const;
         float GetMaxSliderValue() const;
+
         std::shared_ptr<UiSpace> GetMainSliderHandle() { return m_mainSlider; }
 
         void SetSize(const glm::vec2 size);
         void SetMinValue(const float min);
         void SetMaxValue(const float max);
+
+        void SetMinLimitValue(const float min);
+        void SetMaxLimitValue(const float max);
 
         void HandleEvent(Event* event) override;
         void Update() override;
@@ -33,6 +37,7 @@ namespace Ull
     private:
         void CreateControls();
         void UpdateSliderValues();
+        void UpdateText();
         void ResizeControls();
 
         std::shared_ptr<UiSpace> m_minSlider;

@@ -1,8 +1,8 @@
 #pragma once
 #include "UiElement/UiRenderArea.h"
 #include "UiElement/Controls/AllControls.h"
-#include "DataStructures/CuttingSettings.h"
 #include "Rendering/Objects/TransferFunctionRenderer.h"
+#include "Core/Types.h"
 #include <array>
 #include <optional>
 
@@ -38,14 +38,12 @@ namespace Ull
         void CreateSettingsPanel();
 
 		void Init();
-        void RenderUI();
 
         std::optional<std::wstring> m_filePath;
         bool m_firstDataLoaded{ false };
         bool m_newDataLoaded{ false };
         bool m_renderTransferEditor{ false };
 
-        glm::ivec2 m_cubeMarchTresholds{ 0, 0 };
         CuttingSettings m_cuttingSettings;
         std::unordered_map<ToolTypes, std::shared_ptr<UiToggle>> m_toolTabs;
         std::shared_ptr<UiSpace> m_toolTabsLine;

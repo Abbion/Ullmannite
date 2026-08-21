@@ -5,6 +5,8 @@
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 #include "Rendering/Api/Renderer.h"
+#include "Resources/ResourceManager.h"
+#include <thread>
 #include <memory>
 
 namespace Ull
@@ -22,15 +24,19 @@ namespace Ull
 		static Mouse& GetMouse() { return m_mouse; }
 		static Renderer& GetRenderer() { return m_renderer; }
 		static EventQueue& GetEventQueue() { return m_eventQueue; }
+		static ResourceManager& GetResourceManager() { return m_resourceManager; }
+		static UllWindow& GetWindow() { return m_window; }
 
 	private:
-		UllWindow m_window;
+		inline static UllWindow m_window;
 		LayerManager m_layerManager;
+		std::thread m_loaderThread;
 
 		inline static EventQueue m_eventQueue;
 		inline static Keyboard m_keyboard;
 		inline static Mouse m_mouse;
 		inline static Renderer m_renderer;
+		inline static ResourceManager m_resourceManager;
 
 		bool m_initFailed{ false };
 

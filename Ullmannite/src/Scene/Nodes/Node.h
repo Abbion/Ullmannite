@@ -22,6 +22,7 @@ namespace Ull
         std::vector<Node*>& GetChildren()   { return m_children; }
         NotOwner<Scene> GetScene() const    { return m_scene; }
         const std::string GetName() const   { return m_name; }
+        Node* GetNodeByName(const std::string& name);
 
         void AddNode(Node* node);
         bool RemoveNode(Node* node);

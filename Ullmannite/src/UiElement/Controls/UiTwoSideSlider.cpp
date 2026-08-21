@@ -11,28 +11,26 @@ namespace
     constexpr auto SLIDER_ACTIVE_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-UiTwoSideSlider::UiTwoSideSlider(const std::string& name, const glm::vec2 position, const glm::vec2 size, const float limitMinValue, const float limitMaxValue) :
-    m_limitMinValue{ limitMinValue },
-    m_limitMaxValue{ limitMaxValue },
+UiTwoSideSlider::UiTwoSideSlider(const std::string& name, const glm::vec2 position, const glm::vec2 size) :
 	UiBasicControl(name, position, size, UiControlType::UiTwoWaySlider),
 	m_minSlider{ std::make_shared<UiSpace>(name + "MinSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, size.y)) },
 	m_maxSlider{ std::make_shared<UiSpace>(name + "MaxSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, size.y)) },
     m_mainSlider{ std::make_shared<UiSpace>(name + "MainSlider", glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, size.y)) },
-    m_minSliderValueText{ std::make_shared<UiText>(name + "MinText", glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), L"-1") },
+    m_minSliderValueText{ std::make_shared<UiText>(name + "MinText", glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), L"0") },
     m_maxSliderValueText{ std::make_shared<UiText>(name + "MaxText", glm::vec2(0.0f, 0.0f), glm::vec2(10.0f, 10.0f), L"1") }
 {
 	CreateControls();
-    UpdateSliderValues();
+    UpdateText();
 }
 
 float UiTwoSideSlider::GetMinSliderValue() const
 {
-    return 0.0f;
+    return m_minValue;
 }
 
 float UiTwoSideSlider::GetMaxSliderValue() const
 {
-    return 0.0f;
+    return m_maxValue;
 }
 
 void UiTwoSideSlider::SetSize(const glm::vec2 size)
@@ -63,6 +61,7 @@ void UiTwoSideSlider::SetMinValue(const float min)
 
     m_maxDragBounderies.x = m_minSlider->GetPosition().x + m_minSlider->GetSize().x;
     UpdateSliderValues();
+    UpdateText();
 }
 
 void UiTwoSideSlider::SetMaxValue(const float max)
@@ -86,6 +85,31 @@ void UiTwoSideSlider::SetMaxValue(const float max)
 
     m_minDragBounderies.y = m_maxSlider->GetPosition().x - m_maxSlider->GetSize().x;
     UpdateSliderValues();
+    UpdateText();
+}
+
+void UiTwoSideSlider::SetMinLimitValue(const float min)
+{
+    if (min > m_minValue)
+    {
+        ULOGE("New min limit value greather than current min value");
+        return;
+    }
+
+    m_limitMinValue = min;
+    SetMinValue(m_minValue);
+}
+
+void UiTwoSideSlider::SetMaxLimitValue(const float max)
+{
+    if (max < m_maxValue)
+    {
+        ULOGE("New max limit value lesser than current max value");
+        return;
+    }
+
+    m_limitMaxValue = max;
+    SetMaxValue(m_maxValue);
 }
 
 void UiTwoSideSlider::HandleEvent(Event* event)
@@ -94,6 +118,9 @@ void UiTwoSideSlider::HandleEvent(Event* event)
     {
     case EventType::MouseMove:
     {
+        if (IsVisible() == false)
+            return;
+
         const auto currentMousePositon = Application::GetMouse().GetMousePosition();
 
         if (m_activeHandle == UiTwoSideSliderHandle::MIN)
@@ -107,7 +134,8 @@ void UiTwoSideSlider::HandleEvent(Event* event)
 
             m_maxDragBounderies.x = m_minSlider->GetPosition().x + m_minSlider->GetSize().x;
             UpdateSliderValues();
-            
+            UpdateText();
+            event->MarkHandeled(true);
         }
         else if (m_activeHandle == UiTwoSideSliderHandle::MAX)
         {
@@ -119,6 +147,8 @@ void UiTwoSideSlider::HandleEvent(Event* event)
 
             m_minDragBounderies.y = m_maxSlider->GetPosition().x - m_maxSlider->GetSize().x;
             UpdateSliderValues();
+            UpdateText();
+            event->MarkHandeled(true);
         }
         else if (m_activeHandle == UiTwoSideSliderHandle::MAIN)
         {
@@ -134,22 +164,29 @@ void UiTwoSideSlider::HandleEvent(Event* event)
             m_maxDragBounderies.x = m_minSlider->GetPosition().x + m_minSlider->GetSize().x;
             m_minDragBounderies.y = m_maxSlider->GetPosition().x - m_maxSlider->GetSize().x;
             UpdateSliderValues();
+            UpdateText();
+            event->MarkHandeled(true);
         }
     }
     break;
 
     case EventType::MouseDown:
+        if (IsVisible() == false)
+            return;
+
         if (m_minSlider->IsHover())
         {
             m_grabPoint = Application::GetMouse().GetMousePosition() - glm::ivec2(m_minSlider->GetGlobalPosition());
             m_activeHandle = UiTwoSideSliderHandle::MIN;
             m_minSlider->SetBackgroundColor(SLIDER_ACTIVE_COLOR);
+            event->MarkHandeled(true);
         }
         else if (m_maxSlider->IsHover())
         {
             m_grabPoint = Application::GetMouse().GetMousePosition() - glm::ivec2(m_maxSlider->GetGlobalPosition());
             m_activeHandle = UiTwoSideSliderHandle::MAX;
             m_maxSlider->SetBackgroundColor(SLIDER_ACTIVE_COLOR);
+            event->MarkHandeled(true);
         }
         else if (m_mainSlider->IsHover())
         {
@@ -159,6 +196,7 @@ void UiTwoSideSlider::HandleEvent(Event* event)
             m_mainSliderBaseColor = m_mainSlider->GetBackgroundColor();
             m_mainSlider->SetBackgroundColor(SLIDER_ACTIVE_COLOR);
             m_mainSliderBaseColorSampled = true;
+            event->MarkHandeled(true);
         }
         else
         {
@@ -167,8 +205,12 @@ void UiTwoSideSlider::HandleEvent(Event* event)
     break;
 
     case EventType::MouseUp:
+        if (IsVisible() == false)
+            return;
+    // Fallthrough is expected
     case EventType::WindowLostFocus:
     {
+
         m_activeHandle = UiTwoSideSliderHandle::NONE;
         m_minSlider->SetBackgroundColor(SLIDER_INACTIVE_COLOR);
         m_maxSlider->SetBackgroundColor(SLIDER_INACTIVE_COLOR);
@@ -177,6 +219,7 @@ void UiTwoSideSlider::HandleEvent(Event* event)
         {
             m_mainSlider->SetBackgroundColor(m_mainSliderBaseColor);
             m_mainSliderBaseColorSampled = false;
+            event->MarkHandeled(true);
         }
     }
     break;
@@ -236,15 +279,15 @@ void UiTwoSideSlider::UpdateSliderValues()
     
     const auto maxValuePickerPosition = m_maxSlider->GetPosition().x - SLIDER_WIDTH;
     const auto maxPercentage = maxValuePickerPosition / valueRange;
-    auto a = (1.0f - maxPercentage);
-    auto b = a * m_limitMinValue;
-    auto c = maxPercentage * m_limitMaxValue;
 
     const auto maxValue = ((1.0f - maxPercentage) * m_limitMinValue) + (maxPercentage * m_limitMaxValue);
 
     m_minValue = minValue;
     m_maxValue = maxValue;
+}
 
+void UiTwoSideSlider::UpdateText()
+{
     m_minSliderValueText->SetString(std::format(L"{:.2f}", m_minValue));
     m_maxSliderValueText->SetString(std::format(L"{:.2f}", m_maxValue));
 }
@@ -253,14 +296,20 @@ void UiTwoSideSlider::ResizeControls()
 {
     const auto sliderSize = GetSize();
 
-    m_mainSlider->SetPosition(glm::vec2(SLIDER_WIDTH, 0.0f));
-    m_mainSlider->SetSize(glm::vec2(sliderSize.x - (SLIDER_WIDTH * 2.0f), sliderSize.y));
+    const auto range = m_limitMaxValue - m_limitMinValue;
+    const auto startFrom = m_minValue / range;
+    const auto endAt = m_maxValue / range;
+
+    const auto mainSliderWidth = sliderSize.x - SLIDER_WIDTH * 2.0f;
+    m_mainSlider->SetPosition(glm::vec2(SLIDER_WIDTH + (mainSliderWidth * startFrom), 0.0f));
+    m_mainSlider->SetSize(glm::vec2(mainSliderWidth * (endAt - startFrom), sliderSize.y));
 
     m_minSlider->SetSize(glm::vec2(SLIDER_WIDTH, sliderSize.y));
+    m_minSlider->SetPosition(glm::vec2(mainSliderWidth * startFrom, 0.0f));
     m_minDragBounderies.x = 0.0f;
 
     m_maxSlider->SetSize(glm::vec2(SLIDER_WIDTH, sliderSize.y));
-    m_maxSlider->SetPosition(glm::vec2(sliderSize.x - m_maxSlider->GetSize().x, 0.0f));
+    m_maxSlider->SetPosition(glm::vec2((mainSliderWidth * endAt) + SLIDER_WIDTH, 0.0f));
     m_maxDragBounderies.y = sliderSize.x - SLIDER_WIDTH;
 
     m_maxDragBounderies.x = m_minSlider->GetPosition().x + m_minSlider->GetSize().x;

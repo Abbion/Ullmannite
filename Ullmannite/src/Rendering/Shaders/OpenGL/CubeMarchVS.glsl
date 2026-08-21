@@ -2,7 +2,6 @@
 
 layout(rgba32f, binding = 0) readonly uniform image3D vertexPosTexture;
 
-uniform mat4 modelMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 

@@ -2,7 +2,7 @@
 
 layout (local_size_x = 16, local_size_y = 8, local_size_z = 8) in;
 
-layout(r16ui, binding = 0) readonly uniform uimage3D inputImage;
+layout(r16i, binding = 0) readonly uniform iimage3D inputImage;
 layout(r8i, binding = 1) readonly uniform iimage2D triangulationTable;
 layout(rgba32f, binding = 2) writeonly uniform image3D vertexPosTexture;
 layout(binding = 3) uniform atomic_uint vertexPosTextureItr;
@@ -43,8 +43,8 @@ vec3 interpolateEdge(float c1, float c2, int edgeNum)
     
     //Naming is flipped because when we check if max corrner is between sample points than we interpolate minimal values.
     //And when min is between sample points than we interpolate maximal values.
-    bool minInterpolation = (CMsettings.minSampleVal <=  maxCorner && CMsettings.maxSampleVal >= maxCorner);
-    bool maxInterpolation = (CMsettings.minSampleVal <= minCorner && CMsettings.maxSampleVal >= minCorner);  
+    bool minInterpolation = (float(CMsettings.minSampleVal) <=  maxCorner && CMsettings.maxSampleVal >= maxCorner);
+    bool maxInterpolation = (float(CMsettings.minSampleVal) <= minCorner && CMsettings.maxSampleVal >= minCorner);  
 
     if(minInterpolation || maxInterpolation)
     {
@@ -74,6 +74,17 @@ vec3 interpolateEdge(float c1, float c2, int edgeNum)
     }
 }
 
+int HandleOutOfRangeTextureSampling(ivec3 samplePoint)
+{
+    if (samplePoint.x < 0 || samplePoint.y < 0 || samplePoint.z < 0 || 
+        samplePoint.x > CMsettings.size.x - 1 || samplePoint.z > CMsettings.size.z - 1 || samplePoint.z > CMsettings.size.z - 1)
+    {
+        return -32768;
+    }
+
+    return 0;
+}
+
 void main() 
 {
     if(gl_GlobalInvocationID.z > CMsettings.size.z || gl_GlobalInvocationID.y > CMsettings.size.y || gl_GlobalInvocationID.x > CMsettings.size.x)
@@ -91,9 +102,12 @@ void main()
     for(uint itr = 0; itr < 8; ++itr)
     {
         ivec3 samplePoint = ivec3(globalPositionI + cubeCornderSampler[itr]);
-        uint cornderValue = imageLoad(inputImage, samplePoint).x;
+        int cornerValue = HandleOutOfRangeTextureSampling(samplePoint);
 
-        if(cornderValue >= CMsettings.minSampleVal && cornderValue <= CMsettings.maxSampleVal)
+        if (cornerValue == 0)
+            cornerValue = imageLoad(inputImage, samplePoint).x;
+
+        if(cornerValue >= CMsettings.minSampleVal && cornerValue <= CMsettings.maxSampleVal)
             activeEdgeCounter |= 1 << itr;
     }
 

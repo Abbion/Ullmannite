@@ -13,7 +13,8 @@ namespace Ull
         Layout,
         GradientEditor,
         GradientMarker,
-        TitleBar
+        TitleBar,
+        ScenView
     };
 
     class UiElement : public TreeNode<UiElement>, std::enable_shared_from_this<UiElement>, public Object2D, public EventHandler, public Drawable

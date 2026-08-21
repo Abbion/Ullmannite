@@ -31,11 +31,29 @@ std::optional<std::wstring> Ull::CreateFileOpenDialog(FileExtentions fileExtenti
         IFileOpenDialog* pFileOpen;
 
         hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
-        pFileOpen->SetTitle(L"Open examination");
         pFileOpen->SetOkButtonLabel(L"load");
 
-        auto filterVec = GetFilters(fileExtentions);
-        pFileOpen->SetFileTypes(static_cast<UINT>(filterVec.size()), filterVec.data());
+        if (fileExtentions & FileExtentions::FOLDER) 
+        {
+            pFileOpen->SetTitle(L"Select examination folder");
+
+            DWORD dwFlags;
+            hr = pFileOpen->GetOptions(&dwFlags);
+            if (SUCCEEDED(hr))
+                pFileOpen->SetOptions(dwFlags | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
+            else
+            {
+                CoUninitialize();
+                pFileOpen->Release();
+                return std::nullopt;
+            }
+        }
+        else
+        {
+            pFileOpen->SetTitle(L"Select examination file");
+            const auto filterVec = GetFilters(fileExtentions);
+            pFileOpen->SetFileTypes(static_cast<UINT>(filterVec.size()), filterVec.data());
+        }
 
         if (SUCCEEDED(hr))
         {
@@ -64,38 +82,4 @@ std::optional<std::wstring> Ull::CreateFileOpenDialog(FileExtentions fileExtenti
     }
 
     return filePath;
-}
-
-void Ull::CreateDataFromDicom(std::wstring filePath)
-{
-    constexpr auto output = L" Assets/VolumetricData/DICOM.dat";
-    std::wstring pathCopy = filePath;
-    filePath.clear();
-
-    for (int i = 0; i < pathCopy.size(); ++i)
-    {
-        if (pathCopy[i] == L'\\')
-        {
-            filePath += '/';
-        }
-        else
-        {
-            filePath += pathCopy[i];
-        }
-    }
-
-    std::wstring args = filePath + output;
-
-    SHELLEXECUTEINFO ShExecInfo = { 0 };
-    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-    ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-    ShExecInfo.hwnd = NULL;
-    ShExecInfo.lpVerb = NULL;
-    ShExecInfo.lpFile = L"Assets\\DicomConverter\\DicomConverter.exe";
-    ShExecInfo.lpParameters = args.c_str();
-    ShExecInfo.lpDirectory = NULL;
-    ShExecInfo.nShow = SW_SHOW;
-    ShExecInfo.hInstApp = NULL;
-    ShellExecuteEx(&ShExecInfo);
-    WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }

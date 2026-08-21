@@ -61,7 +61,7 @@ void UiFrame::CreateResources()
 
     m_layout->Bind();
 
-    m_vertexBuffer = VertexBuffer::Create(sizeof(glm::vec3) * vertices.size(), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
+    m_vertexBuffer = VertexBuffer::Create(sizeof(glm::vec3) * static_cast<int>(vertices.size()), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
     m_indexBuffer = IndexBuffer::Create(sizeof(indices), indices, GraphicsBufferType::STATIC_DRAW);
 
     m_layout->Build();

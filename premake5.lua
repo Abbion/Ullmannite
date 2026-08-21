@@ -13,8 +13,6 @@ workspace (workspaceName)
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 libdir = workspaceName.."/ThirdPartyLibs"
 
---====================================================================
-
 project "GLFW"
     kind "StaticLib"
     language "C"
@@ -49,7 +47,7 @@ project "GLFW"
 
     filter "system:windows"
 		systemversion "latest"
-		staticruntime "On"
+		staticruntime "on"
 
 		files
 		{
@@ -73,7 +71,7 @@ project "GLFW"
 		pic "On"
 
 		systemversion "latest"
-		staticruntime "On"
+		staticruntime "on"
 
         files
         {
@@ -113,7 +111,6 @@ project "GLFW"
 project "GLAD"
     kind "StaticLib"
     language "C"
-    staticruntime "Off"
 
     targetdir("bin/" .. outputdir .. "/%{prj.name}")
     objdir("bin-obj/" .. outputdir .. "/%{prj.name}")
@@ -199,13 +196,13 @@ project "IMGUI"
     filter "system:windows"
         cppdialect "C++20"
 		systemversion "latest"
-        staticruntime "On"
+        staticruntime "on"
 
 	filter "system:linux"
         pic "On"
         systemversion "latest"
         cppdialect "C++20"
-        staticruntime "On"
+        staticruntime "on"
 
     filter "configurations:Debug or configurations:Tests"
         runtime "Debug"
@@ -288,7 +285,7 @@ project "FreeType"
 
     filter "system:windows"
         systemversion "latest"
-        staticruntime "On"
+        staticruntime "on"
         defines { "_CRT_SECURE_NO_WARNINGS" }
         files
         {
@@ -379,6 +376,13 @@ project "Ullmannite"
         libdir.."/glm",
         libdir.."/StbImage/",
         libdir.."/googleTest/googletest/include",
+        libdir.."/python/include",
+        libdir.."/rpng",
+    }
+
+    libdirs
+    {
+        libdir.."/python/lib",
     }
 
     links
@@ -391,12 +395,13 @@ project "Ullmannite"
 
     defines
     {
-        "GLFW_INCLUDE_NONE"
+        "GLFW_INCLUDE_NONE",
+        "DCM_STATIC"
     }
 
     filter "system:windows"
         cppdialect "C++20"
-        staticruntime "On"
+        staticruntime "on"
         systemversion "latest"
 
         defines
@@ -408,22 +413,6 @@ project "Ullmannite"
         {
             "opengl32.lib"
         }
-
-    filter "system:linux"
-    	flags { "NoPCH" }
-        cppdialect "C++20"
-        staticruntime "On"
-        systemversion "latest"
-
-        defines
-        {
-            "PLATFORM_LINUX"
-        }
-        
-        links
-        {
-            "X11"
-	}
 
     filter "configurations:Debug"
         defines "DEBUG"

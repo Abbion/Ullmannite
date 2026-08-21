@@ -1,7 +1,7 @@
 #pragma once
 #include "Layer.h"
 #include "UiView/UiPickerView.h"
-#include "Window/UllWindow.h""
+#include "Window/UllWindow.h"
 #include <glm/glm.hpp>
 
 namespace Ull
@@ -14,17 +14,15 @@ namespace Ull
         void Update() override;
         void HandleEvent(Event* event) override;
 
-        void SetWindow(const NotOwner<UllWindow>& window);
         void RenderLayerComponents() override;
 
     private:
         glm::mat4 m_viewMatrix;
     
     private:
-        virtual void CreateLayout() override;
-        virtual void ResizeLayout() override;
+        virtual void CreateLayout() override {};
+        virtual void ResizeLayout() override {};
     
         std::shared_ptr<UiPickerView> m_pickerView;
-        NotOwner<UllWindow> m_window{ nullptr };
     };
 }

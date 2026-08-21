@@ -16,10 +16,4 @@ namespace Ull
 
 		return false;
 	}
-
-	template<typename vec2T>
-	bool PointInTriangle(vec2T point, vec2T p1, vec2T p2, vec2T p3)
-	{
-		//TODO: Fill this
-	}
 }

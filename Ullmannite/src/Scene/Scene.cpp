@@ -27,7 +27,7 @@ namespace
 Scene::Scene(std::string name) :
     m_name(name)
 {
-    m_root = new Node("3D scene", this);
+    m_root = new Node("scene tree", this);
     m_root->SetParent(nullptr);
 }
 
@@ -52,13 +52,15 @@ void Scene::HandleEvent(Event* event)
 void Scene::Update()
 {
     m_mainCamera->Update();
+
+    for (auto node : m_root->GetChildren())
+        node->Update();
 }
 
 void Scene::Render()
 {
     for (auto node : m_root->GetChildren())
     {
-        //TODO: Put renderable in Node and static_cast
         auto renderNode = dynamic_cast<RenderableNode*>(node);
 
         if(renderNode != nullptr)

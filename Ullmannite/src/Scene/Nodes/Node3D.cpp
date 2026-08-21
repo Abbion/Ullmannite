@@ -70,7 +70,6 @@ void Node3D::Rotate(const glm::vec3 rotateBy)
 
 void Node3D::CalculateTransformationMatrix()
 {
-    //TODO: add rotation
     m_transformationMatrix = glm::mat4(1.0f);
     m_transformationMatrix = glm::scale(m_transformationMatrix, m_scale);
     m_transformationMatrix = glm::translate(m_transformationMatrix, m_position);

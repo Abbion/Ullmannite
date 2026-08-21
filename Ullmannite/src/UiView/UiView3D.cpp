@@ -5,82 +5,43 @@
 #include "Rendering/Objects/Cube.h"
 #include "Rendering/Objects/MarchCubeRenderer.h"
 #include "Rendering/Objects/DirectionalLight.h"
-#include "Rendering/Utils/RenderHelper.h"
 #include "Scene/SceneObjects/Camera.h"
 #include "Utilities/CollisionCheckers.h"
-#include <string>
-
-#include "DataLoaders/VolumeLoader.h"
-#include "DataStructures/VolumeData.h"
-
 #include <algorithm>
-#include "Core/PlatformDependantFreeFunctions.h"
-#include <codecvt>
-#include <locale>
 
 using namespace Ull;
 
-namespace {
-    std::string ConvertDcmToDat(std::string str)
-    {
-        auto pos = str.find_last_of('.');
-        if (pos != std::string::npos)
-        {
-            auto extension = str.substr(pos);
-
-            if (extension == ".dcm")
-            {
-                using convert_t = std::codecvt_utf8<wchar_t>;
-                std::wstring_convert<convert_t, wchar_t> strconverter;
-                CreateDataFromDicom(strconverter.from_bytes(str));
-                return "Assets/VolumetricData/DICOM.dat";
-            }
-        }
-
-        return str;
-    }
-}
-
 UiView3D::UiView3D(std::string name, glm::uvec2 position, glm::uvec2 size) :
-    UiRenderArea(name, position, size, true),
-    m_scene("Scene 3D")
+    UiRenderArea(name, position, size, true)
 {
     SetBackgroundColor(glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
-
     Init();
-}
-
-void UiView3D::SetTransferFunction(const NotOwner<TransferFunctionRenderer>& transferFunction)
-{
-    m_transferFunction = transferFunction;
-
-    auto cubeMarch = static_cast<MarchCubeRenderer*>(m_scene.GetNodeByName("Cube march"));
-    cubeMarch->SetTransferTexture(m_transferFunction->GetTransferFunctionTexture());
 }
 
 void UiView3D::Init()
 {
-    auto root = m_scene.GetRootNode();
+    m_sceneview = std::make_shared<UiSceneView>("Scene view 3D");
+    AddChildNode(m_sceneview);
+
+    auto& scene = m_sceneview->GetScene();
+    auto root = scene.GetRootNode();
 
     //Camera
-    auto camera = new Camera("Main camera", &m_scene, UiRenderArea::GetSize());
+    auto camera = new Camera("main camera", &scene, UiRenderArea::GetSize());
     camera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     camera->CalculateProjectionMatrix();
     camera->CalculateViewMatrix();
 
-    m_scene.SetMainCamera(camera);
+    scene.SetMainCamera(camera);
     root->AddNode(camera);
 
     //Light
-    auto dirLight = new DirectionalLight("dirLight", &m_scene);
+    auto dirLight = new DirectionalLight("dirLight", &scene);
     dirLight->SetDirection(glm::vec3(1.0f, -1.0f, 0.0f));
     dirLight->SetAmbientStrength(0.15f);
     dirLight->SetLightColor(glm::vec3(0.9f, 0.9f, 0.9f));
 
     root->AddNode(dirLight);
-
-    auto cubeMarch = new MarchCubeRenderer("Cube march", &m_scene);
-    root->AddNode(cubeMarch);
 }
 
 void UiView3D::HandleEvent(Event* event)
@@ -89,12 +50,30 @@ void UiView3D::HandleEvent(Event* event)
     {
     case EventType::WindowResize:
     {
-         auto cameraNode = m_scene.GetNodeByName("Main camera");
+        auto& scene = m_sceneview->GetScene();
+        auto cameraNode = scene.GetNodeByName("main camera");
         
         if(cameraNode != nullptr)
         {
             auto camera = static_cast<Camera*>(cameraNode);
             camera->SetRenderAreaSize(UiRenderArea::GetSize());
+        }
+    }
+    break;
+
+    case EventType::KeyDown:
+    {
+        const auto key = static_cast<KeyDownEvent*>(event)->GetVal();
+        if (key == Keyboard::Key::L_SHFT)
+        {
+            auto& scene = m_sceneview->GetScene();
+            auto cameraNode = scene.GetNodeByName("main camera");
+            auto camera = static_cast<Camera*>(cameraNode);
+
+            auto directionalLightNode = scene.GetNodeByName("dirLight");
+            auto directionalLight = static_cast<DirectionalLight*>(directionalLightNode);
+
+            directionalLight->SetDirection(camera->GetForward());
         }
     }
     break;
@@ -104,30 +83,39 @@ void UiView3D::HandleEvent(Event* event)
     case EventType::MouseUp:
     case EventType::MouseScroll:
     {
-        if(!PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()) && !m_window->IsCursorLocked())
+        auto& window = Application::GetWindow();
+        if(!PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()) && !window.IsCursorLocked())
             return;
     }
     break;
-
-    case EventType::FileLoaded:
+    case EventType::DataFolderSelected:
     {
-        auto path = static_cast<DataLoadEvent*>(event)->GetVal();
-        path = ConvertDcmToDat(path);
-        auto dataSet = LoadVolumeData(path);
-        auto cubeMarchRenderer = m_scene.GetNodeByName("Cube march");
-        if (cubeMarchRenderer != nullptr)
+        auto& scene = m_sceneview->GetScene();
+        auto marchCubeNode = scene.GetNodeByName("march cube");
+        if (marchCubeNode)
         {
-            auto renderer = static_cast<MarchCubeRenderer*>(cubeMarchRenderer);
-            renderer->SetVolumeData(dataSet);
-            renderer->GenerateMesh();
-            m_scene.SetUpdated(true);
+            scene.GetRootNode()->RemoveNode(marchCubeNode);
+            delete marchCubeNode;
         }
     }
     break;
 
-    case EventType::GradientUpdated:
+    case EventType::VolumeLoaded:
     {
-        m_scene.SetUpdated(true);
+        auto& scene = m_sceneview->GetScene();
+        auto root = scene.GetRootNode();
+        auto cubeMarch = new MarchCubeRenderer("march cube", &scene);
+        root->AddNode(cubeMarch);
+
+        const auto colorTransferNode = GetRoot()->GetNodeByName("colorTransferLinearGradient");
+        if (colorTransferNode)
+        {
+            const auto colorTransfer = static_cast<UiLinearColorGradient*>(colorTransferNode.value().Get());
+            const auto transferPoints = colorTransfer->GetGradientColors();
+            m_transferFunction = std::make_unique<TransferFunctionRenderer>(transferPoints);
+            m_transferFunction->GenerateTransferFunction();
+            cubeMarch->SetTransferFunction(m_transferFunction->GetTransferFunctionTexture());
+        }
     }
     break;
 
@@ -135,37 +123,45 @@ void UiView3D::HandleEvent(Event* event)
         break;
     }
 
-    m_scene.HandleEvent(event);
     UiRenderArea::HandleEvent(event);
 }
 
 void UiView3D::Update()
 {
-    m_scene.Update();
+    auto& scene = m_sceneview->GetScene();
 
-    if(m_scene.IsUpdated())
+    if (auto marchCubeRendererNode = scene.GetNodeByName("march cube"))
     {
-        m_areaUpdated = true;
-        m_scene.SetUpdated(false);
+        auto marchCubeRenderer = static_cast<MarchCubeRenderer*>(marchCubeRendererNode);
+
+        if (const auto volumeThresholdSliderNode = GetRoot()->GetNodeByName("volumeThresholdSlider"))
+        {
+            const auto volumeThresholdSlider = static_cast<UiTwoSideSlider*>(volumeThresholdSliderNode->Get());
+            const auto minValue = volumeThresholdSlider->GetMinSliderValue();
+            const auto maxValue = volumeThresholdSlider->GetMaxSliderValue();
+
+            marchCubeRenderer->SetThresholdValues(static_cast<glm::uint>(std::round(minValue)), static_cast<glm::uint>(std::round(maxValue)));
+        }
+
+        if (const auto colorTransferNode = GetRoot()->GetNodeByName("colorTransferLinearGradient"))
+        {
+            const auto colorTransfer = static_cast<UiLinearColorGradient*>(colorTransferNode.value().Get());
+            const auto transferPoints = colorTransfer->GetGradientColors();
+            m_transferFunction = std::make_unique<TransferFunctionRenderer>(transferPoints);
+            m_transferFunction->GenerateTransferFunction();
+            marchCubeRenderer->SetTransferFunction(m_transferFunction->GetTransferFunctionTexture());
+        }
     }
 
     UiRenderArea::Update();
 }
 
-void UiView3D::SetWindow(const NotOwner<UllWindow>& window)
-{
-    m_window = window;
-    auto cameraNode = m_scene.GetNodeByName("Main camera");
-    if(cameraNode != nullptr)
-    {
-        auto camera = static_cast<Camera*>(cameraNode);
-        camera->SetWindow(m_window);
-    }
-}
-
 void UiView3D::Render()
 {
-    m_areaUpdated = true;
-    
+    Application::GetRenderer().SetDepth(Renderer::State::ENABLE);
+
     UiRenderArea::Render();
+
+    Application::GetRenderer().SetDepth(Renderer::State::DISABLE);
+    Application::GetRenderer().SetFaceCulling(Renderer::FaceCulling::NONE);
 }

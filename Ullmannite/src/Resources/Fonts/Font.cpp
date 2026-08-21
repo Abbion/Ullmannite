@@ -95,7 +95,7 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 
 		outerSdf->SetSubData(cursor + static_cast<int>(sdfOffset), glyphSize, PixelDataFormat::R_I, GraphicsDataType::USHORT, bitmapBuffer.data());
 
-		Character character{ cursor + static_cast<int>(sdfOffset), glyphSize, glm::ivec2{ face->glyph->bitmap_left, face->glyph->bitmap_top }, (face->glyph->advance.x >> 6) };
+		Character character{ cursor + static_cast<int>(sdfOffset), glyphSize, glm::ivec2{ face->glyph->bitmap_left, face->glyph->bitmap_top }, static_cast<unsigned int>(face->glyph->advance.x >> 6) };
 		m_characters.insert(std::pair<wchar_t, Character>((wchar_t)gliphInfo.id, std::move(character)));
 
 		cursor.x += sizeWithOffset.x;
@@ -200,14 +200,12 @@ Font::Font(const std::string& fontPath, FT_Library& library, const int width, co
 	if (startName == std::string::npos)
 		startName = 0;
 
-	const auto endName = fontPath.find_last_of('.');
-	const auto fontName = fontPath.substr(startName + 1u, endName - startName - 1u) + "SDF";
-
-	Image2DWriter imageWriter(glm::uvec2(FontTextureDimensions, FontTextureDimensions), Image2DWriter::Channels::MONO);
-	imageWriter.AddImageData(glm::uvec2(0, 0), glm::uvec2(FontTextureDimensions, FontTextureDimensions), sdfImage, 256.0f);
-	imageWriter.SaveToFile(fontName);
-
-	//CHECK IF I HAVE TO DELETE frameBuffer and other stuff or the destructor deletes it
+	//const auto endName = fontPath.find_last_of('.');
+	//const auto fontName = fontPath.substr(startName + 1u, endName - startName - 1u) + "SDF";
+	//
+	//Image2DWriter imageWriter(glm::uvec2(FontTextureDimensions, FontTextureDimensions), Image2DWriter::Channels::MONO);
+	//imageWriter.AddImageData(glm::uvec2(0, 0), glm::uvec2(FontTextureDimensions, FontTextureDimensions), sdfImage, /256.0f);
+	//imageWriter.SaveToFile(fontName);
 }
 
 std::map<wchar_t, Font::Character> Font::GenerateDictionary(const std::wstring& text)

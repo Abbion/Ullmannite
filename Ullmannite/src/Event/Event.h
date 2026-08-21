@@ -2,7 +2,7 @@
 #include "Logger/Logger.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
-#include "DataStructures/CuttingSettings.h"
+#include "Core/Types.h"
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -35,11 +35,9 @@ namespace Ull
         UiScaledUp,
         UiScaledDown,
 
-        FileLoaded,
+        DataFolderSelected,
+        VolumeLoaded,
         CuttingSettingsChanged,
-        TransferFunctionChanged,
-        ExaminationThresholdChanged,
-        GradientUpdated,
 
         RenderAreaSizeChanged,
         
@@ -51,7 +49,7 @@ namespace Ull
     {
     public:
         Event(EventType eventType) : m_type(eventType) {}
-        virtual ~Event() { /*ULOGD("event " << (int)m_type << " terminated");*/ }
+        virtual ~Event() { }
 
         void MarkHandeled(const bool handeled) { m_handeled = handeled; } 
 
@@ -87,7 +85,6 @@ namespace Ull
     typedef Event WindowClosedEvent;
     typedef Event WindowMinimized;
     typedef Event WindowRestored;
-    typedef Event GradientUpdatedEvent;
     typedef Event MouseEnteredWindowEvent;
     typedef Event MouseExitedWindowEvent;
 
@@ -103,11 +100,11 @@ namespace Ull
     typedef ValueEvent<float> UiScaledUpEvent;
     typedef ValueEvent<float> UiScaledDownEvent;
 
-    typedef ValueEvent<std::string> DataLoadEvent;
-    typedef ValueEvent<glm::uvec2> ExaminationThresholdChangedEvent;
+    typedef ValueEvent<std::wstring> DataFolderSelectedEvent;
     typedef ValueEvent<CuttingSettings> CuttingSettingsChangedEvent;
 
     typedef Event RenderAreaSizeChanged;
+    typedef Event VolumeLoadedEvent;
 
     typedef ValueEvent<ToolSetup> OpenToolEvent;
 };

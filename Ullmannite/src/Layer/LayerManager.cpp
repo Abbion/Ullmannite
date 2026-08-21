@@ -5,10 +5,6 @@
 
 using namespace Ull;
 
-LayerManager::LayerManager()
-{
-}
-
 LayerManager::~LayerManager()
 {
     m_layers.clear();
@@ -23,6 +19,17 @@ void LayerManager::PushLayer(std::shared_ptr<Layer> newLayer)
 void LayerManager::DropAllLayers()
 {
     m_layers.clear();
+}
+
+std::shared_ptr<Layer> LayerManager::GetLayerByName(const std::string& layerName)
+{
+    for (auto& layer : m_layers)
+    {
+        if (layer->GetName() == layerName)
+            return layer;
+    }
+
+    return nullptr;
 }
 
 unsigned int LayerManager::GetSize() const

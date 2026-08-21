@@ -9,19 +9,18 @@
 #include "Event/Event.h"
 #include "Input/Mouse.h"
 
-#include "Application/Application.h"
 #include "Rendering/Api/ShaderManager.h"
+#include "Rendering/TriangulationTable/TriangulationTable.h"
 
 #include "Layer/Layer.h"
 #include "Layer/MainLayer.h"
 #include "Layer/ToolLayer.h"
 
-#include "Resources/ResourceManager.h"
-
 #include <ft2build.h>
 #include FT_FREETYPE_H  
 
 #include "Output/Image2DWriter.h"
+#include "Core/PythonHelper.h"
 
 using namespace Ull;
 
@@ -41,13 +40,17 @@ Application::Application()
 
 Application::~Application()
 {
+    if (m_loaderThread.joinable())
+        m_loaderThread.join();
+
     m_layerManager.DropAllLayers();
     GetRenderer().Terminate();
+    FinalizePython();
     ULOGD("Application terminated");
 }
 
 void Application::Run()
-{    
+{
     while (m_window.IsOpen())
     {        
         if (Application::GetKeyboard().IsKeyPressed(Keyboard::Key::ESCAPE))
@@ -76,7 +79,7 @@ void Application::UpdateAndRenderLayers()
             layer->RenderLayerComponents();
         
         m_window.Clear();
-        
+
         for (auto layer : layers)
             layer->Render();
 
@@ -86,6 +89,8 @@ void Application::UpdateAndRenderLayers()
 
 void Application::InitApplciation()
 {
+    InitializePython();
+
     auto& renderer = GetRenderer();
     renderer.SetApi(Ull::Renderer::API::OPEN_GL);
 
@@ -135,22 +140,23 @@ void Application::InitApplciation()
     shaderManager.LoadShader(ShaderTag::INVERSE_2D_BIT_MAP, "Inverse2DBitMapCS");
     shaderManager.LoadShader(ShaderTag::MEREGE_INNSER_OUTER_SDF, "MergeInnerOuterSdfCS");
     shaderManager.LoadShader(ShaderTag::SDF_TEXT, "SdfTextVS", "SdfTextPS");
-    //shaderManager.LoadShader(ShaderTag::CHANGE_VALUE_IF_GREATHER_THAN_UIIMAGE_2D, "ChangeValueInUIImage2DIfGreaterThan");
 
     //Resources
-    auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
+    auto& fontManager = m_resourceManager.GetFontMnager();
     fontManager.InitLoader();
     fontManager.LoadFont("segoeui.ttf", FontTag::UI_FONT, 128, 33, 126);
     fontManager.LoadFont("UllIcon.ttf", FontTag::UI_ICON, 256, 61440, 61449);
     fontManager.ReleaseLoader();
 
+    TriangulationTable::GetInstance().CreateTriangulationTable();
+    TriangulationTable::GetInstance().CreateVectexCountTable();
+
     //Layers
-    auto mainLayer = std::make_shared<MainLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
-    mainLayer->SetWindow(NotOwner<UllWindow>(&m_window));
+    auto& window = Application::GetWindow();
+    auto mainLayer = std::make_shared<MainLayer>(window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
     m_layerManager.PushLayer(mainLayer);
 
-    auto toolLayer = std::make_shared<ToolLayer>(m_window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
-    toolLayer->SetWindow(NotOwner<UllWindow>(&m_window));
+    auto toolLayer = std::make_shared<ToolLayer>(window.GetSize(), NotOwner<LayerManager>(&m_layerManager));
     m_layerManager.PushLayer(toolLayer);
 
     //First resizeEvent to inform components of the initial window size
@@ -162,8 +168,8 @@ void Application::HandleEvents()
 {
     m_eventQueue.MakeEventUnique(EventType::WindowResize);
 
-    Keyboard::KeyState keyState{};
-    Mouse::ButtonState buttonState{};
+    std::vector<Keyboard::KeyState> newKeyStates{};
+    std::vector<Mouse::ButtonState> newButtonStates{};
     int scroll = 0;
 
     while (m_eventQueue.HasPenddingEvents())
@@ -187,31 +193,37 @@ void Application::HandleEvents()
             break;
 
         case EventType::KeyDown:
+        {
+            Keyboard::KeyState keyState;
             keyState.key = static_cast<KeyDownEvent*>(currentEvent.get())->GetVal();
             keyState.state = true;
-
-            if (keyState.key == Keyboard::Key::P)
-            {
-                //const auto colorPickerData = ColorPickerData{ glm::vec4(1.0f, 0.0f, 1.0f, 1.0f) };
-                //EventAggregator::Publish(std::make_shared<OpenToolEvent>(EventType::OpenTool, ToolSetup{ ToolType::ColorPicker, glm::uvec2(50, 25), colorPickerData }));
-            }
+            newKeyStates.push_back(keyState);
             break;
-
+        }
         case EventType::KeyUp:
+        {
+            Keyboard::KeyState keyState;
             keyState.key = static_cast<KeyUpEvent*>(currentEvent.get())->GetVal();
             keyState.state = false;
+            newKeyStates.push_back(keyState);
             break;
-
+        }
         case EventType::MouseDown:
+        {
+            Mouse::ButtonState buttonState;
             buttonState.button = static_cast<MouseDownEvent*>(currentEvent.get())->GetVal();
             buttonState.state = true;
+            newButtonStates.push_back(buttonState);
             break;
-
+        }
         case EventType::MouseUp:
+        {
+            Mouse::ButtonState buttonState;
             buttonState.button = static_cast<MouseDownEvent*>(currentEvent.get())->GetVal();
             buttonState.state = false;
+            newButtonStates.push_back(buttonState);
             break;
-
+        }
         case EventType::MouseMove:
             GetMouse().UpdatePosition(static_cast<MouseMoveEvent*>(currentEvent.get())->GetVal());
             break;
@@ -222,14 +234,32 @@ void Application::HandleEvents()
 
         default:
             break;
+        case EventType::DataFolderSelected:
+            const auto event = static_cast<DataFolderSelectedEvent*>(currentEvent.get());
+            const auto folderPath = event->GetVal();
+
+            if (m_loaderThread.joinable())
+                m_loaderThread.join();
+
+            m_loaderThread = std::thread([this](const std::wstring& path) {
+                const auto success = m_resourceManager.GetVolumeManager().LoadVolumeFromFolder(path);
+                if (success)
+                    m_eventQueue.PushEvent(std::make_shared<VolumeLoadedEvent>(EventType::VolumeLoaded));
+            }, folderPath);
+                
+            break;
         }
 
          m_window.HandleEvent(currentEvent.get());
          m_layerManager.HandleEvent(currentEvent.get());
     }
 
-    GetKeyboard().UpdateKeyMap(keyState);
-    GetMouse().UpdateButtonMap(buttonState);
+    for (const auto keyState : newKeyStates)
+        GetKeyboard().UpdateKeyMap(keyState);
+
+    for (const auto buttonState : newButtonStates)
+        GetMouse().UpdateButtonMap(buttonState);
+
     GetMouse().UpdateScroll(scroll);
 }
 

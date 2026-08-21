@@ -155,7 +155,7 @@ void UiText::CreateResources()
 	if (m_layout != nullptr)
 		delete m_layout;
 
-	auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
+	auto& fontManager = Application::GetResourceManager().GetFontMnager();
 	const auto characters = fontManager.GetFont(m_fontTag)->GenerateDictionary(m_text);
 	const auto loadedFontSize = fontManager.GetFont(m_fontTag)->GetLoadedHeight();
 	const auto spaceWidth = fontManager.GetFont(m_fontTag)->GetCharacter(AdvanceCharacter).advance;
@@ -168,7 +168,6 @@ void UiText::CreateResources()
 	const glm::vec2 scale{ static_cast<float>(m_fontSize) / static_cast<float>(size.x) / static_cast<float>(loadedFontSize),
 					 static_cast<float>(m_fontSize) / static_cast<float>(size.y) / static_cast<float>(loadedFontSize) };
 
-	//TODO: Subtract whitespaces form the text length
 	std::vector<GpuLetterData> vertices((m_text.length()) * 4);
 	std::vector<unsigned int> indices(m_text.length() * 6);
 
@@ -279,7 +278,7 @@ void UiText::CreateResources()
 
 	m_layout->Bind();
 
-	m_vertexBuffer = VertexBuffer::Create(sizeof(GpuLetterData) * vertices.size(), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
+	m_vertexBuffer = VertexBuffer::Create(sizeof(GpuLetterData) * static_cast<int>(vertices.size()), reinterpret_cast<float*>(vertices.data()), GraphicsBufferType::STATIC_DRAW);
 	m_indexBuffer = IndexBuffer::Create(static_cast<int>(sizeof(unsigned int) * indices.size()), indices.data(), GraphicsBufferType::STATIC_DRAW);
 
 	m_layout->Build();
@@ -330,7 +329,7 @@ void UiText::Render()
 	m_shader->SetFloat2("renderAreaPosition", position);
 	m_shader->SetFloat2("renderAreaSize", GetSize());
 
-	auto& fontManager = ResourceManager::GetInstance().GetFontMnager();
+	auto& fontManager = Application::GetResourceManager().GetFontMnager();
 	const auto texture = fontManager.GetFont(m_fontTag)->GetTexture();
 	texture->Bind();
 
@@ -339,11 +338,6 @@ void UiText::Render()
 	Application::GetRenderer().SetBlending(Renderer::State::ENABLE);
 	Application::GetRenderer().DrawElements(GraphicsRenderPrimitives::TRIANGLE, m_indexBuffer->GetSize());
 	Application::GetRenderer().SetBlending(Renderer::State::DISABLE);
-}
-
-void UiText::UpdateDisplayTextSize()
-{
-
 }
 
 void UiText::RealignText()

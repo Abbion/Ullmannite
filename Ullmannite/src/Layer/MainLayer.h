@@ -14,15 +14,11 @@ namespace Ull
     public:
         MainLayer(const glm::uvec2 size, const NotOwner<LayerManager>& layerManager);
 
-        void SetWindow(const NotOwner<UllWindow>& window);
-
         virtual void RenderLayerComponents() override;
 
     private:
         virtual void CreateLayout() override;
         virtual void ResizeLayout() override;
-
-        NotOwner<UllWindow> m_window{ nullptr };
 
         std::shared_ptr<UiTitleBar> m_titleBar;
         std::shared_ptr<UiRenderArea> m_titleBarView;

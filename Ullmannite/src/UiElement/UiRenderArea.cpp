@@ -28,7 +28,6 @@ void UiRenderArea::OnSizeChange()
 void UiRenderArea::SetBackgroundColor(const glm::vec4& color)
 {
     m_color = color;
-    m_areaUpdated = true;
 }
 
 void UiRenderArea::HandleEvent(Event* event)
@@ -40,11 +39,13 @@ void UiRenderArea::HandleEvent(Event* event)
     {
     case EventType::MouseMove:
     case EventType::MouseEnteredWindow:
+    case EventType::MouseUp:
+    case EventType::MouseDown:
+    case EventType::MouseScroll:
         CheckMouseInArea();
     break;
 
     case EventType::MouseExitedWindow:
-        m_areaUpdated = true;
         m_inArea = false;
     break;
 
@@ -62,23 +63,20 @@ void UiRenderArea::Update()
 
 void UiRenderArea::Render()
 {
-    //if(m_areaUpdated)
-    {
-        m_frameBuffer->Bind();
-
-        Clear();
-        UiElement::Render();
-
-        m_frameBuffer->Unbind();
-
-        m_areaUpdated = false;
-    }
+    m_frameBuffer->Bind();
+    
+    Clear();
+    UiElement::Render();
+    
+    m_frameBuffer->Unbind();
 }
 
 void UiRenderArea::Clear()
 {
+    const uint8_t clearDepthBit = m_usesDepth ? Renderer::ClearBits::DEPTH : 0u;
+
     Application::GetRenderer().SetClearColor(m_color);
-    Application::GetRenderer().Clear(Renderer::ClearBits::COLOR);
+    Application::GetRenderer().Clear(Renderer::ClearBits::COLOR | clearDepthBit);
     Application::GetRenderer().SetViewPort(glm::ivec2(0, 0), GetSize());
 }
 
@@ -86,13 +84,10 @@ void UiRenderArea::CheckMouseInArea()
 {
     if (PointInStaticRect<glm::ivec2>(Application::GetMouse().GetMousePosition(), GetPosition(), GetSize()))
     {
-        m_areaUpdated = true;
         m_inArea = true;
     }
     else
     {
-        if (m_inArea = true)
-            m_areaUpdated = true;
         m_inArea = false;
     }
 }

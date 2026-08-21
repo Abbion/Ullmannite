@@ -1,6 +1,5 @@
 #include <Ullpch.h>
 #include "EventQueue.h"
-
 #include "Logger/Logger.h"
 
 using namespace Ull;
@@ -13,18 +12,16 @@ EventQueue::~EventQueue()
 
 void EventQueue::PushEvent(const std::shared_ptr<Event>& newEvent)
 {
+    const auto guard = std::lock_guard(m_mutex);
     m_events.push_back(newEvent);
 }
 
 std::shared_ptr<Event> EventQueue::PopEvent()
 {
+    const auto guard = std::lock_guard(m_mutex);
     auto lastEvent = m_events.front();
     m_events.pop_front();
     return lastEvent;
-}
-
-void EventQueue::CheckPublishedEvents()
-{
 }
 
 bool EventQueue::HasPenddingEvents() const
@@ -34,11 +31,12 @@ bool EventQueue::HasPenddingEvents() const
 
 unsigned int EventQueue::GetSize() const
 {
-    return (unsigned int)m_events.size();
+    return static_cast<unsigned int>(m_events.size());
 }
 
 void EventQueue::MakeEventUnique(EventType eventType)
 {
+    const auto guard = std::lock_guard(m_mutex);
     std::deque<std::shared_ptr<Event>> uniqueQueue;
     bool lock = false;
 
@@ -56,11 +54,12 @@ void EventQueue::MakeEventUnique(EventType eventType)
             uniqueQueue.push_back(*itr);
     }
 
-    ClearEventQueue();
+    m_events.clear();
     m_events = uniqueQueue;
 }
 
 void EventQueue::ClearEventQueue()
 {
+   const auto guard = std::lock_guard(m_mutex);
    m_events.clear();
 }
