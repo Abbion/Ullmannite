@@ -377,6 +377,7 @@ project "Ullmannite"
         libdir.."/StbImage/",
         libdir.."/googleTest/googletest/include",
         libdir.."/python/include",
+        libdir.."/rpng",
     }
 
     libdirs
