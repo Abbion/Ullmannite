@@ -1278,7 +1278,7 @@ char *rpng_load_image_from_memory(const char *buffer, int *width, int *height, i
                 int pixel_size = *color_channels*(*bit_depth/8);
                 data = rpng_inflate_image_data(chunk_image.data, chunk_image.length, *width, *height, pixel_size);
 
-                if (data == NULL) RPNG_LOG("WARNING: IDAT image data ¡decompression failed\n");
+                if (data == NULL) RPNG_LOG("WARNING: IDAT image data Â¡decompression failed\n");
             }
             else RPNG_LOG("WARNING: CRC not valid, IDAT chunk image data could be corrupted\n");
         }
@@ -1360,7 +1360,7 @@ char *rpng_load_image_indexed_from_memory(const char *buffer, int *width, int *h
                     int pixel_size = (IHDRData->bit_depth/8); // NOTE: Assume 1 channel
                     data = rpng_inflate_image_data(chunk_image.data, chunk_image.length, *width, *height, pixel_size);
 
-                    if (data == NULL) RPNG_LOG("WARNING: IDAT image data ¡decompression failed\n");
+                    if (data == NULL) RPNG_LOG("WARNING: IDAT image data Â¡decompression failed\n");
                 }
                 else RPNG_LOG("WARNING: CRC not valid, IDAT chunk image data could be corrupted\n");
             }
@@ -3023,8 +3023,9 @@ sdefl_bound(int len) {
 static int
 sinfl_bsr(unsigned n) {
 #ifdef _MSC_VER
-  _BitScanReverse(&n, n);
-  return n;
+  unsigned long r = 0;
+  _BitScanReverse(&r, n);
+  return (int)r;
 #elif defined(__GNUC__) || defined(__clang__)
   return 31 - __builtin_clz(n);
 #endif

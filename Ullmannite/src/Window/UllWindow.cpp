@@ -22,6 +22,7 @@
 #endif
 
 #define RPNG_IMPLEMENTATION
+#define RPNG_DEFLATE_IMPLEMENTATION
 #include "rpng.h"
 
 using namespace Ull;
@@ -96,11 +97,10 @@ void UllWindow::Create(std::string title, glm::uvec2 size)
     int iconHeight = 0;
     int colorChannels = 0;
     int bitDepth = 0;
-    const auto a = rpng_load_image("Assets/Icons/AppIcon.png", &iconWidth, &iconHeight, &colorChannels, &bitDepth);
-    m_icon.pixels = reinterpret_cast<unsigned char*>(a);
+    m_icon.pixels = reinterpret_cast<unsigned char*>(rpng_load_image("../Assets/Icons/AppIcon.png", &iconWidth, &iconHeight, &colorChannels, &bitDepth));
     m_icon.width = iconWidth;
     m_icon.height = iconHeight;
-    //glfwSetWindowIcon(m_window, 1, &m_icon);
+    glfwSetWindowIcon(m_window, 1, &m_icon);
 
     m_lastRefresh = std::chrono::steady_clock::now();
 }
